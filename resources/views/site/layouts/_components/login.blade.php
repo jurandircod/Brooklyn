@@ -170,7 +170,7 @@
                         autocomplete="current-password">
                 </div>
 
-                <a href="javascript:void(0)" class="pass-forgot">Forgot your password?</a>
+                <a href="{{route('password.request')}}" class="pass-forgot">Forgot your password?</a>
 
                 <div class="button login">
                     <button type="submit">

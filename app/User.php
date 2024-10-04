@@ -2,7 +2,9 @@
 
 namespace App;
 
+
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -10,6 +12,10 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    public function enderecos()
+    {
+        return $this->hasMany(Endereco::class); // Um usuário pode ter muitos endereços
+    }
     /**
      * The attributes that are mass assignable.
      *

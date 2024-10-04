@@ -1,3 +1,4 @@
+
 <style>
     .h-logo {
         max-width: 185px !important;
@@ -13,8 +14,6 @@
         }
     }
 </style>
-
-
 <div class="mobile-menu d-sm-none">
     <ul>
         <li>
@@ -90,8 +89,9 @@
             <div class="col-lg-3">
                 <ul class="nav nav-tabs custome-nav-tabs flex-column category-option" id="myTab">
                     <li class="nav-item mb-2">
-                        <button class="nav-link font-light active"  id="tab" data-bs-toggle="tab"
-                            data-bs-target="#dash" type="button"><i class="fas fa-angle-right"></i>Painel de
+                        <button class="nav-link font-light @empty($_GET['activeTab']) active @endempty"
+                            id="tab" data-bs-toggle="tab" data-bs-target="#dash" type="button"><i
+                                class="fas fa-angle-right"></i>Painel de
                             Controle</button>
                     </li>
                     <li class="nav-item mb-2">
@@ -100,11 +100,13 @@
                     </li>
 
                     <li class="nav-item">
-                        <button class="nav-link font-light " id="6-tab" data-bs-toggle="tab"
-                            data-bs-target="#endereco" type="button"><i class="fas fa-angle-right"></i>Cadastrar
+                        <button
+                            class="nav-link font-light @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 3)active @endif @endisset"
+                            id="6-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button"><i
+                                class="fas fa-angle-right"></i>Cadastrar
                             Endereço</button>
                     </li>
-                    <li class="nav-item mb-2"> 
+                    <li class="nav-item mb-2">
                         <button class="nav-link font-light" id="1-tab" data-bs-toggle="tab" data-bs-target="#order"
                             type="button"><i class="fas fa-angle-right"></i>Pedidos</button>
                     </li>
@@ -141,7 +143,7 @@
                 </div>
 
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show  " id="dash">
+                    <div class="tab-pane fade show @empty($_GET['activeTab']) active @endempty" id="dash">
                         <div class="dashboard-right">
                             <div class="dashboard">
                                 <div class="page-title title title1 title-effect">
@@ -593,90 +595,53 @@
 
                     <div class="tab-pane fade dashboard" id="save">
                         <div class="box-head">
-                            <h3>Save Address</h3>
-                            <button class="btn btn-solid-default btn-sm fw-bold ms-auto" data-bs-toggle="modal"
-                                data-bs-target="#addAddress"><i class="fas fa-plus"></i>
-                                Add New Address</button>
+                            <h3>Endereços Salvos</h3>
+                            <a href="{{ route('site.perfil') }}?activeTab=3"
+                                class="btn btn-solid-default btn-sm fw-bold ms-auto" data-bs-target="#addAddress"><i
+                                    class="fas fa-plus"></i>
+                                Adicionar novo endereço</a>
                         </div>
                         <div class="save-details-box">
                             <div class="row g-3">
-                                <div class="col-xl-4 col-md-6">
-                                    <div class="save-details">
-                                        <div class="save-name">
-                                            <h5>Mark Jugal</h5>
-                                            <div class="save-position">
-                                                <h6>Home</h6>
+                                @isset($enderecos)
+                                    @if ($enderecos->isEmpty())
+                                        <div class="col-12">
+                                            <h6 class="font-light">Você ainda não salvou nenhum endereço.</h6>
+                                        </div>
+                                    @else
+                                        @foreach ($enderecos as $endereco)
+                                            <div class="col-xl-4 col-md-6">
+                                                <div class="save-details">
+                                                    <div class="save-name">
+                                                        <h5>{{ $endereco->cidade }}</h5>
+                                                        <div class="save-position">
+                                                            <h6>Home</h6>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="save-address">
+                                                        <p class="font-light"><b>Endereço: </b>{{ $endereco->bairro }}</p>
+                                                        <p class="font-light"><b>Número da casa:
+                                                            </b>{{ $endereco->numero }} </p>
+                                                        <p class="font-light"><b>Estado: </b>{{ $endereco->estado }} </p>
+                                                        <p class="font-light"><b>CEP: </b>{{ $endereco->cep }} </p>
+                                                    </div>
+
+                                                    <div class="mobile">
+                                                        <p class="font-light mobile"><b>Telefone:
+                                                            </b>{{ $endereco->telefone }} </p>
+                                                    </div>
+
+                                                    <div class="button">
+                                                        <a href="{{route('site.perfil.editar', ['id' => $endereco->id])}}"
+                                                            class="btn btn-sm">Edit</a>
+                                                        <a href="javascript:void(0)" class="btn btn-sm">Remove</a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <div class="save-address">
-                                            <p class="font-light">549 Sulphur Springs Road</p>
-                                            <p class="font-light">Downers Grove, IL</p>
-                                            <p class="font-light">60515</p>
-                                        </div>
-
-                                        <div class="mobile">
-                                            <p class="font-light mobile">Mobile No. +1-123-456-7890</p>
-                                        </div>
-
-                                        <div class="button">
-                                            <a href="javascript:void(0)" class="btn btn-sm">Edit</a>
-                                            <a href="javascript:void(0)" class="btn btn-sm">Remove</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-4 col-md-6">
-                                    <div class="save-details">
-                                        <div class="save-name">
-                                            <h5>Method Zaki</h5>
-                                            <div class="save-position">
-                                                <h6>Office</h6>
-                                            </div>
-                                        </div>
-
-                                        <div class="save-address">
-                                            <p class="font-light">549 Sulphur Springs Road</p>
-                                            <p class="font-light">Downers Grove, IL</p>
-                                            <p class="font-light">60515</p>
-                                        </div>
-
-                                        <div class="mobile">
-                                            <p class="font-light mobile">Mobile No. +1-123-456-7890</p>
-                                        </div>
-
-                                        <div class="button">
-                                            <a href="javascript:void(0)" class="btn btn-sm">Edit</a>
-                                            <a href="javascript:void(0)" class="btn btn-sm">Remove</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-4 col-md-6">
-                                    <div class="save-details">
-                                        <div class="save-name">
-                                            <h5>Mark Jugal</h5>
-                                            <div class="save-position">
-                                                <h6>Home</h6>
-                                            </div>
-                                        </div>
-
-                                        <div class="save-address">
-                                            <p class="font-light">549 Sulphur Springs Road</p>
-                                            <p class="font-light">Downers Grove, IL</p>
-                                            <p class="font-light">60515</p>
-                                        </div>
-
-                                        <div class="mobile">
-                                            <p class="font-light mobile">Mobile No. +1-123-456-7890</p>
-                                        </div>
-
-                                        <div class="button">
-                                            <a href="javascript:void(0)" class="btn btn-sm">Edit</a>
-                                            <a href="javascript:void(0)" class="btn btn-sm">Remove</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                        @endforeach
+                                    @endif
+                                @endisset
                             </div>
                         </div>
                     </div>
@@ -982,39 +947,43 @@
                                 Account</button>
                         </div>
                     </div>
-                    <div class="tab-pane fade @isset($_GET['activeTab']) @if($_GET['activeTab'] == 3) show dashboard active @endif @endisset" id="endereco">
+                    <div class="tab-pane fade @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 3) show dashboard active @endif @endisset"
+                        id="endereco">
                         <div class="">
                             <h3 class="">Endereço</h3>
 
-                            <form action="{{route('site.perfil.salvar')}}" method="POST">
+                            <form action="{{ route('site.perfil.salvar') }}" method="POST">
                                 @csrf
+                                @isset($enderecoEditar)
+                                        <input type="hidden" name="id" value="{{$enderecoEditar->id}}">
+                                @endisset
                                 <div class="row">
                                     <div class="col mt-3">
                                         <div class="form-group">
                                             <label for="input-phone">Telefone<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="tel" class="form-control" value="{{old('telefone')}}" name="telefone"
-                                                id="input-phone" placeholder="Telefone">
-                                                @if($errors->has('telefone'))
-                                                {{$errors->first('telefone')}}
-                                                    <span class="invalid-feedback" style="color: red" role="alert">
-                                                        {{ $errors->first('telefone') }}
-                                                    </span>
-                                                @endif
+                                            <input type="tel" class="form-control" value="{{ old('telefone') }}"
+                                                name="telefone" id="input-phone" placeholder="Telefone">
+                                            @if ($errors->has('telefone'))
+                                                <span style="color: red">{{ $errors->first('telefone') }}</span>
+                                                <span class="invalid-feedback" style="color: red" role="alert">
+                                                    {{ $errors->first('telefone') }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col mt-3">
                                         <div class="form-group">
                                             <label for="input-address">CEP<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="numeric" class="form-control" value="{{old('cep')}}" name="cep" id="input-cep"
-                                                placeholder="Digite o CEP">
-                                                @if($errors->has('cep'))
-                                                {{$errors->first('cep')}}
-                                                    <span class="invalid-feedback" style="color: red" role="alert">
-                                                        {{ $errors->first('cep') }}
-                                                    </span>
-                                                @endif
+                                            <input type="numeric" class="form-control" value="{{ old('cep') }}"
+                                                name="cep" id="input-cep" placeholder="Digite o CEP">
+                                            @if ($errors->has('cep'))
+                                                <span style="color: red">{{ $errors->first('cep') }}</span>
+                                                <span class="invalid-feedback" style="color: red" role="alert">
+                                                    {{ $errors->first('cep') }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -1024,29 +993,29 @@
                                         <div class="form-group">
                                             <label for="input-city">Cidade<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="text" class="form-control" value="{{old('cidade')}}" name="cidade"
-                                                id="input-city" placeholder="Cidade" readonly>
-                                                @if($errors->has('cidade'))
-                                                {{$errors->first('cidade')}}
-                                                    <span class="invalid-feedback" style="color: red" role="alert">
-                                                        {{ $errors->first('cidade') }}
-                                                    </span> 
-                                                @endif
+                                            <input type="text" class="form-control" value="{{ old('cidade') }}"
+                                                name="cidade" id="input-city" placeholder="Cidade">
+                                            @if ($errors->has('cidade'))
+                                                <span style="color: red">{{ $errors->first('cidade') }}</span>
+                                                <span class="invalid-feedback" style="color: red" role="alert">
+                                                    {{ $errors->first('cidade') }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
 
                                     <div class="col mt-3">
                                         <div class="form-group">
-                                            <label for="">Estado<span class="required"
+                                            <label for="">Estado <span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="text" class="form-control" value="{{old('estado')}}" name="estado" id=""
-                                                placeholder="Estado">
-                                                @if($errors->has('estado'))
-                                                {{$errors->first('estado')}}
-                                                    <span class="invalid-feedback" style="color: red" role="alert">
-                                                        {{ $errors->first('estado') }}
-                                                    </span> 
-                                                @endif
+                                            <input type="text" class="form-control" value="{{ old('estado') }}"
+                                                name="estado" id="input-uf" placeholder="Estado">
+                                            @if ($errors->has('estado'))
+                                                <span style="color: red">{{ $errors->first('estado') }}</span>
+                                                <span class="invalid-feedback" style="color: red" role="alert">
+                                                    {{ $errors->first('estado') }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -1055,14 +1024,15 @@
                                     <div class="col mt-3">
                                         <div class="form-group">
                                             <label for="input-city">Complemento</label>
-                                            <input type="text" name="complemento" class="form-control" value="{{old('complemento')}}"
-                                                id="input-city" placeholder="Complemento">
-                                                @if($errors->has('complemento'))
-                                                {{$errors->first('complemento')}}
-                                                    <span class="invalid-feedback" style="color: red" role="alert">
-                                                        {{ $errors->first('complemento') }}
-                                                    </span> 
-                                                @endif
+                                            <input type="text" name="complemento" class="form-control"
+                                                value="{{ old('complemento') }}" id="input-city"
+                                                placeholder="Complemento">
+                                            @if ($errors->has('complemento'))
+                                                <span style="color: red">{{ $errors->first('complemento') }}</span>
+                                                <span class="invalid-feedback" style="color: red" role="alert">
+                                                    {{ $errors->first('complemento') }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -1070,14 +1040,15 @@
                                         <div class="form-group">
                                             <label for="">Logradouro<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="text" name="logradouro" class="form-control" value="{{old('logradouro')}}"
-                                                id="" placeholder="Logradouro">
-                                                @if($errors->has('logradouro'))
-                                                {{$errors->first('logradouro')}}
-                                                    <span class="invalid-feedback" style="color: red" role="alert">
-                                                        {{ $errors->first('logradouro') }}
-                                                    </span> 
-                                                @endif
+                                            <input type="text" name="logradouro" class="form-control"
+                                                value="{{ old('logradouro') }}" id=""
+                                                placeholder="Logradouro">
+                                            @if ($errors->has('logradouro'))
+                                                <span style="color: red">{{ $errors->first('logradouro') }}</span>
+                                                <span class="invalid-feedback" style="color: red" role="alert">
+                                                    {{ $errors->first('logradouro') }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -1085,15 +1056,16 @@
                                 <div class="row">
                                     <div class="col mt-3">
                                         <div class="form-group">
-                                            <label for="input-city">Número</label>
-                                            <input type="text" name="numero" class="form-control" value="{{old('numero')}}"
-                                                id="input-city" placeholder="numero">
-                                                @if($errors->has('numero'))
-                                                {{$errors->first('numero')}}
-                                                    <span class="invalid-feedback" style="color: red" role="alert">
-                                                        {{ $errors->first('numero') }}
-                                                    </span> 
-                                                @endif
+                                            <label for="input-city">Número <span class="required"
+                                                    style="color: red; font-size:15px;">*</span></label>
+                                            <input type="text" name="numero" class="form-control"
+                                                value="{{ old('numero') }}" id="input-city" placeholder="numero">
+                                            @if ($errors->has('numero'))
+                                                <span style="color: red">{{ $errors->first('numero') }}</span>
+                                                <span class="invalid-feedback" style="color: red" role="alert">
+                                                    {{ $errors->first('numero') }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -1101,14 +1073,14 @@
                                         <div class="form-group">
                                             <label for="">Bairro<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="text" name="bairro" class="form-control" value="{{old('bairro')}}"
-                                                id="" placeholder="bairro">
-                                                @if($errors->has('bairro'))
-                                                <span style="color: red">{{$errors->first('bairro')}}</span>
-                                                    <span class="invalid-feedback" style="color: red" role="alert">
-                                                        {{ $errors->first('bairro') }}
-                                                    </span> 
-                                                @endif
+                                            <input type="text" name="bairro" class="form-control"
+                                                value="{{ old('bairro') }}" id="" placeholder="bairro">
+                                            @if ($errors->has('bairro'))
+                                                <span style="color: red">{{ $errors->first('bairro') }}</span>
+                                                <span class="invalid-feedback" style="color: red" role="alert">
+                                                    {{ $errors->first('bairro') }}
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -1128,8 +1100,11 @@
                                         url: '/cep/' + cep,
                                         method: 'GET',
                                         success: function(response) {
-                                            if (response.city) {
+                                            if (response.city && response.uf) {
+                                                $('#input-uf').val(response.uf);
                                                 $('#input-city').val(response.city);
+                                                $('#input-uf').attr('readonly', true);
+                                                $('#input-city').attr('readonly', true);
                                             } else {
                                                 alert('CEP não encontrado!');
                                             }

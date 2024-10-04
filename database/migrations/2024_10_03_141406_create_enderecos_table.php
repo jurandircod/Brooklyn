@@ -15,7 +15,7 @@ class CreateEnderecosTable extends Migration
     {
         Schema::create('enderecos', function (Blueprint $table) {
             $table->id();
-            $table->string('logradouro')->default('teste');
+            $table->string('logradouro');
             $table->string('numero');
             $table->string('complemento');
             $table->string('bairro');
@@ -23,6 +23,8 @@ class CreateEnderecosTable extends Migration
             $table->string('estado');
             $table->string('telefone');
             $table->string('cep');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -34,6 +36,9 @@ class CreateEnderecosTable extends Migration
      */
     public function down()
     {
+        Schema::table('enderecos', function (Blueprint $table) {
+            $table->dropForeign(['user_id']); 
+        });
         Schema::dropIfExists('enderecos');
     }
 }

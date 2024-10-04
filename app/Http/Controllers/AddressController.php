@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use App\Endereco;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class AddressController extends Controller
 {
+
     public function getCityByCep($cep)
     {
 
@@ -30,12 +33,14 @@ class AddressController extends Controller
 
             // Verifica se o CEP é inválido ou não foi encontrado
             if (isset($data['erro'])) {
+                Alert::alert('Erro', "saf", 'error');
                 return response()->json(['error' => 'CEP não encontrado'], 404);
             }
 
             // Retorna a cidade ou uma mensagem de erro
             $city = $data['localidade'] ?? 'Cidade não disponível para este CEP';
-            return response()->json(['city' => $city]);
+            $uf = $data['uf'] ?? 'UF não disponível para este CEP';
+            return response()->json(['city' => $city, 'uf' => $uf]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao buscar o CEP Informar o Jurandir'], 500);
         }
@@ -43,17 +48,23 @@ class AddressController extends Controller
 
     public function salvar(Request $request)
     {
+        $activeTab = 3;
+        $cepTratado = preg_replace('/[^0-9]/', '', $request->cep);
+        $data = $request->all();
+        $data['cep'] = $cepTratado;
+        $data['user_id'] = Auth::user()->id;
+        
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'bairro' => 'required|min:3|max:255',
             'cidade' => 'required|min:3|max:255',
             'estado' => 'required|min:2|max:255',
-            'cep' => 'required|min:3|max:255',
+            'cep' => 'required|digits:8',
             'logradouro' => 'required|min:3|max:255',
             'numero' => 'required|max:255|numeric',
             'complemento' => 'required|min:3|max:255',
             'telefone' => 'required|min:3|numeric',
-        ],[
+        ], [
             'bairro.required' => 'O bairro é obrigatório',
             'bairro.min' => 'O bairro deve ter pelo menos 3 caracteres',
             'bairro.max' => 'O bairro deve ter no máximo 255 caracteres',
@@ -64,13 +75,12 @@ class AddressController extends Controller
             'estado.min' => 'O estado deve ter pelo menos 2 caracteres',
             'estado.max' => 'O estado deve ter no máximo 255 caracteres',
             'cep.required' => 'O cep é obrigatório',
-            'cep.min' => 'O cep deve ter pelo menos 3 caracteres',
-            'cep.max' => 'O cep deve ter no máximo 255 caracteres',
+            'cep.digits' => 'O cep deve ter 8 dígitos',
             'logradouro.required' => 'O logradouro é obrigatório',
             'logradouro.min' => 'O logradouro deve ter pelo menos 3 caracteres',
             'logradouro.max' => 'O logradouro deve ter no máximo 255 caracteres',
             'numero.required' => 'O numero é obrigatório',
-            
+
             'numero.max' => 'O numero deve ter no máximo 255 caracteres',
             'complemento.required' => 'O complemento é obrigatório',
             'complemento.min' => 'O complemento deve ter pelo menos 3 caracteres',
@@ -80,11 +90,28 @@ class AddressController extends Controller
             'telefone.numeric' => 'O telefone é inválido',
             'numero.numeric' => 'O numero é inválido',
         ]);
-        
 
-        $activeTab = true;
-        Endereco::create($request->all());
-        Alert::alert('Endereço', 'Salvo com sucesso', 'success');
-        return redirect()->route('site.perfil', compact('activeTab'));
+        if ($validator->fails()) {
+            Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error'); 
+            return redirect()
+                ->route('site.perfil', compact('activeTab'))
+                ->withErrors($validator) 
+                ->withInput(); 
+        }
+
+        try {
+            Endereco::create($data);
+            Alert::alert('Endereço', 'Salvo com sucesso', 'success');
+            return redirect()->route('site.perfil', compact('activeTab'));
+        } catch (\Exception $e) {
+            Alert::alert('Erro', $e, 'error');
+            return redirect()->route('site.perfil', compact('activeTab'));
+        }
+    }
+    public function editar($id)
+    {
+        $enderecoEditar = Endereco::where('id', $id)->first();
+        //$enderecoEditar = Endereco::find($id);
+        return redirect()->route('site.perfil', compact('enderecoEditar'));
     }
 }

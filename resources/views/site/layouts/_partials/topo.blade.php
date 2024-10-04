@@ -57,7 +57,7 @@
                                 </li>
                                 <li class="onhover-dropdown wislist-dropdown">
                                     <div class="cart-media">
-                                        <a href="?cart=1">
+                                        <a href="{{route('site.carrinho')}}">
                                             <i data-feather="shopping-cart"></i>
                                             <span id="cart-count" class="label label-theme rounded-pill">
                                                 0
@@ -74,7 +74,7 @@
                                     <div class="onhover-div profile-dropdown">
                                         <ul>
                                             <li>
-                                                <a href="{{route('login')}}" class="d-block">Perfil</a>
+                                                <a href="{{route('site.perfil')}}" class="d-block">Meu Perfil</a>
                                             </li>
                                             <li>
                                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

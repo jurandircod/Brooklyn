@@ -21,9 +21,10 @@ Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar')
 Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
 Route::get('/produtos', 'ShopController@shop')->name('site.shop');
 Route::get('/carrinho', 'CarrinhoController@index')->name('site.carrinho');
-Route::get('/perfil', 'PerfilController@index')->name('site.perfil');
 
 Route::get('/cep/{cep}', 'AddressController@getCityByCep');
+Route::get('/perfil', 'User@index')->name('site.perfil');
+Route::get('/perfil/{id}', 'AddressController@editar')->name('site.perfil.editar');
 Route::post('/perfil/salvar', 'AddressController@salvar')->name('site.perfil.salvar');
 Auth::routes(['reset' => true]);
 

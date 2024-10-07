@@ -1,4 +1,3 @@
-
 <style>
     .h-logo {
         max-width: 185px !important;
@@ -14,6 +13,14 @@
         }
     }
 </style>
+
+@php
+if(isset($endereco)){
+    dd($endereco);
+}
+@endphp
+
+
 <div class="mobile-menu d-sm-none">
     <ul>
         <li>
@@ -89,7 +96,7 @@
             <div class="col-lg-3">
                 <ul class="nav nav-tabs custome-nav-tabs flex-column category-option" id="myTab">
                     <li class="nav-item mb-2">
-                        <button class="nav-link font-light @empty($_GET['activeTab']) active @endempty"
+                        <button class="nav-link font-light @empty($activeTab) active @endempty"
                             id="tab" data-bs-toggle="tab" data-bs-target="#dash" type="button"><i
                                 class="fas fa-angle-right"></i>Painel de
                             Controle</button>
@@ -101,7 +108,7 @@
 
                     <li class="nav-item">
                         <button
-                            class="nav-link font-light @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 3)active @endif @endisset"
+                            class="nav-link font-light @isset($activeTab) @if ($activeTab == 3)active @endif @endisset"
                             id="6-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button"><i
                                 class="fas fa-angle-right"></i>Cadastrar
                             Endereço</button>
@@ -143,7 +150,7 @@
                 </div>
 
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show @empty($_GET['activeTab']) active @endempty" id="dash">
+                    <div class="tab-pane fade show @empty($activeTab) active @endempty" id="dash">
                         <div class="dashboard-right">
                             <div class="dashboard">
                                 <div class="page-title title title1 title-effect">
@@ -633,7 +640,7 @@
                                                     </div>
 
                                                     <div class="button">
-                                                        <a href="{{route('site.perfil.editar', ['id' => $endereco->id])}}"
+                                                        <a href="{{ route('site.perfil.enviaParaformEnderecos', ['id' => $endereco->id]) }}"
                                                             class="btn btn-sm">Edit</a>
                                                         <a href="javascript:void(0)" class="btn btn-sm">Remove</a>
                                                     </div>
@@ -947,22 +954,25 @@
                                 Account</button>
                         </div>
                     </div>
-                    <div class="tab-pane fade @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 3) show dashboard active @endif @endisset"
+                    
+                    <div class="tab-pane fade @isset($activeTab) @if ($activeTab == 3) show active @endif @endisset"
                         id="endereco">
                         <div class="">
                             <h3 class="">Endereço</h3>
 
-                            <form action="{{ route('site.perfil.salvar') }}" method="POST">
+                            <form action="{{ isset($enderecoEditar) ? route('site.perfil.editarEndereco', ['id' => $enderecoEditar->id]) : route('site.perfil.salvarEndereco') }}" method="POST">
                                 @csrf
                                 @isset($enderecoEditar)
-                                        <input type="hidden" name="id" value="{{$enderecoEditar->id}}">
+                                    <input type="hidden" name="id" value="{{ $enderecoEditar->id }}">
                                 @endisset
+
                                 <div class="row">
                                     <div class="col mt-3">
                                         <div class="form-group">
                                             <label for="input-phone">Telefone<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="tel" class="form-control" value="{{ old('telefone') }}"
+                                            <input type="tel" class="form-control"
+                                                @isset($enderecoEditar) value="{{ $enderecoEditar->telefone }}" @endisset
                                                 name="telefone" id="input-phone" placeholder="Telefone">
                                             @if ($errors->has('telefone'))
                                                 <span style="color: red">{{ $errors->first('telefone') }}</span>
@@ -976,7 +986,7 @@
                                         <div class="form-group">
                                             <label for="input-address">CEP<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="numeric" class="form-control" value="{{ old('cep') }}"
+                                            <input type="numeric" class="form-control" value="{{ isset($enderecoEditar) ? $enderecoEditar->cep : old('cep') }}"
                                                 name="cep" id="input-cep" placeholder="Digite o CEP">
                                             @if ($errors->has('cep'))
                                                 <span style="color: red">{{ $errors->first('cep') }}</span>
@@ -993,7 +1003,8 @@
                                         <div class="form-group">
                                             <label for="input-city">Cidade<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="text" class="form-control" value="{{ old('cidade') }}"
+                                            <input type="text" class="form-control"
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->cidade : old('cidade') }}"
                                                 name="cidade" id="input-city" placeholder="Cidade">
                                             @if ($errors->has('cidade'))
                                                 <span style="color: red">{{ $errors->first('cidade') }}</span>
@@ -1008,7 +1019,7 @@
                                         <div class="form-group">
                                             <label for="">Estado <span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="text" class="form-control" value="{{ old('estado') }}"
+                                            <input type="text" class="form-control" value="{{ isset($enderecoEditar) ? $enderecoEditar->estado : old('estado') }}"
                                                 name="estado" id="input-uf" placeholder="Estado">
                                             @if ($errors->has('estado'))
                                                 <span style="color: red">{{ $errors->first('estado') }}</span>
@@ -1025,7 +1036,7 @@
                                         <div class="form-group">
                                             <label for="input-city">Complemento</label>
                                             <input type="text" name="complemento" class="form-control"
-                                                value="{{ old('complemento') }}" id="input-city"
+                                                value="{{ isset($enderecoEditar->complemento) ? $enderecoEditar->complemento : old('complemento') }}" id="input-city"
                                                 placeholder="Complemento">
                                             @if ($errors->has('complemento'))
                                                 <span style="color: red">{{ $errors->first('complemento') }}</span>
@@ -1041,7 +1052,7 @@
                                             <label for="">Logradouro<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
                                             <input type="text" name="logradouro" class="form-control"
-                                                value="{{ old('logradouro') }}" id=""
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->logradouro : old('logradouro') }}" id=""
                                                 placeholder="Logradouro">
                                             @if ($errors->has('logradouro'))
                                                 <span style="color: red">{{ $errors->first('logradouro') }}</span>
@@ -1059,7 +1070,7 @@
                                             <label for="input-city">Número <span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
                                             <input type="text" name="numero" class="form-control"
-                                                value="{{ old('numero') }}" id="input-city" placeholder="numero">
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->numero : old('numero') }}" id="input-city" placeholder="numero">
                                             @if ($errors->has('numero'))
                                                 <span style="color: red">{{ $errors->first('numero') }}</span>
                                                 <span class="invalid-feedback" style="color: red" role="alert">
@@ -1074,7 +1085,7 @@
                                             <label for="">Bairro<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
                                             <input type="text" name="bairro" class="form-control"
-                                                value="{{ old('bairro') }}" id="" placeholder="bairro">
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->bairro : old('bairro') }}" id="" placeholder="bairro">
                                             @if ($errors->has('bairro'))
                                                 <span style="color: red">{{ $errors->first('bairro') }}</span>
                                                 <span class="invalid-feedback" style="color: red" role="alert">

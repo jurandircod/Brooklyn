@@ -24,8 +24,10 @@ Route::get('/carrinho', 'CarrinhoController@index')->name('site.carrinho');
 
 Route::get('/cep/{cep}', 'AddressController@getCityByCep');
 Route::get('/perfil', 'User@index')->name('site.perfil');
-Route::get('/perfil/{id}', 'AddressController@editar')->name('site.perfil.editar');
-Route::post('/perfil/salvar', 'AddressController@salvar')->name('site.perfil.salvar');
+Route::get('/perfil/{id}', 'AddressController@enviaParaformEnderecos')->name('site.perfil.enviaParaformEnderecos');
+Route::get('/perfil/exibirEndereco', 'PerfilController@exibirEndereco')->name('site.perfil.exibirEndereco');
+Route::post('/perfil/salvar', 'AddressController@salvar')->name('site.perfil.salvarEndereco');
+Route::post('/perfil/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');
 Auth::routes(['reset' => true]);
 
 Route::get('/home', 'HomeController@index')->name('home');

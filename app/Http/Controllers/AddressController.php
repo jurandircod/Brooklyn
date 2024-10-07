@@ -11,50 +11,21 @@ use Illuminate\Support\Facades\Auth;
 
 class AddressController extends Controller
 {
-
-    public function getCityByCep($cep)
+    public function __construct()
     {
+        $this->middleware('auth');
+    }
 
-        // Remover caracteres não numéricos do CEP
-        $cep = preg_replace('/[^0-9]/', '', $cep);
-
-        // Validar o CEP (8 dígitos)
-        if (strlen($cep) !== 8) {
-            return response()->json(['error' => 'CEP inválido'], 400);
-        }
-
-        $client = new Client(['verify' => false]);
-        $url = "https://viacep.com.br/ws/{$cep}/json/";
-
-        try {
-            $response = $client->get($url);
-            $data = json_decode($response->getBody(), true);
-
-
-            // Verifica se o CEP é inválido ou não foi encontrado
-            if (isset($data['erro'])) {
-                Alert::alert('Erro', "saf", 'error');
-                return response()->json(['error' => 'CEP não encontrado'], 404);
-            }
-
-            // Retorna a cidade ou uma mensagem de erro
-            $city = $data['localidade'] ?? 'Cidade não disponível para este CEP';
-            $uf = $data['uf'] ?? 'UF não disponível para este CEP';
-            return response()->json(['city' => $city, 'uf' => $uf]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao buscar o CEP Informar o Jurandir'], 500);
+    public function index()
+    {
+        $user = Auth::user();
+        if ($user == null) {
+            return redirect()->route('login');
         }
     }
 
-    public function salvar(Request $request)
+    public function validarInput(Request $request)
     {
-        $activeTab = 3;
-        $cepTratado = preg_replace('/[^0-9]/', '', $request->cep);
-        $data = $request->all();
-        $data['cep'] = $cepTratado;
-        $data['user_id'] = Auth::user()->id;
-        
-
         $validator = Validator::make($request->all(), [
             'bairro' => 'required|min:3|max:255',
             'cidade' => 'required|min:3|max:255',
@@ -65,6 +36,7 @@ class AddressController extends Controller
             'complemento' => 'required|min:3|max:255',
             'telefone' => 'required|min:3|numeric',
         ], [
+            // Mensagens de erro personalizadas
             'bairro.required' => 'O bairro é obrigatório',
             'bairro.min' => 'O bairro deve ter pelo menos 3 caracteres',
             'bairro.max' => 'O bairro deve ter no máximo 255 caracteres',
@@ -80,7 +52,6 @@ class AddressController extends Controller
             'logradouro.min' => 'O logradouro deve ter pelo menos 3 caracteres',
             'logradouro.max' => 'O logradouro deve ter no máximo 255 caracteres',
             'numero.required' => 'O numero é obrigatório',
-
             'numero.max' => 'O numero deve ter no máximo 255 caracteres',
             'complemento.required' => 'O complemento é obrigatório',
             'complemento.min' => 'O complemento deve ter pelo menos 3 caracteres',
@@ -91,12 +62,26 @@ class AddressController extends Controller
             'numero.numeric' => 'O numero é inválido',
         ]);
 
+        return $validator;
+    }
+
+    public function salvar(Request $request)
+    {
+        $activeTab = 3;
+        $cepTratado = preg_replace('/[^0-9]/', '', $request->cep);
+        $data = $request->all();
+        $data['cep'] = $cepTratado;
+        $data['user_id'] = Auth::user()->id;
+
+        // Chama a função de validação
+        $validator = $this->validarInput($request);
+
         if ($validator->fails()) {
-            Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error'); 
+            Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
             return redirect()
                 ->route('site.perfil', compact('activeTab'))
-                ->withErrors($validator) 
-                ->withInput(); 
+                ->withErrors($validator)
+                ->withInput();
         }
 
         try {
@@ -104,14 +89,55 @@ class AddressController extends Controller
             Alert::alert('Endereço', 'Salvo com sucesso', 'success');
             return redirect()->route('site.perfil', compact('activeTab'));
         } catch (\Exception $e) {
-            Alert::alert('Erro', $e, 'error');
+            Alert::alert('Erro', $e->getMessage(), 'error');
             return redirect()->route('site.perfil', compact('activeTab'));
         }
     }
-    public function editar($id)
+
+    public function editar(Request $request, $id)
     {
+        $activeTab = 3;
+
+        // Chama a função de validação
+        $validator = $this->validarInput($request);
+
+        if ($validator->fails()) {
+            Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
+            return redirect()
+                ->route('site.perfil', compact('activeTab'))
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            $endereco = Endereco::findOrFail($id);
+            $endereco->update($request->all());
+
+            Alert::alert('Endereço', 'Atualizado com sucesso', 'success');
+            return redirect()->route('site.perfil', compact('activeTab'));
+        } catch (\Exception $e) {
+            Alert::alert('Erro', $e->getMessage(), 'error');
+            return redirect()->route('site.perfil', compact('activeTab'));
+        }
+    }
+
+    public function enviaParaformEnderecos(Request $request, $id)
+    {
+        $enderecos = Endereco::where('id', $id)->get();
+        $activeTab = 3;
         $enderecoEditar = Endereco::where('id', $id)->first();
-        //$enderecoEditar = Endereco::find($id);
-        return redirect()->route('site.perfil', compact('enderecoEditar'));
+
+        return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos'));
+    }
+
+    public function exibirEndereco()
+    {
+        $user = Auth::user();
+        if ($user == null) {
+            return redirect()->route('login');
+        } else {
+            $enderecos = Endereco::where('user_id', Auth::user()->id)->get();
+            return view('site.perfil', compact('enderecos'));
+        }
     }
 }

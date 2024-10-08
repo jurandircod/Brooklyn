@@ -96,7 +96,7 @@ if(isset($endereco)){
             <div class="col-lg-3">
                 <ul class="nav nav-tabs custome-nav-tabs flex-column category-option" id="myTab">
                     <li class="nav-item mb-2">
-                        <button class="nav-link font-light @empty($activeTab) active @endempty"
+                        <button class="nav-link font-light @if(empty($activeTab) && empty($_GET['activeTab'])) active @endif"
                             id="tab" data-bs-toggle="tab" data-bs-target="#dash" type="button"><i
                                 class="fas fa-angle-right"></i>Painel de
                             Controle</button>
@@ -108,7 +108,7 @@ if(isset($endereco)){
 
                     <li class="nav-item">
                         <button
-                            class="nav-link font-light @isset($activeTab) @if ($activeTab == 3)active @endif @endisset"
+                            class="nav-link font-light @if(isset($activeTab) or isset($_GET['activeTab'])) active @endif"
                             id="6-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button"><i
                                 class="fas fa-angle-right"></i>Cadastrar
                             Endereço</button>
@@ -150,7 +150,7 @@ if(isset($endereco)){
                 </div>
 
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show @empty($activeTab) active @endempty" id="dash">
+                    <div class="tab-pane fade show @if(empty($activeTab) && empty($_GET['activeTab'])) active @endif" id="dash">
                         <div class="dashboard-right">
                             <div class="dashboard">
                                 <div class="page-title title title1 title-effect">
@@ -600,23 +600,23 @@ if(isset($endereco)){
                         </div>
                     </div>
 
-                    <div class="tab-pane fade dashboard" id="save">
+                    <div class="tab-pane fade dashboard @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 6) show active @endif @endisset" id="save">
                         <div class="box-head">
                             <h3>Endereços Salvos</h3>
-                            <a href="{{ route('site.perfil') }}?activeTab=3"
+                            <a href="{{ route('site.perfil.exibirEndereco')}}"
                                 class="btn btn-solid-default btn-sm fw-bold ms-auto" data-bs-target="#addAddress"><i
                                     class="fas fa-plus"></i>
                                 Adicionar novo endereço</a>
                         </div>
                         <div class="save-details-box">
                             <div class="row g-3">
-                                @isset($enderecos)
-                                    @if ($enderecos->isEmpty())
+                                @isset($enderecosMostrar)
+                                    @if ($enderecosMostrar->isEmpty())
                                         <div class="col-12">
                                             <h6 class="font-light">Você ainda não salvou nenhum endereço.</h6>
                                         </div>
                                     @else
-                                        @foreach ($enderecos as $endereco)
+                                        @foreach ($enderecosMostrar as $endereco)
                                             <div class="col-xl-4 col-md-6">
                                                 <div class="save-details">
                                                     <div class="save-name">
@@ -641,8 +641,8 @@ if(isset($endereco)){
 
                                                     <div class="button">
                                                         <a href="{{ route('site.perfil.enviaParaformEnderecos', ['id' => $endereco->id]) }}"
-                                                            class="btn btn-sm">Edit</a>
-                                                        <a href="javascript:void(0)" class="btn btn-sm">Remove</a>
+                                                            class="btn btn-sm">Editar</a>
+                                                        <a href="{{route('site.perfil.removerEndereco',['id' => $endereco->id])}}" class="btn btn-sm">Remover</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -955,7 +955,7 @@ if(isset($endereco)){
                         </div>
                     </div>
                     
-                    <div class="tab-pane fade @isset($activeTab) @if ($activeTab == 3) show active @endif @endisset"
+                    <div class="tab-pane fade @isset($activeTab) @if ($activeTab == 3) show active @endif @endisset @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 3) show active @endif @endisset"
                         id="endereco">
                         <div class="">
                             <h3 class="">Endereço</h3>

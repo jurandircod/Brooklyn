@@ -13,21 +13,34 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// Rotas públicas
 Route::get('/login', 'LoginController@login')->name('site.login');
 Route::get('/principal', 'PrincipalController@principal')->name('site.principal');
 Route::get('/', 'PrincipalController@principal')->name('site.principal');
 Route::get('/contato', 'ContatoController@contato')->name('site.contato');
-Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
 Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
 Route::get('/produtos', 'ShopController@shop')->name('site.shop');
 Route::get('/carrinho', 'CarrinhoController@index')->name('site.carrinho');
-
 Route::get('/cep/{cep}', 'AddressController@getCityByCep');
+
+// Rotas relacionadas ao perfil
 Route::get('/perfil', 'User@index')->name('site.perfil');
 Route::get('/perfil/{id}', 'AddressController@enviaParaformEnderecos')->name('site.perfil.enviaParaformEnderecos');
 Route::get('/perfil/exibirEndereco', 'PerfilController@exibirEndereco')->name('site.perfil.exibirEndereco');
-Route::post('/perfil/salvar', 'AddressController@salvar')->name('site.perfil.salvarEndereco');
-Route::post('/perfil/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');
+
+// Agrupando rotas de criação, edição e salvamento de endereços
+Route::group(['prefix' => 'perfil'], function () {
+    Route::post('/salvar', 'AddressController@salvar')->name('site.perfil.salvarEndereco');
+    Route::get('/remover/{id}', 'AddressController@remover')->name('site.perfil.removerEndereco');
+    Route::post('/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');
+});
+
+// Rotas de contato (salvar)
+Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
+
+// Autenticação
 Auth::routes(['reset' => true]);
 
+// Home
 Route::get('/home', 'HomeController@index')->name('home');
+

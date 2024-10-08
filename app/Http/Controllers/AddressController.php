@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AddressController extends Controller
 {
+    
     public function __construct()
     {
         $this->middleware('auth');
@@ -24,9 +25,44 @@ class AddressController extends Controller
         }
     }
 
-    public function validarInput(Request $request)
+    public function getCityByCep($cep)
     {
-        $validator = Validator::make($request->all(), [
+
+        // Remover caracteres não numéricos do CEP
+        $cep = preg_replace('/[^0-9]/', '', $cep);
+
+        // Validar o CEP (8 dígitos)
+        if (strlen($cep) !== 8) {
+            return response()->json(['error' => 'CEP inválido'], 400);
+        }
+
+        $client = new Client(['verify' => false]);
+        $url = "https://viacep.com.br/ws/{$cep}/json/";
+
+        try {
+            $response = $client->get($url);
+            $data = json_decode($response->getBody(), true);
+
+
+            // Verifica se o CEP é inválido ou não foi encontrado
+            if (isset($data['erro'])) {
+                Alert::alert('Erro', "saf", 'error');
+                return response()->json(['error' => 'CEP não encontrado'], 404);
+            }
+
+            // Retorna a cidade ou uma mensagem de erro
+            $city = $data['localidade'] ?? 'Cidade não disponível para este CEP';
+            $uf = $data['uf'] ?? 'UF não disponível para este CEP';
+            return response()->json(['city' => $city, 'uf' => $uf]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao buscar o CEP Informar o Jurandir'], 500);
+        }
+    }
+    
+    public function validarInput($request)
+    {
+        
+        $validator = Validator::make($request, [
             'bairro' => 'required|min:3|max:255',
             'cidade' => 'required|min:3|max:255',
             'estado' => 'required|min:2|max:255',
@@ -74,7 +110,7 @@ class AddressController extends Controller
         $data['user_id'] = Auth::user()->id;
 
         // Chama a função de validação
-        $validator = $this->validarInput($request);
+        $validator = $this->validarInput($data);
 
         if ($validator->fails()) {
             Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
@@ -97,9 +133,10 @@ class AddressController extends Controller
     public function editar(Request $request, $id)
     {
         $activeTab = 3;
+        
 
         // Chama a função de validação
-        $validator = $this->validarInput($request);
+        $validator = $this->validarInput($request->all());
 
         if ($validator->fails()) {
             Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
@@ -117,7 +154,7 @@ class AddressController extends Controller
             return redirect()->route('site.perfil', compact('activeTab'));
         } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
-            return redirect()->route('site.perfil', compact('activeTab'));
+            return view('site.perfil', compact('activeTab'));
         }
     }
 
@@ -125,9 +162,10 @@ class AddressController extends Controller
     {
         $enderecos = Endereco::where('id', $id)->get();
         $activeTab = 3;
+        $enderecosMostrar = Endereco::where('user_id', Auth::user()->id)->get();
         $enderecoEditar = Endereco::where('id', $id)->first();
+        return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos', 'enderecosMostrar'));
 
-        return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos'));
     }
 
     public function exibirEndereco()
@@ -137,7 +175,16 @@ class AddressController extends Controller
             return redirect()->route('login');
         } else {
             $enderecos = Endereco::where('user_id', Auth::user()->id)->get();
-            return view('site.perfil', compact('enderecos'));
+            return view('site.perfil', compact('enderecosMostrar'));
         }
+    }
+
+    public function remover($id)
+    {
+        $activeTab = 6;
+        $endereco = Endereco::findOrFail($id);
+        $endereco->delete();
+        Alert::alert('Endereço', 'Removido com sucesso', 'success');
+        return redirect()->route('site.perfil.exibirEndereco', compact('activeTab'));
     }
 }

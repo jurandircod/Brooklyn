@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 // Rotas públicas
-Route::get('/login', 'LoginController@login')->name('site.login');
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
+Route::post('/register', [App\Http\Controllers\Auth\LoginController::class, 'register'])->name('register');
+Route::get('/register', [App\Http\Controllers\Auth\LoginController::class, 'showRegisterForm'])->name('register');
+
 Route::get('/principal', 'PrincipalController@principal')->name('site.principal');
 Route::get('/', 'PrincipalController@principal')->name('site.principal');
 Route::get('/contato', 'ContatoController@contato')->name('site.contato');

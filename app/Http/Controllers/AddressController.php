@@ -55,7 +55,7 @@ class AddressController extends Controller
             $uf = $data['uf'] ?? 'UF não disponível para este CEP';
             return response()->json(['city' => $city, 'uf' => $uf]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao buscar o CEP Informar o Jurandir'], 500);
+            return response()->json(['error' => 'Erro ao buscar o CEP Informar o Jurandir o erro', $e->getMessage()], 500);
         }
     }
     
@@ -133,9 +133,6 @@ class AddressController extends Controller
     public function editar(Request $request, $id)
     {
         $activeTab = 3;
-        
-
-        // Chama a função de validação
         $validator = $this->validarInput($request->all());
 
         if ($validator->fails()) {
@@ -185,6 +182,6 @@ class AddressController extends Controller
         $endereco = Endereco::findOrFail($id);
         $endereco->delete();
         Alert::alert('Endereço', 'Removido com sucesso', 'success');
-        return redirect()->route('site.perfil.exibirEndereco', compact('activeTab'));
+        return redirect()->route('site.perfil', compact('activeTab'));
     }
 }

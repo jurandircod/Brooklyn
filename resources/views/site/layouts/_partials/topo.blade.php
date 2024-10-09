@@ -85,7 +85,7 @@
                                                 <a class="d-block" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sair</a>
                                             </li>
                                             <li>
-                                                <a href="{{route('register')}}" class="d-block">Registrar</a>
+                                                <a href="{{ route('register') }}" class="d-block">Registrar</a>
                                             </li>
 
                                         </ul>

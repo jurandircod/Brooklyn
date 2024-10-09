@@ -15,9 +15,9 @@
 </style>
 
 @php
-if(isset($endereco)){
-    dd($endereco);
-}
+    if (isset($endereco)) {
+        dd($endereco);
+    }
 @endphp
 
 
@@ -96,7 +96,7 @@ if(isset($endereco)){
             <div class="col-lg-3">
                 <ul class="nav nav-tabs custome-nav-tabs flex-column category-option" id="myTab">
                     <li class="nav-item mb-2">
-                        <button class="nav-link font-light @if(empty($activeTab) && empty($_GET['activeTab'])) active @endif"
+                        <button class="nav-link font-light @if (empty($activeTab) && empty($_GET['activeTab'])) active @endif"
                             id="tab" data-bs-toggle="tab" data-bs-target="#dash" type="button"><i
                                 class="fas fa-angle-right"></i>Painel de
                             Controle</button>
@@ -107,8 +107,7 @@ if(isset($endereco)){
                     </li>
 
                     <li class="nav-item">
-                        <button
-                            class="nav-link font-light @if(isset($activeTab) or isset($_GET['activeTab'])) active @endif"
+                        <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 3) || (isset($_GET['activeTab']) && $_GET['activeTab'] == 3)) active @endif"
                             id="6-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button"><i
                                 class="fas fa-angle-right"></i>Cadastrar
                             Endereço</button>
@@ -125,7 +124,7 @@ if(isset($endereco)){
                     </li>
 
                     <li class="nav-item mb-2">
-                        <button class="nav-link font-light" id="3-tab" data-bs-toggle="tab" data-bs-target="#save"
+                        <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 6) || (isset($_GET['activeTab']) && $_GET['activeTab'] == 6)) active @endif" id="3-tab" data-bs-toggle="tab" data-bs-target="#save"
                             type="button"><i class="fas fa-angle-right"></i>Endereços salvos</button>
                     </li>
 
@@ -150,7 +149,7 @@ if(isset($endereco)){
                 </div>
 
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show @if(empty($activeTab) && empty($_GET['activeTab'])) active @endif" id="dash">
+                    <div class="tab-pane fade show @if (empty($activeTab) && empty($_GET['activeTab'])) active @endif" id="dash">
                         <div class="dashboard-right">
                             <div class="dashboard">
                                 <div class="page-title title title1 title-effect">
@@ -600,10 +599,11 @@ if(isset($endereco)){
                         </div>
                     </div>
 
-                    <div class="tab-pane fade dashboard @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 6) show active @endif @endisset" id="save">
+                    <div class="tab-pane fade dashboard @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 6) show active @endif @endisset"
+                        id="save">
                         <div class="box-head">
                             <h3>Endereços Salvos</h3>
-                            <a href="{{ route('site.perfil.exibirEndereco')}}"
+                            <a href="{{ route('site.perfil.exibirEndereco') }}"
                                 class="btn btn-solid-default btn-sm fw-bold ms-auto" data-bs-target="#addAddress"><i
                                     class="fas fa-plus"></i>
                                 Adicionar novo endereço</a>
@@ -642,7 +642,8 @@ if(isset($endereco)){
                                                     <div class="button">
                                                         <a href="{{ route('site.perfil.enviaParaformEnderecos', ['id' => $endereco->id]) }}"
                                                             class="btn btn-sm">Editar</a>
-                                                        <a href="{{route('site.perfil.removerEndereco',['id' => $endereco->id])}}" class="btn btn-sm">Remover</a>
+                                                        <a href="{{ route('site.perfil.removerEndereco', ['id' => $endereco->id]) }}"
+                                                            class="btn btn-sm">Remover</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -954,13 +955,15 @@ if(isset($endereco)){
                                 Account</button>
                         </div>
                     </div>
-                    
+
                     <div class="tab-pane fade @isset($activeTab) @if ($activeTab == 3) show active @endif @endisset @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 3) show active @endif @endisset"
                         id="endereco">
                         <div class="">
                             <h3 class="">Endereço</h3>
 
-                            <form action="{{ isset($enderecoEditar) ? route('site.perfil.editarEndereco', ['id' => $enderecoEditar->id]) : route('site.perfil.salvarEndereco') }}" method="POST">
+                            <form
+                                action="{{ isset($enderecoEditar) ? route('site.perfil.editarEndereco', ['id' => $enderecoEditar->id]) : route('site.perfil.salvarEndereco') }}"
+                                method="POST">
                                 @csrf
                                 @isset($enderecoEditar)
                                     <input type="hidden" name="id" value="{{ $enderecoEditar->id }}">
@@ -986,7 +989,8 @@ if(isset($endereco)){
                                         <div class="form-group">
                                             <label for="input-address">CEP<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="numeric" class="form-control" value="{{ isset($enderecoEditar) ? $enderecoEditar->cep : old('cep') }}"
+                                            <input type="numeric" class="form-control"
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->cep : old('cep') }}"
                                                 name="cep" id="input-cep" placeholder="Digite o CEP">
                                             @if ($errors->has('cep'))
                                                 <span style="color: red">{{ $errors->first('cep') }}</span>
@@ -1019,7 +1023,8 @@ if(isset($endereco)){
                                         <div class="form-group">
                                             <label for="">Estado <span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
-                                            <input type="text" class="form-control" value="{{ isset($enderecoEditar) ? $enderecoEditar->estado : old('estado') }}"
+                                            <input type="text" class="form-control"
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->estado : old('estado') }}"
                                                 name="estado" id="input-uf" placeholder="Estado">
                                             @if ($errors->has('estado'))
                                                 <span style="color: red">{{ $errors->first('estado') }}</span>
@@ -1036,8 +1041,8 @@ if(isset($endereco)){
                                         <div class="form-group">
                                             <label for="input-city">Complemento</label>
                                             <input type="text" name="complemento" class="form-control"
-                                                value="{{ isset($enderecoEditar->complemento) ? $enderecoEditar->complemento : old('complemento') }}" id="input-city"
-                                                placeholder="Complemento">
+                                                value="{{ isset($enderecoEditar->complemento) ? $enderecoEditar->complemento : old('complemento') }}"
+                                                id="input-city" placeholder="Complemento">
                                             @if ($errors->has('complemento'))
                                                 <span style="color: red">{{ $errors->first('complemento') }}</span>
                                                 <span class="invalid-feedback" style="color: red" role="alert">
@@ -1052,8 +1057,8 @@ if(isset($endereco)){
                                             <label for="">Logradouro<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
                                             <input type="text" name="logradouro" class="form-control"
-                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->logradouro : old('logradouro') }}" id=""
-                                                placeholder="Logradouro">
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->logradouro : old('logradouro') }}"
+                                                id="" placeholder="Logradouro">
                                             @if ($errors->has('logradouro'))
                                                 <span style="color: red">{{ $errors->first('logradouro') }}</span>
                                                 <span class="invalid-feedback" style="color: red" role="alert">
@@ -1070,7 +1075,8 @@ if(isset($endereco)){
                                             <label for="input-city">Número <span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
                                             <input type="text" name="numero" class="form-control"
-                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->numero : old('numero') }}" id="input-city" placeholder="numero">
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->numero : old('numero') }}"
+                                                id="input-city" placeholder="numero">
                                             @if ($errors->has('numero'))
                                                 <span style="color: red">{{ $errors->first('numero') }}</span>
                                                 <span class="invalid-feedback" style="color: red" role="alert">
@@ -1085,7 +1091,8 @@ if(isset($endereco)){
                                             <label for="">Bairro<span class="required"
                                                     style="color: red; font-size:15px;">*</span></label>
                                             <input type="text" name="bairro" class="form-control"
-                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->bairro : old('bairro') }}" id="" placeholder="bairro">
+                                                value="{{ isset($enderecoEditar) ? $enderecoEditar->bairro : old('bairro') }}"
+                                                id="" placeholder="bairro">
                                             @if ($errors->has('bairro'))
                                                 <span style="color: red">{{ $errors->first('bairro') }}</span>
                                                 <span class="invalid-feedback" style="color: red" role="alert">

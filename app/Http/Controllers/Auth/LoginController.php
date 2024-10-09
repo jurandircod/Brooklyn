@@ -6,26 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;  // Certifique-se de importar Hash
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
+use App\Models\User;  // Certifique-se de importar o model User
+
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
     use AuthenticatesUsers;
 
     public function showLoginForm()
     {
         return view('site.login');
     }
+
     /**
      * Where to redirect users after login.
      *
@@ -33,12 +28,36 @@ class LoginController extends Controller
      */
     protected $redirectTo = RouteServiceProvider::HOME;
 
+    public function login(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required|email|max:255',
+            'password' => 'required|min:6|max:255',
+            
+        ],[
+            'email.required' => 'O email é obrigatório',
+            'email.email' => 'O email é inválido, por favor, informe um email válido',
+            'email.max' => 'O email deve ter no máximo 255 caracteres',
+            'password.required' => 'O senha é obrigatório',
+            'password.min' => 'O senha deve ter pelo menos 6 caracteres',
+            'password.max' => 'O senha deve ter no máximo 255 caracteres',
+        ]);
+
+        
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            // Autenticação bem-sucedida, redireciona para a página principal
+            return redirect()->intended('/principal');
+        } else {
+            // Usuário ou senha incorretos
+            Alert::error('Usuário ou senha incorretos');
+            return redirect()->back(); // Retorna à página de login
+        }
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();  // Faz o logout do usuário autenticado
-
-        // Redireciona para a página desejada após o logout
-        return redirect('/login');  // Ou outra rota, como a página inicial
+        return redirect('/login');  // Redireciona para a página de login
     }
 
     /**

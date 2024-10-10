@@ -22,6 +22,7 @@ class RegisterController extends Controller
     | provide this functionality without requiring any additional code.
     |
     */
+    use RegistersUsers;
 
     /**
      * Create a new controller instance.
@@ -30,17 +31,16 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
+        
         $this->middleware('guest');
     }
     
-    public function showRegisterForm()
+    public function showRegistrationForm()
     {
-        dd('Sobrescrevi corretamente');
 
-        return view('register');
+        return view('site.register');
     }
     
-    use RegistersUsers;
     /**
      * Where to redirect users after registration.
      *
@@ -55,6 +55,19 @@ class RegisterController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required|string|min:6|same:password',
+        ],[
+            'name.required' => 'O nome é obrigatório',
+            'email.required' => 'O email é obrigatório',
+            'email.email' => 'O email é inválido',
+            'password.required' => 'A senha é obrigatória',
+            'password.min' => 'A senha deve ter no mínimo 6 caracteres',
+            'password_confirmation.required' => 'a confirmação da senha é obrigatória',
+            'password_confirmation.min' => 'A senha deve ter no mínimo 6 caracteres',
+            'password_confirmation.same' => 'As senhas são divergentes',
+            'password.confirmed' => 'As senhas são divergentes',
+            'email.unique' => 'O email já está cadastrado',
+
         ]);
         
         $user = User::create([
@@ -62,6 +75,7 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        
         return redirect()->route('site.principal');
     }
     /**

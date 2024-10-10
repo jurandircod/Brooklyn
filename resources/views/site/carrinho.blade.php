@@ -3,6 +3,6 @@
 
 
 @section('conteudo')
-        @include('site.layouts._components.cart')   
+        @include('site.layouts._pages.cart')   
 @endsection
 

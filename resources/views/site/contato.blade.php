@@ -2,6 +2,6 @@
 @section('titulo', 'Contato')
 
 @section('conteudo')
-    @include('site.layouts._components.contato')
+    @include('site.layouts._pages.contato')
     @include('sweetalert::alert')
 @endsection

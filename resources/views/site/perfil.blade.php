@@ -2,6 +2,6 @@
 @section('titulo', 'Pefil')
 
 @section('conteudo')
-    @include('site.layouts._components.perfil')
+    @include('site.layouts._pages.perfil')
     @include('sweetalert::alert')
 @endsection

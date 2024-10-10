@@ -2,5 +2,5 @@
 @section('titulo', 'Sobre')
 
 @section('conteudo')
-    @include('site.layouts._components.sobre')
+    @include('site.layouts._pages.sobre')
 @endsection

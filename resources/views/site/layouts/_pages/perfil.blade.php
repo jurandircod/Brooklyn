@@ -1,3 +1,5 @@
+
+
 <style>
     .h-logo {
         max-width: 185px !important;
@@ -14,47 +16,8 @@
     }
 </style>
 
-@php
-    if (isset($endereco)) {
-        dd($endereco);
-    }
-@endphp
+@include('site.layouts._components.principal.mobileMenu')
 
-
-<div class="mobile-menu d-sm-none">
-    <ul>
-        <li>
-            <a href="demo3.php" class="active">
-                <i data-feather="home"></i>
-                <span>Home</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)" class="toggle-category">
-                <i data-feather="align-justify"></i>
-                <span>Category</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)">
-                <i data-feather="shopping-bag"></i>
-                <span>Cart</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)">
-                <i data-feather="heart"></i>
-                <span>Wishlist</span>
-            </a>
-        </li>
-        <li>
-            <a href="user-dashboard.php">
-                <i data-feather="user"></i>
-                <span>Account</span>
-            </a>
-        </li>
-    </ul>
-</div>
 <!-- Breadcrumb section start -->
 <section class="breadcrumb-section section-b-space">
     <ul class="circles">
@@ -72,7 +35,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h3>User Dashboard</h3>
+                <h3>Painel do Usuário</h3>
                 <nav>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
@@ -80,7 +43,7 @@
                                 <i class="fas fa-home"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">User Dashboard</li>
+                        <li class="breadcrumb-item active" aria-current="page">Painel do Usuário</li>
                     </ol>
                 </nav>
             </div>

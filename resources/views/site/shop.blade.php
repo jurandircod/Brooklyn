@@ -2,6 +2,6 @@
 @section('titulo', 'Produtos')
 
 @section('conteudo')
-    @include('site.layouts._components.shop')
+    @include('site.layouts._pages.pesquisaProduto')
     @include('sweetalert::alert')
 @endsection

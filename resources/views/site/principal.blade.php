@@ -3,8 +3,8 @@
 
 
 @section('conteudo')
-        @include('site.layouts._components.carousel')
-        @include('site.layouts._components.banner')
-        @include('site.layouts._components.produtos')
+        @include('site.layouts._components.principal.carousel')
+        @include('site.layouts._components.principal.banner')
+        @include('site.layouts._components.principal.produtos')
 @endsection
 

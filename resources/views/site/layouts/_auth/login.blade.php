@@ -156,10 +156,10 @@
                 @csrf
 
                 <div class="login-title">
-                    <h2>Login</h2>
+                    <h2>Entrar com sua conta</h2>
                 </div>
                 <div class="input">
-                    <label for="name">Username</label>
+                    <label for="name">Nome</label>
                     <input type="email" id="name" name="email" :value="old('email')" required=""
                         autofocus="" autocomplete="name">
 
@@ -183,16 +183,16 @@
                         {{ $errors->first('password') }}
                     </span>
                 @endif
-                <a href="{{ route('password.request') }}" class="pass-forgot">Forgot your password?</a>
+                <a href="{{ route('password.request') }}" class="pass-forgot">Esqueceu sua senha?</a>
 
                 <div class="button login">
                     <button type="submit">
-                        <span>Log In</span>
+                        <span>Logar</span>
                         <i class="fa fa-check"></i>
                     </button>
                 </div>
 
-                <p>Not a member? <a href="register.html" class="theme-color">Sign up now</a></p>
+                <p>Não lembra? <a href="{{route('register')}}" class="theme-color">Se inscrever</a></p>
             </form>
         </div>
     </div>

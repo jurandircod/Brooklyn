@@ -38,6 +38,13 @@ Route::group(['prefix' => 'perfil'], function () {
     Route::post('/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');
 });
 
+Route::group(['prefix' => 'administrativo'], function () {
+    Route::get('/', [App\Http\Controllers\Administrativo\PermissoesController::class, 'index'])->name('administrativo.index');
+    Route::post('/salvarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'salvarPermissao'])->name('administrativo.salvarPermissao');
+    Route::post('/{id}/remover', 'PermissoesController@remover')->name('administrativo.removerPermissao');
+});
+
+
 // Rotas de contato (salvar)
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
 

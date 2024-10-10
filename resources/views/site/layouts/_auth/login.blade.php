@@ -185,6 +185,11 @@
                 @endif
                 <a href="{{ route('password.request') }}" class="pass-forgot">Esqueceu sua senha?</a>
 
+                <div class="">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label">Manter logado</label>
+                </div>
+
                 <div class="button login">
                     <button type="submit">
                         <span>Logar</span>

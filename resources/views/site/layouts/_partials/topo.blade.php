@@ -80,8 +80,6 @@
                                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                                     @csrf
                                                 </form> 
-                                                
-                            
                                                 <a class="d-block" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sair</a>
                                             </li>
                                             <li>

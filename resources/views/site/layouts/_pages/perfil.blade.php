@@ -16,7 +16,7 @@
     }
 </style>
 
-@include('site.layouts._components.principal.mobileMenu')
+@include('site.layouts._components.perfil.mobileMenu')
 
 <!-- Breadcrumb section start -->
 <section class="breadcrumb-section section-b-space">

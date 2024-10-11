@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\AddressController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -39,9 +40,14 @@ Route::group(['prefix' => 'perfil'], function () {
 });
 
 Route::group(['prefix' => 'administrativo'], function () {
-    Route::get('/', [App\Http\Controllers\Administrativo\PermissoesController::class, 'index'])->name('administrativo.index');
+    Route::get('/', [App\Http\Controllers\Administrativo\PrincipalController::class, 'index'])->name('administrativo.principal');
+    Route::get('/permissoes', [App\Http\Controllers\Administrativo\PermissoesController::class, 'permissoes'])->name('administrativo.permissoes');
+    Route::get('/permissoes/usuario', [App\Http\Controllers\Administrativo\PermissoesController::class, 'permissoesUsuarios'])->name('administrativo.permissoes.usuarios');
     Route::post('/salvarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'salvarPermissao'])->name('administrativo.salvarPermissao');
-    Route::post('/{id}/remover', 'PermissoesController@remover')->name('administrativo.removerPermissao');
+    Route::post('/administrativo/removerPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'removerPermissao'])
+        ->name('administrativo.removerPermissao');
+    Route::post('/administrativo/enviarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'enviarPermissao'])->name('administrativo.enviarPermissao');
+    Route::post('/administrativo/editarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'editarPermissao'])->name('administrativo.editarPermissao');
 });
 
 
@@ -50,7 +56,3 @@ Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar')
 
 // Autenticação
 Auth::routes(['reset' => true]);
-
-// Home
-Route::get('/home', 'HomeController@index')->name('home');
-

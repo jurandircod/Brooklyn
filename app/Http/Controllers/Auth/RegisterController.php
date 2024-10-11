@@ -74,6 +74,7 @@ class RegisterController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => 1,
         ]);
         
         return redirect()->route('site.principal');

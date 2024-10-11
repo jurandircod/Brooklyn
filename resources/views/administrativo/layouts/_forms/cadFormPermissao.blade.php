@@ -30,45 +30,55 @@
                     </div>
                     <!-- /.card-header -->
                     <!-- form start -->
-                    <form action="{{ route('administrativo.salvarPermissao') }}" method="post">
-                      @csrf
+                    <form
+                        action="{{ isset($permissao->role_id) ? route('administrativo.editarPermissao') : route('administrativo.salvarPermissao') }}"
+                        method="POST">
+
+                        @csrf
+                        @isset($permissao)
+                            <input type="hidden" name="idEditar" value="{{ $id = $permissao->role_id }}">
+                        @endisset
+
                         <div class="card-body">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Tipo de usuario</label>
-                                <input type="text" name="tipo_acesso" value="{{old('tipo_acesso')}}" class="form-control" id="exampleInputEmail1"
+                            <input type="text" name="tipo_acesso" value="{{ isset($permissao) ? $permissao->tipo_acesso : old('tipo_acesso') }}"
+                                    class="form-control" id="exampleInputEmail1"
                                     placeholder="Digite o tipo de usuário ex: administrador do sistema">
-                                    @if($errors->has('tipo_acesso'))
-                                        <span style="color: red">{{ $errors->first('tipo_acesso') }}</span>
-                                        <span class="invalid-feedback" style="color: red" role="alert">
-                                            {{ $errors->first('tipo_acesso') }}
-                                        </span>
-                                    @endif
+                                @if ($errors->has('tipo_acesso'))
+                                    <span style="color: red">{{ $errors->first('tipo_acesso') }}</span>
+                                    <span class="invalid-feedback" style="color: red" role="alert">
+                                        {{ $errors->first('tipo_acesso') }}
+                                    </span>
+                                @endif
                             </div>
 
                             <div class="form-group">
                                 <label for="exampleInputPassword1">Descrição das funções</label>
-                                <input type="text" class="form-control" value="{{old('descricao')}}" name="descricao" id="exampleInputPassword1"
+                                <input type="text" class="form-control" value="{{ isset($permissao) ? $permissao->descricao : old('descricao') }}"
+                                    name="descricao" id="exampleInputPassword1"
                                     placeholder="Digite a descrição das funções a serem executadas pelo usuário">
-                                    @if($errors->has('descricao'))
-                                        <span style="color: red">{{ $errors->first('descricao') }}</span>
-                                        <span class="invalid-feedback" style="color: red" role="alert">
-                                            {{ $errors->first('descricao') }}
-                                        </span>
-                                    @endif
+                                @if ($errors->has('descricao'))
+                                    <span style="color: red">{{ $errors->first('descricao') }}</span>
+                                    <span class="invalid-feedback" style="color: red" role="alert">
+                                        {{ $errors->first('descricao') }}
+                                    </span>
+                                @endif
                             </div>
 
                             <div class="form-group">
                                 <label for="">Nível de permissão</label>
-                                <input name="role" type="number" value="{{old('role')}}" min="0" max="10" 
+                                <input name="role_id" type="number" value="{{ isset($permissao) ? $permissao->role_id : old('role') }}" min="0"
+                                    max="10"
                                     placeholder="Digite em um intervalo de 1 a 10 qual a quantidade de permissões o usuário terá"
                                     class="form-control" id="">
-                                    @if($errors->has('role'))
-                                        <span style="color: red">{{ $errors->first('role') }}</span>
-                                        <span class="invalid-feedback" style="color: red" role="alert">
-                                            {{ $errors->first('role') }}
-                                        </span>
-                                    @endif
-                            </div>      
+                                @if ($errors->has('role'))
+                                    <span style="color: red">{{ $errors->first('role') }}</span>
+                                    <span class="invalid-feedback" style="color: red" role="alert">
+                                        {{ $errors->first('role') }}
+                                    </span>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- /.card-body -->

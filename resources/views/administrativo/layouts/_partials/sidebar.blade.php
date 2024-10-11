@@ -98,7 +98,7 @@
                 </ul>
 
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('administrativo.permissoes') }}" class="nav-link">
                         <i class="nav-icon fas fa-chart-pie"></i>
                         <p>
                             Permissões
@@ -107,9 +107,17 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('administrativo.permissoes') }}" class="nav-link">
+                                <i class="far fa-chart-pie nav-icon"></i>
                                 <p>Cadastrar Permissões</p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('administrativo.permissoes.usuarios') }}" class="nav-link">
+                                <i class="far fa-chart-pie nav-icon"></i>
+                                <p>Gerenciar permissões de usuários</p>
                             </a>
                         </li>
                     </ul>

@@ -29,14 +29,14 @@
 
                                              <div class="row">
                                                  <div class="col-md-4">
-                                                     <form action="{{ route('administrativo.enviarPermissao') }}" method="post">
+                                                     <form action="{{ route('administrativo.enviarPermissao.usuario') }}" method="post">
                                                         @csrf
                                                         <input name="role_id" value="{{ $permissao->role_id }}" hidden>
                                                         
                                                         <button type="submit"
                                                              class="btn btn-sm btn-warning" type="button"
                                                              data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                                             <i class="fas fa-comments"></i>Alterar Permissão
+                                                             <i class="fas fa-comments"></i>Alterar
                                                          </button>
                                                      </form>
                                                  </div>
@@ -49,7 +49,7 @@
                                                          <input name="role_id" value="{{ $permissao->role_id }}"
                                                             hidden>
                                                          <button type="submit" class="btn btn-sm btn-danger mt-1" type="d">
-                                                             <i class="fas fa-comments"></i>Excluir Permissão
+                                                             <i class="fas fa-comments"></i>Excluir
                                                          </button>
                                                      </form>
                                                  </div>

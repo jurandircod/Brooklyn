@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Http\Controllers\Administrativo;
+
 use App\Http\Controllers\Controller;
 use App\Permissoes;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 
 class PermissoesController extends Controller
 {
@@ -18,8 +21,9 @@ class PermissoesController extends Controller
         $this->usuarios = User::all();
     }
 
-    public function validarInput($request){
-        
+    public function validarInput($request)
+    {
+
         $validator = Validator::make($request, [
             'role_id' => 'required|numeric|min:0|max:10|unique:permissoes',
             'tipo_acesso' => 'required|string|unique:permissoes',
@@ -44,15 +48,14 @@ class PermissoesController extends Controller
     {
         $permissoes = $this->permissoes;
         return view('administrativo.permissoes', compact('permissoes'));
-
     }
 
     public function salvarPermissao(Request $request)
     {
         $data = $request->all();
-        
+
         $validator = $this->validarInput($data);
-        
+
         Alert::alert('Permissão', 'Salva com sucesso', 'success');
         if ($validator->fails()) {
             Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
@@ -62,11 +65,10 @@ class PermissoesController extends Controller
                 ->withInput();
         } else {
             Alert::alert('Permissão', 'Salva com sucesso', 'success');
-            try{         
+            try {
                 Permissoes::create($request->all());
                 return redirect()->route('administrativo.permissoes');
-                
-            }catch(\Exception $e){
+            } catch (\Exception $e) {
                 Alert::alert('Erro', $e->getMessage(), 'error');
                 return redirect()->route('administrativo.permissoes');
             }
@@ -75,7 +77,7 @@ class PermissoesController extends Controller
 
     public function enviarPermissao(Request $request)
     {
-        
+
         $permissoes = $this->permissoes;
         $id = $request->input('role_id');
         $permissao = Permissoes::find($id);
@@ -84,15 +86,14 @@ class PermissoesController extends Controller
 
     public function removerPermissao(Request $request)
     {
-        try{
-        $permissoes = $this->permissoes;
-        $id = $request->input('role_id');
-        $permissao = Permissoes::find($id);
-        $permissao->delete();
-        Alert::alert('Exclusão', 'Permissão excluída com sucesso', 'success');
-        return redirect()->route('administrativo.permissoes', compact('permissoes'));
-
-        }catch(\Exception $e){
+        try {
+            $permissoes = $this->permissoes;
+            $id = $request->input('role_id');
+            $permissao = Permissoes::find($id);
+            $permissao->delete();
+            Alert::alert('Exclusão', 'Permissão excluída com sucesso', 'success');
+            return redirect()->route('administrativo.permissoes', compact('permissoes'));
+        } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.permissoes', compact('permissoes'));
         }
@@ -101,32 +102,51 @@ class PermissoesController extends Controller
 
     public function editarPermissao(Request $request)
     {
-        
-        try{
-        // pega o valor antigo do id para atualizar
-        $idEditar = $request->input('idEditar');
-        // pega informações para exibir a tabela permissoes na view        
-        $permissoes = $this->permissoes;
-        // pega o valor da role_id antiga
-        $permissao = Permissoes::where('role_id', $idEditar)->first();
-        
-        $data = $request->all();
-        // insere os novos dados na tabela permissoes
-        $permissao->update($data);
-        Alert::alert('Permissão', 'Permissão editada com sucesso', 'success');
-        return redirect()->route('administrativo.permissoes', compact('permissao', 'permissoes'));
 
-        }catch(\Exception $e){
+        try {
+            // pega o valor antigo do id para atualizar
+            $idEditar = $request->input('idEditar');
+            // pega informações para exibir a tabela permissoes na view        
+            $permissoes = $this->permissoes;
+            // pega o valor da role_id antiga
+            $permissao = Permissoes::where('role_id', $idEditar)->first();
+
+            $data = $request->all();
+            // insere os novos dados na tabela permissoes
+            $permissao->update($data);
+            Alert::alert('Permissão', 'Permissão editada com sucesso', 'success');
+            return redirect()->route('administrativo.permissoes', compact('permissao', 'permissoes'));
+        } catch (\Exception $e) {
 
             Alert::alert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.permissoes', compact('permissoes'));
-        
         }
     }
     public function permissoesUsuarios()
     {
+        $permissoesUser = Permissoes::where('role_id', Auth::user()->role_id)->get();
+        $permissoes = $this->permissoes;
         $usuarios = $this->usuarios;
-        return view('administrativo.permissoesUsuarios', compact('usuarios'));
+        return view('administrativo.permissoesUsuarios', compact('usuarios', 'permissoes', 'permissoesUser'));
     }
-        
+    
+    public function editarUsuarioPermissao(Request $request)
+    {
+        try {
+            // pega o valor antigo do id para atualizar
+            $idEditar = $request->input('role_id_alter');
+            $idUser = $request->input('user_id');
+            $user = User::findOrFail($idUser);
+            $user->update([
+                'role_id' => $idEditar,
+            ]);
+            // insere os novos dados na tabela permissoes
+            Alert::alert('Permissão', 'Permissão editada com sucesso', 'success');
+            return redirect()->route('administrativo.permissoes.usuarios');
+        } catch (\Exception $e) {
+
+            Alert::alert('Erro', $e->getMessage(), 'error');
+            return redirect()->route('administrativo.permissoes.usuarios');
+        }
+    }
 }

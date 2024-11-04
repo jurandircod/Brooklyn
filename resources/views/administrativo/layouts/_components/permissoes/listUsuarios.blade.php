@@ -17,6 +17,7 @@
                                     <th>Nome</th>
                                     <th>Email</th>
                                     <th>Nível de permissão</th>
+                                    <th>Alterar</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -25,16 +26,43 @@
                                         <td>{{ $users->name }}</td>
                                         <td>{{ $users->email }}</td>
                                         <td>{{ $users->role_id }} - max: 10</td>
-
+                                        <td>
+                                            <div class="row">
+                                                <form action="{{ route('administrativo.editarPermissao.usuario') }}"
+                                                    method="post">
+                                                    <div class="col">
+                                                        @csrf
+                                                        <select name="role_id_alter" class="form-control">
+                                                            @foreach ($permissoes as $permissao)
+                                                                @if ($permissao->role_id == $users->role_id)
+                                                                    <option value="{{ $permissao->role_id }}" selected>
+                                                                        {{ $permissao->tipo_acesso }}</option>
+                                                                @else
+                                                                    <option value="{{ $permissao->role_id }}">
+                                                                        {{ $permissao->tipo_acesso }}</option>
+                                                                @endif
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="" name="user_id" value="{{ $users->id }}" hidden>
+                                                        <button type="submit" class="btn btn-sm btn-warning mt-1"
+                                                            type="d">
+                                                            Alterar
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th>Nome</th>
-                                    <th>Numero</th>
-                                    <th>Setor</th>
-                                    
+                                    <th>Email</th>
+                                    <th>Nível de permissão</th>
+                                    <th>Alterar</th>
                                 </tr>
                             </tfoot>
                         </table>

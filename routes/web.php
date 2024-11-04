@@ -39,6 +39,7 @@ Route::group(['prefix' => 'perfil'], function () {
     Route::post('/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');
 });
 
+// Rotas do administrador
 Route::group(['prefix' => 'administrativo'], function () {
     Route::get('/', [App\Http\Controllers\Administrativo\PrincipalController::class, 'index'])->name('administrativo.principal');
     Route::get('/permissoes', [App\Http\Controllers\Administrativo\PermissoesController::class, 'permissoes'])->name('administrativo.permissoes');
@@ -48,6 +49,8 @@ Route::group(['prefix' => 'administrativo'], function () {
         ->name('administrativo.removerPermissao');
     Route::post('/administrativo/enviarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'enviarPermissao'])->name('administrativo.enviarPermissao');
     Route::post('/administrativo/editarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'editarPermissao'])->name('administrativo.editarPermissao');
+    Route::post('/administrativo/enviarPermissao/usuario', [App\Http\Controllers\user::class, 'enviarPermissao'])->name('administrativo.enviarPermissao.usuario');
+    Route::post('/administrativo/editarPermissao/usuario', [App\Http\Controllers\Administrativo\PermissoesController::class, 'editarUsuarioPermissao'])->name('administrativo.editarPermissao.usuario');
 });
 
 
@@ -56,3 +59,7 @@ Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar')
 
 // Autenticação
 Auth::routes(['reset' => true]);
+
+Route::fallback(function () {
+    echo "A rota acessada não exite clique aqui para ir para pagia inicial<a href=" . '/' .  ">clique aqui para retornar para o inicio</a>";
+});

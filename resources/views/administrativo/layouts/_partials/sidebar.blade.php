@@ -1,8 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-        <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-            style="opacity: .8">
         <span class="brand-text font-weight-light">Painel dos Fornecedores</span>
     </a>
 
@@ -78,16 +76,16 @@
 
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('administrativo.permissoes') }}" class="nav-link">
-                                <p>Cadastrar Características dos acessórios</p>
+                            <a href="{{ route('administrativo.produto.acessorio') }}" class="nav-link">
+                                <p>Cadastrar Produtos</p>
                             </a>
                         </li>
                     </ul>
 
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('administrativo.permissoes') }}" class="nav-link">
-                                <p>Cadastrar Características das peças</p>
+                            <a href="{{ route('administrativo.produto.categoria') }}" class="nav-link">
+                                <p>Cadastrar Categorias</p>
                             </a>
                         </li>
                     </ul>

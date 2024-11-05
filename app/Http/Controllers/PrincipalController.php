@@ -12,8 +12,6 @@ class PrincipalController extends Controller
         }else{
             $cart = null;
             return view('site.principal')->with(['cart' => $cart]);
-        }
-
-        
+        }   
     }
 }

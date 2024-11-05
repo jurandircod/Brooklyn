@@ -45,19 +45,29 @@ Route::group(['prefix' => 'administrativo'], function () {
     Route::get('/permissoes', [App\Http\Controllers\Administrativo\PermissoesController::class, 'permissoes'])->name('administrativo.permissoes');
     Route::get('/permissoes/usuario', [App\Http\Controllers\Administrativo\PermissoesController::class, 'permissoesUsuarios'])->name('administrativo.permissoes.usuarios');
     Route::post('/salvarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'salvarPermissao'])->name('administrativo.salvarPermissao');
-    Route::post('/administrativo/removerPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'removerPermissao'])
+    Route::post('/removerPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'removerPermissao'])
         ->name('administrativo.removerPermissao');
-    Route::post('/administrativo/enviarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'enviarPermissao'])->name('administrativo.enviarPermissao');
-    Route::post('/administrativo/editarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'editarPermissao'])->name('administrativo.editarPermissao');
-    Route::post('/administrativo/enviarPermissao/usuario', [App\Http\Controllers\user::class, 'enviarPermissao'])->name('administrativo.enviarPermissao.usuario');
-    Route::post('/administrativo/editarPermissao/usuario', [App\Http\Controllers\Administrativo\PermissoesController::class, 'editarUsuarioPermissao'])->name('administrativo.editarPermissao.usuario');
+    Route::post('/enviarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'enviarPermissao'])->name('administrativo.enviarPermissao');
+    Route::post('/editarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'editarPermissao'])->name('administrativo.editarPermissao');
+    Route::post('/enviarPermissao/usuario', [App\Http\Controllers\user::class, 'enviarPermissao'])->name('administrativo.enviarPermissao.usuario');
+    Route::post('/editarPermissao/usuario', [App\Http\Controllers\Administrativo\PermissoesController::class, 'editarUsuarioPermissao'])->name('administrativo.editarPermissao.usuario');
+    // rotas de Produtos
+    Route::group(['prefix' => 'produtos'], function () {
+        Route::get('/', [App\Http\Controllers\Administrativo\ProdutosController::class, 'index'])->name('administrativo.produto.acessorio');
+        Route::post('/salvar/acessorio', [App\Http\Controllers\Administrativo\ProdutosController::class, 'salvarAcessorio'])->name('administrativo.produto.acessorio.salvar');
+        Route::get('/categoria', [App\Http\Controllers\Administrativo\CategoriaController::class, 'index'])->name('administrativo.produto.categoria');
+        Route::post('/salvar/categoria', [App\Http\Controllers\Administrativo\CategoriaController::class, 'salvarCategoria'])->name('administrativo.produto.categoria.salvar');
+        Route::post('/enviaFormAlterar/categoria', [App\Http\Controllers\Administrativo\CategoriaController::class, 'enviaFormAlterar'])->name('administrativo.produto.categoria.enviaFormAlterar');
+        Route::post('/alterar/categoria', [App\Http\Controllers\Administrativo\CategoriaController::class, 'alterarCategoria'])->name('administrativo.produto.categoria.alterar');
+        Route::post('/excluir/categoria', [App\Http\Controllers\Administrativo\CategoriaController::class, 'excluirCategoria'])->name('administrativo.produto.categoria.excluir');
+    });
 });
 
 
-// Rotas de contato (salvar)
+
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
 
-// Autenticação
+
 Auth::routes(['reset' => true]);
 
 Route::fallback(function () {

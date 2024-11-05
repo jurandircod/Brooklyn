@@ -124,7 +124,12 @@ class PermissoesController extends Controller
     }
     public function permissoesUsuarios()
     {
-        $permissoesUser = Permissoes::where('role_id', Auth::user()->role_id)->get();
+        if (Auth::check()) {
+            $permissoesUser = Permissoes::where('role_id', Auth::user()->role_id)->get();
+        } else {
+            $permissoesUser = collect(); 
+        }
+
         $permissoes = $this->permissoes;
         $usuarios = $this->usuarios;
         return view('administrativo.permissoesUsuarios', compact('usuarios', 'permissoes', 'permissoesUser'));

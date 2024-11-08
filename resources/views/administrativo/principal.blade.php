@@ -1,5 +1,5 @@
 @extends('administrativo.layouts.basico')
-@section('titulo', 'Teste')
+@section('titulo', 'Home')
 
 @section('conteudo')
     @include('sweetalert::alert')

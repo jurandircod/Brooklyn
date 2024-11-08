@@ -80,8 +80,11 @@ class CategoriaController extends Controller
     public function alterarCategoria(Request $request)
     {
         try {
-            Categoria::findOrFail($request->input('categoria_id'));
-            Categoria::where('categoria', $request->input('categoria_id'))->update($request->all());
+            $categoria = Categoria::findOrFail($request->input('categoria_id'));
+            $categoria->update([
+                'nome' => $request->input('nome'),
+                'descricao' => $request->input('descricao'),
+            ]);
             Alert::alert('Alteração', 'Categoria alterada com sucesso', 'success');
             return redirect()->route('administrativo.produto.categoria');
         } catch (\Exception $e) {
@@ -92,7 +95,8 @@ class CategoriaController extends Controller
 
     public function enviaFormAlterar(Request $request)
     {
-        $categoriaAlter = Categoria::where('id', $request->input('categoria_id'))->get();
-        return view('administrativo.categoria', compact('categoriaAlter'));
+        $categoriaAlter = $this->categorias->find($request->input('categoria_id'));
+        $categorias = $this->categorias;
+        return view('administrativo.categoria', compact('categoriaAlter', 'categorias'));
     }
 }

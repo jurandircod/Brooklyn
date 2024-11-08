@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class Marcas extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cores', function (Blueprint $table) {
+        Schema::create('marcas', function (Blueprint $table) {
             $table->id();
-            $table->string('nome')->nullable(); 
-            $table->char('cor_hex', 7); 
-            $table->timestamps(); 
+            $table->string('nome');
+            $table->string('descricao')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cores');
+        Schema::dropIfExists('marcas');
     }
-};
+}

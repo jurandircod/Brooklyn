@@ -76,7 +76,7 @@
 
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('administrativo.produto.acessorio') }}" class="nav-link">
+                            <a href="{{ route('administrativo.produtos') }}" class="nav-link">
                                 <p>Cadastrar Produtos</p>
                             </a>
                         </li>
@@ -89,7 +89,14 @@
                             </a>
                         </li>
                     </ul>
-                    
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('administrativo.marca') }}" class="nav-link">
+                                <p>Cadastrar Marcas</p>
+                            </a>
+                        </li>
+                    </ul>                  
                 </li>
             </ul>
 

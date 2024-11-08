@@ -7,7 +7,6 @@
     <title>Administrativo - @yield('titulo')</title>
 
     <!-- Google Font: Source Sans Pro -->
-    <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
@@ -35,6 +34,7 @@
     <link rel="stylesheet"
         href="{{ asset('adminLte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('adminLte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+    <link rel="shortcut icon" href="{{ asset('adminLte/dist/img/favicon.ico') }}">
 
 </head>
 

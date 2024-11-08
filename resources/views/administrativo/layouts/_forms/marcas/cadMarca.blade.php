@@ -6,12 +6,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Cadastrar Acessórios</h1>
+                <h1>Cadastrar Marcas</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Início</a></li>
-                    <li class="breadcrumb-item active">Cadastrar Características do Acessório</li>
+                    <li class="breadcrumb-item active">Cadastrar Marcas</li>
                 </ol>
             </div>
         </div>
@@ -25,25 +25,24 @@
             <div class="col-md-12">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Cadastrar Características do Acessório / Função Administrativa</h3>
+                        <h3 class="card-title">Cadastrar marcas / Função Administrativa</h3>
                     </div>
 
                     <!-- form start -->
                     <form
-                        action="{{ isset($categoriaAlter) ? route('administrativo.produto.categoria.alterar') : route('administrativo.produto.categoria.salvar') }}"
+                        action="{{ isset($marcaAlter) ? route('administrativo.marca.alterar') : route('administrativo.marca.salvar') }}"
                         method="POST" onsubmit="return enviarCores()">
                         @csrf
 
-                        @isset($categoriaAlter)
-                            <input type="hidden" name="categoria_id" value="{{ $categoriaAlter->id }}">
+                        @isset($marcaAlter)
+                            <input type="hidden" name="marca_id" value="{{ $marcaAlter->id }}">
                         @endisset
 
                         <div class="card-body row">
                             <div class="form-group col-md-5">
-                                <label for="categoria">Categoria</label>
-                                <input type="text"
-                                    value="{{ isset($categoriaAlter) ? $categoriaAlter->nome : old('nome') }}"
-                                    class="form-control" name="nome" placeholder="Digite o Categoria do usuário">
+                                <label for="marca">Nome</label>
+                                <input type="text" value="{{ isset($marcaAlter) ? $marcaAlter->nome : old('nome') }}"
+                                    class="form-control" name="nome" placeholder="Digite o nome da marca">
                                 @if ($errors->has('nome'))
                                     <span style="color: red">{{ $errors->first('nome') }}</span>
                                     <span class="invalid-feedback" style="color: red" role="alert">
@@ -53,10 +52,10 @@
                             </div>
 
                             <div class="form-group col-md-5">
-                                <label for="">Descrição</label>
+                                <label for="marca">Descricao</label>
                                 <input type="text"
-                                    value="{{ isset($categoriaAlter) ? $categoriaAlter->descricao : old('descricao') }}"
-                                    class="form-control" name="descricao" placeholder="Digite a descrição do usuário">
+                                    value="{{ isset($marcaAlter) ? $marcaAlter->descricao : old('descricao') }}"
+                                    class="form-control" name="descricao" placeholder="Digite o descricao da marca">
                                 @if ($errors->has('descricao'))
                                     <span style="color: red">{{ $errors->first('descricao') }}</span>
                                     <span class="invalid-feedback" style="color: red" role="alert">
@@ -65,8 +64,7 @@
                                 @endif
                             </div>
                         </div>
-
-                        <div class="card-footer">
+                        <div class=" card-footer">
                             <button type="submit" class="btn btn-primary">Enviar</button>
                         </div>
                     </form>
@@ -75,3 +73,5 @@
         </div>
     </div>
 </section>
+
+

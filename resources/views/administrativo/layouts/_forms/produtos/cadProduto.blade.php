@@ -66,26 +66,26 @@
                             <div class="row mb-3">
                                 <div class="col-md-6 mb-3">
                                     <label for="tamanhoAcesso" class="form-label">Nome <span style="color: red">*</span></label>
-                                    <input type="text" class="form-control" name="nome" id="tamanhoAcesso" placeholder="Digite o nome do produto">
+                                    <input type="text" class="form-control" name="nome" value="{{ old('nome') }}" id="tamanhoAcesso" placeholder="Digite o nome do produto">
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="valor" class="form-label">Valor do Produto<span style="color: red">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">R$</span>
-                                        <input type="text" id="valor" oninput="formatCurrency(this)" class="form-control" name="valor" placeholder="R$ 0,00">
+                                        <input type="text" id="valor" oninput="formatCurrency(this)" value="{{ old('valor') }}" class="form-control" name="valor" placeholder="R$ 0,00">
                                     </div>
                                 </div>
 
                                 <div class="col-md-3 mb-3">
                                     <label for="quantidade" class="form-label">Quantidade em Estoque <span style="color: red">*</span></label>
-                                    <input type="number" class="form-control" name="quantidade" placeholder="Digite a quantidade" min="0">
+                                    <input type="number" class="form-control" name="quantidade" value="{{ old('quantidade') }}" placeholder="Digite a quantidade" min="0">
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-3 mb-3">
                                     <label for="categoria" class="form-label">Categoria do Produto <span style="color: red">*</span></label>
-                                    <select class="form-control mb-3" name="categoria" id="categoria">
+                                    <select class="form-control mb-3" name="categoria_id" value='{{ old('categoria_id') }}' id="categoria">
                                         <option selected>Escolha uma Categoria</option>
                                         @foreach ($produtosCategorias as $categoria)
                                             <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
@@ -95,7 +95,7 @@
 
                                 <div class="col-md-3 mb-3">
                                     <label for="marca" class="form-label">Marca</label>
-                                    <select class="form-control mb-3" name="marca" id="marca">
+                                    <select class="form-control mb-3" name="marca_id" id="marca">
                                         <option selected>Escolha uma marca</option>
                                         @foreach ($produtosMarca as $marca)
                                             <option value="{{ $marca->id }}">{{ $marca->nome }}</option>

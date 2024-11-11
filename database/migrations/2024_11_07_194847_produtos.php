@@ -24,8 +24,7 @@ class Produtos extends Migration
         $table->foreign('categoria_id')->references('id')->on('categorias');
         $table->unsignedBigInteger('marca_id')->nullable();
         $table->foreign('marca_id')->references('id')->on('marcas');
-        $table->string('url_imagem');
-        $table->string('descricao');
+        $table->string('descricao')->nullable();
         $table->timestamps();
     });
 }

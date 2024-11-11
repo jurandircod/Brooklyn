@@ -10,6 +10,7 @@ use App\Produtos;
 use App\Categoria;
 use App\Marca;
 use App\Cores;
+use App\Fotos;
 use App\corHasProdutos;
 use Illuminate\Validation\Rules\Unique;
 
@@ -56,36 +57,44 @@ class ProdutosController extends Controller
         $nomeProduto = $data['nome'];
         //transforma o tamanho em string
 
-        
+
         $data['tamanho'] = implode(',', $data['tamanho']);
-        
+
         $caminho = public_path() . '/uploads/produtos/' . $nomeProduto;
         $pasta =  $this->criarPasta($caminho);
 
         $caminhoFoto = public_path() . '/uploads/produtos/' . $nomeProduto . '/';
         $foto = $this->criarImagem($caminhoFoto);
 
-        dd($foto, $pasta);
 
         $validator = $this->validarInput($data);
         Alert::alert('Produto', 'Salva com sucesso', 'success');
+
         if ($validator->fails()) {
             Alert::alert('Produto', 'Preencha os campos obrigatórios', 'error');
+
             return redirect()
                 ->route('administrativo.produto')
                 ->withErrors($validator)
                 ->withInput();
         } else {
-            
+
             try {
-                if ($pasta && $foto) {
-                    Alert::alert('Produto', 'Salva com sucesso', 'success');
-                    $data['url_imagem'] = $caminhoFoto;
-                    $data['nome'] = str_replace('.', '-', $data['nome']);
-                    $produto = Produtos::create($data);
+                $data['valor'] = str_replace(['R$', ' '], '', $data['valor']);
+                $data['valor'] = str_replace(',', '.', $data['valor']);
+                Alert::alert('Produto', 'Salva com sucesso', 'success');
+                unset($data['url_imagem']);
+                $data['nome'] = str_replace('.', '-', $data['nome']);
+                $fotos['url_imagem'] = $caminhoFoto;
+                $produto = Produtos::create($data);
+                $fotos['produto_id'] = $produto->id;
+                try {
+                    Fotos::create($fotos);
+                } catch (\Exception $e) {
+                    Alert::alert('Erro', $e->getMessage(), 'error');
                     return redirect()->route('administrativo.produtos');
                 }
-    
+                return redirect()->route('administrativo.produtos');
             } catch (\Exception $e) {
                 Alert::alert('Erro', $e->getMessage(), 'error');
                 return redirect()->route('administrativo.produtos');
@@ -123,7 +132,7 @@ class ProdutosController extends Controller
             if (mkdir($caminho, 0777, true)) {
                 return true;
             } else {
-                $this->redirecionaError("Erro ao criar a pasta.");
+                return true;
             }
         }
     }
@@ -142,7 +151,7 @@ class ProdutosController extends Controller
 
                 // Move o arquivo temporário para o caminho de destino
                 if (move_uploaded_file($tmpName, $caminhoCompleto)) {
-                    return true;
+                    return $caminhoCompleto;
                 } else {
                     $this->redirecionaError("Erro ao enviar o arquivo.");
                 }

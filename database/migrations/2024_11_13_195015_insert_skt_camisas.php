@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCoresTable extends Migration
+class InsertSktCamisas extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateCoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('cores', function (Blueprint $table) {
-            $table->id();
-            $table->char('cor');
-            $table->timestamps();
+        Schema::table('produtos', function (Blueprint $table) {
+            $table->string('largura')->nullable();
         });
     }
 
@@ -27,6 +25,6 @@ class CreateCoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cores');
+        //
     }
 }

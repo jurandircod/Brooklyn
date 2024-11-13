@@ -10,4 +10,9 @@ class Marca extends Model
         'nome',
         'descricao',
     ];
+
+    public function listarMarca(Int $produtoId){
+        $produtoMarca = Marca::where('id', $produtoId)->first();
+        return $produtoMarca; 
+    }
 }

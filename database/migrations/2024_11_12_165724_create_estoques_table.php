@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCorHasProdutosTable extends Migration
+class CreateEstoquesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,15 @@ class CreateCorHasProdutosTable extends Migration
      */
     public function up()
     {
-        Schema::create('cor_has_produtos', function (Blueprint $table) {
+        Schema::create('estoques', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cor_id');
-            $table->unsignedBigInteger('produto_id');
-            $table->foreign('cor_id')->references('id')->on('cores');
+            $table->double('quantidade')->default(0);
+            $table->unsignedBigInteger('produto_id')->unique();
             $table->foreign('produto_id')->references('id')->on('produtos');
+            $table->double('quantidadeP')->default(0);
+            $table->double('quantidadeM')->default(0);
+            $table->double('quantidadeG')->default(0);
+            $table->double('quantidadeGG')->default(0);
             $table->timestamps();
         });
     }
@@ -30,10 +33,9 @@ class CreateCorHasProdutosTable extends Migration
      */
     public function down()
     {
-        Schema::table('cor_has_produtos', function (Blueprint $table) {
-            $table->dropForeign(['cor_id']);
+        Schema::table('estoques', function (Blueprint $table) {
             $table->dropForeign(['produto_id']);
         });
-        Schema::dropIfExists('cor_has_produtos');
+        Schema::dropIfExists('estoques');
     }
 }

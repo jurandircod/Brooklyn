@@ -12,4 +12,9 @@ class Categoria extends Model
         return $this->hasMany(Produtos::class);
     }
     protected $fillable = ['nome', 'descricao'];
+
+    public function listarCategoria(Int $produtoId){
+        $produtoCategoria = Categoria::where('id', $produtoId)->first();
+        return $produtoCategoria; 
+    }
 }

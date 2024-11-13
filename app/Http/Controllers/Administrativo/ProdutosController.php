@@ -12,6 +12,7 @@ use App\Marca;
 use App\Cores;
 use App\Fotos;
 use App\corHasProdutos;
+use App\Estoque;
 use Illuminate\Validation\Rules\Unique;
 
 class ProdutosController extends Controller
@@ -20,19 +21,24 @@ class ProdutosController extends Controller
     private $produtos;
     private $categorias;
     private $marca;
+    private $estoque;
 
     public function __construct()
     {
         $this->marca = Marca::all();
         $this->produtos = Produtos::all();
         $this->categorias = Categoria::all();
+        $this->estoque = Estoque::all();
     }
     public function index()
     {
         $produtos = $this->produtos;
         $produtosCategorias = $this->categorias;
         $produtosMarca = $this->marca;
-        return view('administrativo.produto', compact('produtos', 'produtosCategorias', 'produtosMarca'));
+        $listarCategoria = new Categoria;
+        $listarEstoque = new Estoque;
+        $listarMarca = new Marca;
+        return view('administrativo.produto', compact('produtos', 'produtosCategorias', 'produtosMarca', 'listarEstoque', 'listarCategoria', 'listarMarca'));
     }
 
     public function validarInput($request)
@@ -51,49 +57,50 @@ class ProdutosController extends Controller
     public function salvarProduto(Request $request)
     {
         $data = $request->all();
-        //$cores = $request->input('cores');
-        // $teste = $this->salvarCor($cores);
-
-        $nomeProduto = $data['nome'];
-        //transforma o tamanho em string
+        $nomeProduto = $data['nome'] . uniqid();
 
 
-        $data['tamanho'] = implode(',', $data['tamanho']);
+        $estoque = $this->criaObjctEstoque($data);
 
         $caminho = public_path() . '/uploads/produtos/' . $nomeProduto;
-        $pasta =  $this->criarPasta($caminho);
+        $this->criarPasta($caminho);
 
         $caminhoFoto = public_path() . '/uploads/produtos/' . $nomeProduto . '/';
-        $foto = $this->criarImagem($caminhoFoto);
+        $caminhosFotos = $this->criarImagem($caminhoFoto);
 
-
+        
         $validator = $this->validarInput($data);
         Alert::alert('Produto', 'Salva com sucesso', 'success');
 
         if ($validator->fails()) {
             Alert::alert('Produto', 'Preencha os campos obrigatórios', 'error');
-
             return redirect()
                 ->route('administrativo.produto')
                 ->withErrors($validator)
                 ->withInput();
         } else {
-
             try {
                 $data['valor'] = str_replace(['R$', ' '], '', $data['valor']);
                 $data['valor'] = str_replace(',', '.', $data['valor']);
                 Alert::alert('Produto', 'Salva com sucesso', 'success');
                 unset($data['url_imagem']);
+                unset($data['quantidadeP']);
+                unset($data['quantidadeM']);
+                unset($data['quantidadeG']);
+                unset($data['quantidadeGG']);
                 $data['nome'] = str_replace('.', '-', $data['nome']);
-                $fotos['url_imagem'] = $caminhoFoto;
+
                 $produto = Produtos::create($data);
-                $fotos['produto_id'] = $produto->id;
-                try {
-                    Fotos::create($fotos);
-                } catch (\Exception $e) {
-                    Alert::alert('Erro', $e->getMessage(), 'error');
-                    return redirect()->route('administrativo.produtos');
-                }
+                $estoque['produto_id'] = $produto->id;
+
+                $estoque->save();
+                $caminhoFoto = '/uploads/produtos/' . $nomeProduto . '/';
+                Fotos::create([
+                    'url_imagem' => $caminhoFoto,
+                    'produto_id' => $produto->id
+                ]);
+
+
                 return redirect()->route('administrativo.produtos');
             } catch (\Exception $e) {
                 Alert::alert('Erro', $e->getMessage(), 'error');
@@ -101,29 +108,6 @@ class ProdutosController extends Controller
             }
         }
     }
-
-    public function salvarCor($cores)
-    {
-
-        $cores = json_decode($cores, true);
-        try {
-            if (is_array($cores)) { // Verifica se $cores é realmente um array
-                foreach ($cores as $cor) {
-                    $novaCor = new Cores();
-                    $novaCor->cor = $cor;
-                    $novaCor->save();
-                }
-                return true;
-            } else {
-                throw new \Exception("Erro: '$cores' não é um array válido.");
-            }
-        } catch (\Exception $e) {
-            Alert::alert('Erro', $e->getMessage(), 'error');
-            return $e->getMessage();
-        }
-    }
-
-    public function alterarCor(Request $request, $id) {}
 
     public function criarPasta($caminho)
     {
@@ -137,8 +121,29 @@ class ProdutosController extends Controller
         }
     }
 
+    public function criaObjctEstoque($data)
+    {
+        $estoque = new Estoque;
+        if ($data['quantidade'] == null) {
+            $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
+            $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
+            $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
+            $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
+            $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG;
+            return $estoque;
+        } else {
+            $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
+            $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
+            $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
+            $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
+            $estoque->quantidade = $data['quantidade'] ?? 0;
+            return $estoque;
+        }
+    }
+
     public function criarImagem($caminhoFoto)
     {
+        $caminhosFotos = []; // Array para armazenar os caminhos das fotos
 
         foreach ($_FILES['url_imagem']['tmp_name'] as $index => $tmpName) {
             // Verifica se o arquivo foi enviado sem erros
@@ -151,7 +156,7 @@ class ProdutosController extends Controller
 
                 // Move o arquivo temporário para o caminho de destino
                 if (move_uploaded_file($tmpName, $caminhoCompleto)) {
-                    return $caminhoCompleto;
+                    $caminhosFotos[] = $caminhoCompleto; // Armazena o caminho no array
                 } else {
                     $this->redirecionaError("Erro ao enviar o arquivo.");
                 }
@@ -159,11 +164,13 @@ class ProdutosController extends Controller
                 $this->redirecionaError("Erro ao enviar o arquivo.");
             }
         }
+
+        return $caminhosFotos; // Retorna o array com todos os caminhos das fotos
     }
 
-    public function redirecionaError($error)
+    public function redirecionaError($mensagem)
     {
-        Alert::alert('Erro', $error, 'error');
-        return redirect()->route('administrativo.produtos');
+        Alert::alert('Erro', $mensagem, 'danger');
+        return redirect()->back();
     }
 }

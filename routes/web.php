@@ -63,6 +63,8 @@ Route::group(['prefix' => 'administrativo'], function () {
         Route::post('/alterar/categoria', [App\Http\Controllers\Administrativo\CategoriaController::class, 'alterarCategoria'])->name('administrativo.produto.categoria.alterar');
         Route::post('/excluir/categoria', [App\Http\Controllers\Administrativo\CategoriaController::class, 'excluirCategoria'])->name('administrativo.produto.categoria.excluir');
         Route::post('/salvar', [App\Http\Controllers\Administrativo\ProdutosController::class, 'salvarProduto'])->name('administrativo.produto.salvar');
+        Route::post('/enviaFormAlterar', [App\Http\Controllers\Administrativo\ProdutosController::class, 'enviaFormAlterar'])->name('administrativo.produto.enviaFormAlterar');
+        Route::post('/excluir', [App\Http\Controllers\Administrativo\ProdutosController::class, 'excluir'])->name('administrativo.produto.excluir');
     });
 
     Route::group(['prefix' => 'marca'], function () {

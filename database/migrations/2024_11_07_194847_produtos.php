@@ -18,12 +18,11 @@ class Produtos extends Migration
         $table->string('nome');
         $table->double('valor');
         $table->string('material')->nullable();
-        $table->string('tamanho')->nullable();
-        $table->integer('quantidade')->default(0);
         $table->unsignedBigInteger('categoria_id');
         $table->foreign('categoria_id')->references('id')->on('categorias');
         $table->unsignedBigInteger('marca_id')->nullable();
         $table->foreign('marca_id')->references('id')->on('marcas');
+        $table->string('largura')->nullable();
         $table->string('descricao')->nullable();
         $table->timestamps();
     });

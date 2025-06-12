@@ -9,6 +9,7 @@ class PrincipalController extends Controller
 
     private $produtos;
     private $fotos;
+    private $cart;
 
     public function __construct()
     {

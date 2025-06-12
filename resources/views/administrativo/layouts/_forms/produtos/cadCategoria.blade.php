@@ -33,7 +33,7 @@
                         action="{{ isset($categoriaAlter) ? route('administrativo.produto.categoria.alterar') : route('administrativo.produto.categoria.salvar') }}"
                         method="POST" onsubmit="return enviarCores()">
                         @csrf
-
+                        <input type="text" name="rotaCategoria" value="0" hidden>
                         @isset($categoriaAlter)
                             <input type="hidden" name="categoria_id" value="{{ $categoriaAlter->id }}">
                         @endisset

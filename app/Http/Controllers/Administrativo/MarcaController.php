@@ -26,20 +26,37 @@ class marcaController extends Controller
 
     public function marcaSalvar(Request $request)
     {
-        $data = $request->all();
-        $validator = $this->validarInput($data);
-        Alert::alert('Marca', 'Salva com sucesso', 'success');
+        if ($request->has('rotaProduto')) {
+            $marca = $request->all();
+            $dataRotaProduto['nome'] = $marca['nomeMarca'];
+            $dataRotaProduto['descricao'] = $marca['descricaoMarca'];
+            $validator = $this->validarInput($dataRotaProduto);
+        } else {
+
+            $validator = $this->validarInput($request->all());
+        }
         if ($validator->fails()) {
             Alert::alert('Marca', 'Preencha os campos obrigatórios', 'error');
-            return redirect()
-                ->route('administrativo.marca')
-                ->withErrors($validator)
-                ->withInput();
+            if ($request->has('rotaProduto')) {
+                return redirect()->route('administrativo.produtos')->withInput();
+            } else {
+                return redirect()
+                    ->route('administrativo.marca')
+                    ->withErrors($validator)
+                    ->withInput();
+            }
         } else {
             Alert::alert('Marca', 'Salva com sucesso', 'success');
             try {
-                marca::create($request->all());
-                return redirect()->route('administrativo.marca');
+                if ($request->has('rotaProduto')) {
+                    marca::create($dataRotaProduto);
+                    Alert::alert('Marca', 'Salva com sucesso', 'success');
+                    return redirect('administrativo/produtos')->withInput();
+                } else {
+                    marca::create($request->all());
+                    Alert::alert('Marca', 'Salva com sucesso', 'success');
+                    return redirect()->route('administrativo.marca');
+                }
             } catch (\Exception $e) {
                 Alert::alert('Erro', $e->getMessage(), 'error');
                 return redirect()->route('administrativo.marca');

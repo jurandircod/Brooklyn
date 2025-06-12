@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Produtos;
 class Estoque extends Model
 {
-    protected $fillable = ['quantidadeP', 'quantidadeM', 'quantidadeG', 'quantidadeGG', 'quantidade'];
+    protected $fillable = ['quantidade', 'produto_id','quantidadeP', 'quantidadeM', 'quantidadeG', 'quantidadeGG'];
+    
     public function estoque()
     {
         return $this->hasOne(Estoque::class, 'produto_id', 'id');

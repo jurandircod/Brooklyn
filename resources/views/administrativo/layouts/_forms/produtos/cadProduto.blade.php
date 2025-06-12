@@ -57,10 +57,9 @@
 
                     <div class="card-body">
                         <h4 class="mb-4 text-secondary">Cadastrar Produtos</h4>
-                        <form action="{{ route('administrativo.produto.salvar') }}" method="POST"
-                            enctype="multipart/form-data">
+                        <form id="formProduto" method="POST" enctype="multipart/form-data">
                             @csrf
-
+                            <!-- Nome do produto -->
                             <div class="row mb-3">
                                 <div class="col-md-4 mb-3">
                                     <label for="nome" class="form-label">Nome <span
@@ -68,7 +67,11 @@
                                     <input type="text" class="form-control" name="nome"
                                         value="{{ old('nome') }}" id="nome"
                                         placeholder="Digite o nome do produto">
+                                    @error('nome')
+                                        <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
+                                    @enderror
                                 </div>
+
                                 <div class="col-md-3 mb-3">
                                     <label for="valor" class="form-label">Valor do Produto<span
                                             style="color: red">*</span></label>
@@ -78,114 +81,123 @@
                                             value="{{ old('valor') }}" class="form-control" name="valor"
                                             placeholder="R$ 0,00">
                                     </div>
+                                    @error('valor')
+                                        <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-5 mb-3">
                                     <label for="categoria" class="form-label">Categoria do Produto <span
                                             style="color: red">*</span></label>
-                                    <select class="form-control mb-3" name="categoria_id" id="categoria">
-                                        <option selected>Escolha uma Categoria</option>
-                                        @foreach ($produtosCategorias as $categoria)
-                                            <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div class="input-group">
+                                        <select class="form-control" name="categoria_id" id="categoria">
+                                            <option value="" {{ old('categoria_id') === null ? 'selected' : '' }}>
+                                                Escolha uma Categoria</option>
+                                            @foreach ($produtosCategorias as $categoria)
+                                                <option value="{{ $categoria->id }}"
+                                                    {{ old('categoria_id') == $categoria->id ? 'selected' : '' }}>
+                                                    {{ $categoria->nome }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                            data-bs-target="#modalNovaCategoria">+</button>
+                                    </div>
+                                    @error('categoria_id')
+                                        <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
+                                    @enderror
                                 </div>
-
-
                             </div>
 
+                            <!-- Marca, Material, Largura -->
                             <div class="row mb-3">
                                 <div class="col-md-5 mb-3">
-                                    <label for="categoria" class="form-label">Marca <span
+                                    <label for="marca" class="form-label">Marca <span
                                             style="color: red">*</span></label>
-                                    <select class="form-control mb-3" name="marca_id" id="categoria">
-                                        <option selected>Escolha uma Marca</option>
-                                        @foreach ($produtosMarca as $marca)
-                                            <option value="{{ $marca->id }}">{{ $marca->nome }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div class="input-group">
+                                        <select class="form-control" name="marca_id" id="marca">
+                                            <option value="" {{ old('marca_id') === null ? 'selected' : '' }}>
+                                                Escolha uma Marca</option>
+                                            @foreach ($produtosMarca as $marca)
+                                                <option value="{{ $marca->id }}"
+                                                    {{ old('marca_id') == $marca->id ? 'selected' : '' }}>
+                                                    {{ $marca->nome }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                            data-bs-target="#modalNovaMarca">+</button>
+                                    </div>
+                                    @error('marca_id')
+                                        <span class="invalid-feedback d-block"
+                                            style="color: red">{{ $message }}</span>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-2 mb-3">
-                                    <label for="" class="form-label">Material</label>
+                                    <label for="material" class="form-label">Material</label>
                                     <input type="text" name="material" id="material" class="form-control"
-                                        placeholder="Digite o tipo de material">
+                                        placeholder="Digite o tipo de material" value="{{ old('material') }}">
                                 </div>
 
                                 <div class="col-md-5 mb-3" id="skateSection" style="display: none;">
-                                    <label for="Largura" class="form-label">largura do Shape
-                                    </label>
-                                    <input type="text" id="largura"
-                                        oninput="formatCurrencyLarguraComprimento(this)" class="form-control"
-                                        name="largura" value="{{ old('largura') }}"
-                                        placeholder="A largura e comprimento do skate (ex: 8,5 x 32)">
+                                    <label for="largura">Largura do shape</label>
+                                    <select name="largura" id="largura" class="form-control">
+                                        <option value="">Selecione</option>
+                                        @foreach (['7,75', '8', '8,125', '8,5', '8,75', '9'] as $largura)
+                                            <option value="{{ $largura }}"
+                                                {{ old('largura') == $largura ? 'selected' : '' }}>{{ $largura }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
+                                <div class="col-md-6 mb-3" id="quantidadeSection" style="display: block">
+                                    <label for="quantidade" class="form-label">Quantidade em Estoque <span
+                                            style="color: red">*</span></label>
+                                    <input type="number" name="quantidade" id="quantidade" class="form-control"
+                                        placeholder="Digite a quantidade" value="{{ old('quantidade') }}"
+                                        min="0">
+                                    @error('quantidade')
+                                        <span class="invalid-feedback d-block"
+                                            style="color: red">{{ $message }}</span>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="inputGroupFile02" class="form-label">Imagens do Produto <span
                                             style="color: red">*</span></label>
-                                    <input type="file" class="form-control" id="inputGroupFile02" name="url_imagem[]"
-                                        multiple onchange="verificarLimiteFotos()">
+                                    <input type="file" class="form-control" id="inputGroupFile02"
+                                        name="url_imagem[]" multiple onchange="verificarLimiteFotos()">
                                 </div>
-
-                                <div class="col-md-6 mb-3" id="quantidadeSection" style="display: block">
-                                    <label for="" class="form-label">Quantidade em Estoque <span
-                                            style="color: red">*</span></label>
-                                    <input type="number" name="quantidade" id="quantidade" class="form-control"
-                                        placeholder="Digite a quantidade" min="0">
-                                </div>
-
-
                             </div>
 
-                            <!-- Seção de tamanhos, inicialmente oculta -->
+                            <!-- Tamanhos -->
                             <div class="row mb-3" id="sizeSection" style="display: none;">
                                 <div class="col-md-12 mb-3">
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <label for="quantidade1" class="form-label">Quantidade em Estoque Tamanho
-                                                P</label>
-                                            <input type="number" class="form-control" id="quantidade1"
-                                                name="quantidadeP" value="{{ old('quantidadeP') }}"
-                                                placeholder="Digite a quantidade" min="0" disabled>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="quantidade2" class="form-label">Quantidade em Estoque Tamanho
-                                                M</label>
-                                            <input type="number" class="form-control" id="quantidade2"
-                                                name="quantidadeM" value="{{ old('quantidadeM') }}"
-                                                placeholder="Digite a quantidade" min="0" disabled>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="quantidade3" class="form-label">Quantidade em Estoque Tamanho
-                                                G</label>
-                                            <input type="number" class="form-control" id="quantidade3"
-                                                name="quantidadeG" value="{{ old('quantidadeG') }}"
-                                                placeholder="Digite a quantidade" min="0" disabled>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="quantidade4" class="form-label">Quantidade em Estoque Tamanho
-                                                GG</label>
-                                            <input type="number" class="form-control" id="quantidade4"
-                                                name="quantidadeGG" value="{{ old('quantidadeGG') }}"
-                                                placeholder="Digite a quantidade" min="0" disabled>
-                                        </div>
+                                        @foreach (['P', 'M', 'G', 'GG'] as $size)
+                                            <div class="col-md-3">
+                                                <label for="quantidade{{ $size }}"
+                                                    class="form-label">Quantidade em Estoque Tamanho
+                                                    {{ $size }}</label>
+                                                <input type="number" class="form-control"
+                                                    id="quantidade{{ $size }}"
+                                                    name="quantidade{{ $size }}"
+                                                    value="{{ old('quantidade' . $size) }}"
+                                                    placeholder="Digite a quantidade" min="0" disabled>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
-
-                                <!-- Botões para selecionar tamanhos -->
                                 <div class="col-md-12 mb-3">
                                     <div class="mb-2"><b>Selecione os tamanhos</b></div>
-                                    <label class="size-option" data-size="P">P</label>
-                                    <label class="size-option" data-size="M">M</label>
-                                    <label class="size-option" data-size="G">G</label>
-                                    <label class="size-option" data-size="GG">GG</label>
+                                    @foreach (['P', 'M', 'G', 'GG'] as $size)
+                                        <label class="size-option"
+                                            data-size="{{ $size }}">{{ $size }}</label>
+                                    @endforeach
                                 </div>
                             </div>
 
-
-
+                            <!-- Pré-visualização das Imagens -->
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <h5>Pré-visualização das Imagens</h5>
@@ -193,14 +205,83 @@
                                 </div>
                             </div>
 
+                            <!-- Descrição -->
                             <div class="mb-3">
                                 <label for="exampleFormControlTextarea1" class="form-label">Descrição</label>
-                                <textarea class="form-control" id="exampleFormControlTextarea1" name="descricao"
-                                    placeholder="Digite a descrição do produto" rows="4"></textarea>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" name="descricao" rows="4"
+                                    placeholder="Digite a descrição do produto">{{ old('descricao') }}</textarea>
                             </div>
 
+                            <!-- Botão -->
                             <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-primary">Enviar</button>
+                                <button type="button" onclick="alterarAction('rotaProduto')"
+                                    class="btn btn-primary">Enviar</button>
+                            </div>
+                            <!-- Modal nova categoria -->
+                            <div class="modal fade" id="modalNovaCategoria" tabindex="-1"
+                                aria-labelledby="modalNovaCategoriaLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <input type="text" name="rotaCategoria" value="1" hidden>
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalNovaCategoriaLabel">Nova Categoria</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Fechar"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="novaCategoria" class="form-label">Nome da
+                                                    Categoria</label>
+                                                <input type="text" class="form-control"
+                                                    placeholder="Digite o nome da categoria" name="nomeCategoria"
+                                                    id="novaCategoria" required>
+                                            </div>
+                                            <div>
+                                                <label for="descricao" class="form-label">Descrição</label>
+                                                <input type="text" name="descricaoCategoria" class="form-control"
+                                                    placeholder="Digite a descrição da categoria">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" onclick="alterarAction('rotaCategoria')"
+                                                class="btn btn-primary">Salvar
+                                                Categoria</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Modal Nova Marca -->
+                            <div class="modal fade" id="modalNovaMarca" tabindex="-1"
+                                aria-labelledby="modalNovaMarcaLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <input type="text" name="rotaProduto" hidden>
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalNovaMarcaLabel">Nova Marca</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Fechar"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="novaMarca" class="form-label">Nome da Marca</label>
+                                                <input type="text" class="form-control" name="nomeMarca"
+                                                    id="novaMarca" required>
+                                            </div>
+                                            <div>
+                                                <label for="descricao" class="form-label">Descrição</label>
+                                                <input type="text" name="descricaoMarca" class="form-control"
+                                                    placeholder="Digite a descrição da categoria">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" onclick="alterarAction('rotaMarca')"
+                                                class="btn btn-primary">Salvar
+                                                Marca</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -209,6 +290,31 @@
         </div>
     </div>
 </section>
+
+
+
+<!-- Modal -->
+
+
+<script>
+    function alterarAction(rota) {
+        const form = document.getElementById('formProduto');
+        const routes = {
+            'rotaProduto': '{{ route('administrativo.produto.salvar') }}',
+            'rotaMarca': '{{ route('administrativo.marca.salvar') }}',
+            'rotaCategoria': '{{ route('administrativo.produto.categoria.salvar') }}'
+        };
+
+        if (routes[rota]) {
+            form.action = routes[rota];
+            form.submit();
+        } else {
+            console.error('Rota não definida:', rota);
+            alert('Erro: Configuração inválida!');
+        }
+    }
+</script>
+
 
 <script>
     document.getElementById('categoria').addEventListener('change', function() {

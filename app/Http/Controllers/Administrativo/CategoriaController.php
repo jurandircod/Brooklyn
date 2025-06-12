@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Administrativo;
+
 use App\Http\Controllers\Controller;
 use App\Categoria;
 use Illuminate\Http\Request;
@@ -17,30 +18,56 @@ class CategoriaController extends Controller
         $this->categorias = Categoria::all();
     }
 
-    public function index(){
+    public function index()
+    {
         $categorias = $this->categorias;
         return view('administrativo.categoria', compact('categorias'));
     }
 
     public function salvarCategoria(Request $request)
     {
-        $data = $request->all();
-        $validator = $this->validarInput($data);
-        Alert::alert('Categoria', 'Salva com sucesso', 'success');
-        if ($validator->fails()) {
-            Alert::alert('Categoria', 'Preencha os campos obrigatórios', 'error');
-            return redirect()
-                ->route('administrativo.produto.categoria')
-                ->withErrors($validator)
-                ->withInput();
-        } else {
+
+        $rotaCategoria = $request->all();
+        if ($rotaCategoria['rotaCategoria'] == 1) {
+            $data['nome'] = $rotaCategoria['nomeCategoria'];
+            $data['descricao'] = $rotaCategoria['descricaoCategoria'];
+            
+            $validator = $this->validarInput($data);
             Alert::alert('Categoria', 'Salva com sucesso', 'success');
-            try {
-                Categoria::create($request->all());
-                return redirect()->route('administrativo.produto.categoria');
-            } catch (\Exception $e) {
-                Alert::alert('Erro', $e->getMessage(), 'error');
-                return redirect()->route('administrativo.produto.categoria');
+            if ($validator->fails()) {
+                Alert::alert('Categoria', 'Preencha os campos obrigatórios', 'error');
+                return redirect()
+                    ->route('administrativo.produtos')
+                    ->withInput();
+            } else {
+                Alert::alert('Categoria', 'Salva com sucesso', 'success');
+                try {
+                    Categoria::create(($data));
+                    return redirect()->route('administrativo.produtos');
+                } catch (\Exception $e) {
+                    Alert::alert('Erro', $e->getMessage(), 'error');
+                    return redirect()->route('administrativo.produtos');
+                }
+            }
+        } else {
+            $data = $request->all();
+            $validator = $this->validarInput($data);
+            Alert::alert('Categoria', 'Salva com sucesso', 'success');
+            if ($validator->fails()) {
+                Alert::alert('Categoria', 'Preencha os campos obrigatórios', 'error');
+                return redirect()
+                    ->route('administrativo.produto.categoria')
+                    ->withErrors($validator)
+                    ->withInput();
+            } else {
+                Alert::alert('Categoria', 'Salva com sucesso', 'success');
+                try {
+                    Categoria::create($request->all());
+                    return redirect()->route('administrativo.produto.categoria');
+                } catch (\Exception $e) {
+                    Alert::alert('Erro', $e->getMessage(), 'error');
+                    return redirect()->route('administrativo.produto.categoria');
+                }
             }
         }
     }
@@ -66,7 +93,7 @@ class CategoriaController extends Controller
     public function excluirCategoria(Request $request)
     {
         try {
-            
+
             Categoria::findOrFail($request->input('categoria_id'));
             Categoria::where('id', $request->input('categoria_id'))->delete();
             Alert::alert('Exclusão', 'Categoria excluída com sucesso', 'success');

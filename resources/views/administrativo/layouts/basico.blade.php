@@ -35,17 +35,23 @@
         href="{{ asset('adminLte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('adminLte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <link rel="shortcut icon" href="{{ asset('adminLte/dist/img/favicon.ico') }}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+         crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous">
+    </script>
 
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
-    
+
     <div class="preloader flex-column justify-content-center align-items-center">
         <img class="animation__shake" src="{{ asset('adminLte/dist/img/bartLoader.gif') }}" alt="AdminLTELogo"
             height="120" width="120">
         <h6 class="text-center">Aguarde enquanto carregamos o painel de administração</h6>
     </div>
-    
+
     <div class="wrapper">
 
 

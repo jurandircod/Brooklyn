@@ -40,18 +40,19 @@
                 }
             }
         </style>
-        <div class="row g-sm-4 g-3">
 
-            @foreach ($produtos as $produto)
+
+        <div class="row g-sm-4 g-3">
+            @foreach ($produtos as $index => $produto)
+                
                 <div class="col-xl-2 col-lg-2 col-6">
                     <div class="product-box">
                         <div class="img-wrapper">
                             <a href="product/details.html">
-                               
-                            
-                                    <img src="{{ asset($fotos->url_imagem) }}"
-                                        class="w-100 bg-img blur-up lazyload" alt="">
-                               
+                                @foreach ($produto->fotos as $foto)
+                                    <img src="{{ asset($foto->url_imagem) }}" class="w-100 blur-up lazyload"
+                                        alt="">
+                                @endforeach
                             </a>
                             <div class="circle-shape"></div>
                             <span class="background-text">Furniture</span>

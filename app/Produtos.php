@@ -6,12 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Produtos extends Model
 {
-    
+
     protected $fillable = ['nome', 'valor', 'material', 'categoria_id', 'marca_id', 'descricao', 'largura'];
     // Define o relacionamento "uma categoria tem muitos produtos"
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);
+    }
+
+     public function fotos()
+    {
+        return $this->hasMany(Fotos::class, 'produto_id');
+        //                     Modelo filho ↑   ↑ Coluna real no banco
     }
 
     public function estoque()

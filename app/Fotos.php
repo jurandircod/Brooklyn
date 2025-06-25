@@ -10,6 +10,6 @@ class Fotos extends Model
     // Define o relacionamento "um produto tem muitas fotos"
     public function produto()
     {
-        return $this->belongsTo(Produtos::class);
+        return $this->belongsTo(Produtos::class, 'produto_id');
     }
 }

@@ -14,10 +14,16 @@ class Produtos extends Model
         return $this->belongsTo(Categoria::class);
     }
 
-     public function fotos()
+    public function fotos()
     {
         return $this->hasMany(Fotos::class, 'produto_id');
         //                     Modelo filho ↑   ↑ Coluna real no banco
+    }
+
+    // metodo acessor de helper
+    public function getImagemUrlAttribute()
+    {
+        return \App\Helpers\ImagemHelper::imagemDoProduto($this->id);
     }
 
     public function estoque()

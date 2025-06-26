@@ -49,10 +49,8 @@
                     <div class="product-box">
                         <div class="img-wrapper">
                             <a href="product/details.html">
-                                @foreach ($produto->fotos as $foto)
-                                    <img src="{{ asset($foto->url_imagem) }}" class="w-100 blur-up lazyload"
+                                    <img src="{{ $produto->imagem_url  }}" class="w-100 blur-up lazyload"
                                         alt="">
-                                @endforeach
                             </a>
                             <div class="circle-shape"></div>
                             <span class="background-text">Furniture</span>

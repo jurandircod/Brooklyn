@@ -19,7 +19,7 @@ class CreateCarrinhosTable extends Migration
             $table->enum('status', ['ativo', 'finalizado'])->default('ativo');
             $table->timestamps();
 
-            $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('cascade');
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
     /**

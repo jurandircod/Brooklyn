@@ -21,7 +21,7 @@ class CreatePedidosTable extends Migration
             $table->decimal('total', 10, 2);
             $table->timestamps();
 
-            $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('cascade');
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('endereco_id')->references('id')->on('enderecos')->onDelete('set null');
         });
     }

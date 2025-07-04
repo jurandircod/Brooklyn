@@ -11,7 +11,7 @@ use App\Categoria;
 use App\Marca;
 use App\Fotos;
 use App\Estoque;
-
+use Psr\EventDispatcher\StoppableEventInterface;
 
 class ProdutosController extends Controller
 {
@@ -47,8 +47,8 @@ class ProdutosController extends Controller
             'nome' => 'required',
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
-            'quantidade' => 'required|integer',
             
+
         ], [
             'nome.required' => 'O campo nome é obrigatório',
             'categoria_id.required' => 'O campo categoria é obrigatório',
@@ -57,10 +57,9 @@ class ProdutosController extends Controller
             'marca_id.required' => 'O campo marca é obrigatório',
             'marca_id.integer' => 'O campo marca deve ser um número inteiro',
             'marca_id.exists' => 'O campo marca não existe',
-            'quantidade.required' => 'O campo quantidade é obrigatório',
             'quantidade.integer' => 'O campo quantidade deve ser um número inteiro',
             'valor.required' => 'O campo valor é obrigatório',
-            
+
 
         ]);
 
@@ -88,20 +87,19 @@ class ProdutosController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         } else {
-             try {
-
-            $data = $this->formatDataParaProduto($data);
-            $produto = Produtos::create($data);
-            Alert::alert('Produto', 'Salva com sucesso', 'success');
-            $estoque['produto_id'] = $produto->id;
-            $estoque->save();
-            $caminhoFoto = '/uploads/produtos/' . $nomeProduto . '/';
-            $this->criarFotos($caminhoFoto, $produto);
-            return redirect()->route('administrativo.produtos');
-             } catch (\Exception $e) {
-            Alert::alert('Erro', $e->getMessage(), 'error');
-            return redirect()->route('administrativo.produtos');
-              }
+            try {
+                $data = $this->formatDataParaProduto($data);
+                $produto = Produtos::create($data);
+                Alert::alert('Produto', 'Salva com sucesso', 'success');
+                $estoque['produto_id'] = $produto->id;
+                $estoque->save();
+                $caminhoFoto = '/uploads/produtos/' . $nomeProduto . '/';
+                $this->criarFotos($caminhoFoto, $produto);
+                return redirect()->route('administrativo.produtos');
+            } catch (\Exception $e) {
+                Alert::alert('Erro', $e->getMessage(), 'error');
+                return redirect()->route('administrativo.produtos');
+            }
         }
     }
 
@@ -215,6 +213,7 @@ class ProdutosController extends Controller
         Alert::alert('Erro', $mensagem, 'danger');
         return redirect()->back();
     }
+
     public function excluir(Request $request)
     {
         try {
@@ -244,42 +243,51 @@ class ProdutosController extends Controller
     public function atualizar(Request $request)
     {
         $data = $request->all();
-
-           try {
         $id = $data['id'];
-
-
-        if (empty($id)) {
-            throw new \Exception("ID do produto não informado");
-        }
         $produto = Produtos::find($id);
         $estoque = Estoque::where('produto_id', $id)->first();
 
-        if (empty($estoque)) {
-            $estoque = new Estoque();
-            $estoque->produto_id = $id;
-            $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
-            $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
-            $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
-            $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
-            $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG;
-            $estoque->save();
-        } else {
-            $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
-            $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
-            $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
-            $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
-            $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG;
-            $estoque->update($data);
-        }
-        unset($data['quantidade'], $data['quantidadeP'], $data['quantidadeM'], $data['quantidadeG'], $data['quantidadeGG']);
-        $produto->update($data);
-        Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
-        return redirect()->route('administrativo.produtos');
-           } catch (\Exception $e) {
+        try {
+            // define se é camisas ou não
+            if ($data['categoria_id'] == 1) {
 
-                Alert::alert('Erro', $e->getMessage(), 'error');
-               return redirect()->route('administrativo.produtos');
-           }
+                if (empty($id)) {
+                    throw new \Exception("ID do produto não informado");
+                }
+
+                // verifique se existe uma tabela estoque, se não existir ele cria uma
+                if (empty($estoque)) {
+                    $estoque = new Estoque();
+                    $estoque->produto_id = $id;
+                    $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
+                    $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
+                    $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
+                    $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
+                    $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG;
+                    $estoque->save();
+                    Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
+                    return redirect()->route('administrativo.produtos');
+                    exit();
+                } else {
+                    $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
+                    $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
+                    $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
+                    $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
+                    $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG;
+                    $estoque->update();
+                    Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
+                    return redirect()->route('administrativo.produtos');
+                    exit();
+                }
+            } else {
+                $produto->update($data);
+                Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
+                return redirect()->route('administrativo.produtos');
+            }
+        } catch (\Exception $e) {
+
+            Alert::alert('Erro', $e->getMessage(), 'error');
+            return redirect()->route('administrativo.produtos');
+        }
     }
 }

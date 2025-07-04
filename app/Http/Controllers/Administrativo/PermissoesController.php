@@ -102,7 +102,7 @@ class PermissoesController extends Controller
 
     public function editarPermissao(Request $request)
     {
-
+        
         try {
             // pega o valor antigo do id para atualizar
             $idEditar = $request->input('idEditar');
@@ -124,6 +124,7 @@ class PermissoesController extends Controller
     }
     public function permissoesUsuarios()
     {
+        
         if (Auth::check()) {
             $permissoesUser = Permissoes::where('role_id', Auth::user()->role_id)->get();
         } else {

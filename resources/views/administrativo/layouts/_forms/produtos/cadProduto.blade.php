@@ -317,26 +317,43 @@
 
 
 <script>
-    document.getElementById('categoria').addEventListener('change', function() {
+    setInterval(() => {
+        const categoria = document.getElementById('categoria');
+        if (!categoria) return;
+
+        const selectedText = categoria.options[categoria.selectedIndex]?.text || '';
         const sizeSection = document.getElementById('sizeSection');
         const skateSection = document.getElementById('skateSection');
         const quantidadeSection = document.getElementById('quantidadeSection');
-        sizeSection.style.display = (this.options[this.selectedIndex].text === 'Camisas') ? 'block' : 'none';
-        skateSection.style.display = (this.options[this.selectedIndex].text === 'Skates') ? 'block' : 'none';
-        quantidadeSection.style.display = (this.options[this.selectedIndex].text === 'Camisas') ? 'none' :
-            'block';
-    });
+
+        if (!sizeSection || !skateSection || !quantidadeSection) return;
+
+        if (selectedText === 'Camisas') {
+            sizeSection.style.display = 'block';
+            skateSection.style.display = 'none';
+            quantidadeSection.style.display = 'none';
+        } else if (selectedText === 'Skates') {
+            sizeSection.style.display = 'none';
+            skateSection.style.display = 'block';
+            quantidadeSection.style.display = 'block';
+        } else {
+            // Outras categorias
+            sizeSection.style.display = 'none';
+            skateSection.style.display = 'none';
+            quantidadeSection.style.display = 'block';
+        }
+    }, 100);
 
     document.querySelectorAll('.size-option').forEach(option => {
         option.addEventListener('click', function() {
-            this.classList.toggle('selected'); // Marca o tamanho como selecionado
+            this.classList.toggle('selected'); // Marca o botão como selecionado
 
             const size = this.dataset.size;
-            const inputQuantidade = document.getElementById(
-                `quantidade${size === 'P' ? '1' : size === 'M' ? '2' : size === 'G' ? '3' : '4'}`);
+            const inputQuantidade = document.getElementById(`quantidade${size}`);
 
-            inputQuantidade.disabled = !inputQuantidade
-                .disabled; // Habilita ou desabilita o campo correspondente
+            if (inputQuantidade) {
+                inputQuantidade.disabled = !inputQuantidade.disabled;
+            }
         });
     });
 

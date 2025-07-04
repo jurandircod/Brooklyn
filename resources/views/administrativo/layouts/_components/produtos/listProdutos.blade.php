@@ -27,6 +27,7 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
+                            <th>Imagem</th>
                             <th>Nome</th>
                             <th>Valor</th>
                             <th>Material</th>
@@ -50,6 +51,8 @@
                             @endphp
 
                             <tr>
+                                <td> <img src="{{ $produto->imagem_url }}" class="blur-up lazyload" alt=""
+                                        style="width: 80px; height: auto;"></td>
                                 <td>{{ $produto->nome }}</td>
                                 <td>R$: {{ $produto->valor }}</td>
                                 <td>{{ $produto->material }}</td>
@@ -70,23 +73,24 @@
                                 <td>{{ $produto->descricao }}</td>
                                 <td>
 
-                                    <button class="btn btn-sm btn-warning mt-1"
-                                        onclick="preencherModal(
-        '{{ $produto->id }}', 
-        '{{ $produto->nome }}', 
-        '{{ $produto->valor }}', 
-        '{{ $produto->material }}', 
-        '{{ $produto->largura }}', 
-        '{{ $estoque['quantidade'] ?? 0 }}',
-        '{{ $produto->categoria_id }}',
-        '{{ $produto->marca_id }}',
-        '{{ $produto->descricao }}',
-        '{{ $estoque->quantidadeP ?? 0 }}',
-        '{{ $estoque->quantidadeM ?? 0 }}',
-        '{{ $estoque->quantidadeG ?? 0 }}',
-        '{{ $estoque->quantidadeGG ?? 0 }}'
-    )"
-                                        data-toggle="modal" data-target="#produtoModal">
+                                    <button class="btn btn-sm btn-warning mt-1" data-toggle="modal"
+                                        data-target="#produtoModal"
+                                        onclick='preencherModal(
+        @json($produto->id), 
+        @json($produto->nome), 
+        @json($produto->valor), 
+        @json($produto->material), 
+        @json($produto->largura), 
+        @json($estoque['quantidade'] ?? 0),
+        @json($produto->categoria_id),
+        @json($produto->marca_id),
+        @json($produto->descricao),
+        @json($estoque->quantidadeP ?? 0),
+        @json($estoque->quantidadeM ?? 0),
+        @json($estoque->quantidadeG ?? 0),
+        @json($estoque->quantidadeGG ?? 0),
+        @json($produto->categoria_id)
+    )'>
                                         Alterar
                                     </button>
 
@@ -104,6 +108,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
+                            <th>Imagem</th>
                             <th>Nome</th>
                             <th>Valor</th>
                             <th>Material</th>
@@ -138,7 +143,7 @@
             </div>
             <form id="formEditarProduto" action="{{ route('administrativo.produto.atualizar') }}" method="POST">
                 @csrf
-               
+
                 <input type="hidden" name="id" id="produtoId">
                 <div class="modal-body">
                     <div class="row">
@@ -147,6 +152,7 @@
                                 <label for="nomeProduto">Nome do Produto</label>
                                 <input type="text" class="form-control" id="nomeProduto" name="nome" required>
                             </div>
+
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
@@ -176,12 +182,9 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="categoriaProduto">Categoria</label>
-                                <select class="form-control" id="categoriaProduto" name="categoria_id" required>
-                                    @foreach ($produtosCategorias as $categoria)
-                                        <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
-                                    @endforeach
-                                </select>
+                                <input class="form-control" id="categoria" name="categoria_id" >
                             </div>
+
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
@@ -201,43 +204,47 @@
                         <textarea class="form-control" id="descricaoProduto" name="descricao" rows="3"></textarea>
                     </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Estoque</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="quantidadeP">Tamanho P</label>
-                                        <input type="number" class="form-control" id="quantidadeP"
-                                            name="quantidadeP" min="0">
+                    
+                        <div class="card" id="estoqueCard">
+                            <div class="card-header">
+                                <h3 class="card-title">Estoque</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="quantidadeP">Tamanho P</label>
+                                            <input type="number" id="quantidadePC" class="form-control"
+                                                name="quantidadeP">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="quantidadeM">Tamanho M</label>
-                                        <input type="number" class="form-control" id="quantidadeM"
-                                            name="quantidadeM" min="0">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="quantidadeM">Tamanho M</label>
+                                            <input type="number" class="form-control" id="quantidadeMC"
+                                                name="quantidadeM">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="quantidadeG">Tamanho G</label>
-                                        <input type="number" class="form-control" id="quantidadeG"
-                                            name="quantidadeG" min="0">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="quantidadeG">Tamanho G</label>
+                                            <input type="number" class="form-control" id="quantidadeGC"
+                                                name="quantidadeG">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="quantidadeGG">Tamanho GG</label>
-                                        <input type="number" class="form-control" id="quantidadeGG"
-                                            name="quantidadeGG" min="0">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="quantidadeGG">Tamanho GG</label>
+                                            <input type="number" class="form-control" id="quantidadeGGC"
+                                                name="quantidadeGG">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    
+
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -251,18 +258,42 @@
 <!-- JavaScript para Preencher Modal -->
 <script>
     function preencherModal(id, nome, valor, material, largura, quantidadeTotal, categoriaId, marcaId, descricao,
-        estoqueP, estoqueM, estoqueG, estoqueGG) {
+        estoqueP, estoqueM, estoqueG, estoqueGG, categoriaId) {
+
+        console.log('Valores recebidos na função:', {
+            id: id,
+            nome: nome,
+            valor: valor,
+            material: material,
+            largura: largura,
+            quantidadeTotal: quantidadeTotal,
+            categoriaId: categoriaId,
+            marcaId: marcaId,
+            descricao: descricao,
+            estoqueP: estoqueP,
+            estoqueM: estoqueM,
+            estoqueG: estoqueG,
+            estoqueGG: estoqueGG,
+            categoriaId: categoriaId
+        });
         document.getElementById('produtoId').value = id;
         document.getElementById('nomeProduto').value = nome;
         document.getElementById('valorProduto').value = valor;
         document.getElementById('materialProduto').value = material;
         document.getElementById('larguraProduto').value = largura;
         document.getElementById('descricaoProduto').value = descricao;
-        document.getElementById('categoriaProduto').value = categoriaId;
+        document.getElementById('categoria').value = categoriaId;
         document.getElementById('marcaProduto').value = marcaId || '';
-        document.getElementById('quantidadeP').value = estoqueP || 0;
-        document.getElementById('quantidadeM').value = estoqueM || 0;
-        document.getElementById('quantidadeG').value = estoqueG || 0;
-        document.getElementById('quantidadeGG').value = estoqueGG || 0;
+        document.getElementById('quantidadePC').value = estoqueP ?? 0;
+        document.getElementById('quantidadeMC').value = estoqueM ?? 0;
+        document.getElementById('quantidadeGC').value = estoqueG ?? 0;
+        document.getElementById('quantidadeGGC').value = estoqueGG ?? 0;
+
+        if (categoriaId == 2) {
+            document.getElementById('estoqueCard').style.display = 'none';
+        }else if (categoriaId == 1) {
+            document.getElementById('estoqueCard').style.display = 'block';
+        }
+        // espera 100ms para garantir que o modal foi carregado
     }
 </script>

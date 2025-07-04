@@ -13,12 +13,12 @@ class Permissoes extends Migration
      */
     public function up()
     {
-        Schema::create('permissoes', function (Blueprint $table) {
-            $table->integer('role_id')->primary()->unique();      // Definir como único                           // Definir 'role' como chave primária
-            $table->string('tipo_acesso')->unique();// Outro campo único (slug ou nome da role)
-            $table->string('descricao');            // Descrição da role
-            $table->timestamps();   
-        });
+    Schema::create('permissoes', function (Blueprint $table) {
+        $table->bigIncrements('role_id'); // Altere para bigIncrements
+        $table->string('tipo_acesso')->unique();
+        $table->string('descricao');
+        $table->timestamps();   
+    });
     }
 
     /**

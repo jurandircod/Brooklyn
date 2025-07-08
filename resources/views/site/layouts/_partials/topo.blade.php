@@ -59,7 +59,7 @@
                                     <div class="cart-media">
                                         <a href="{{route('site.carrinho')}}">
                                             <i data-feather="shopping-cart"></i>
-                                            <span id="cart-count" class="label label-theme rounded-pill">
+                                            <span id="contador" class="label label-theme rounded-pill">
                                                 0
                                             </span>
                                         </a>
@@ -129,3 +129,26 @@
         </div>
     </div>
 </header>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@auth
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "{{ route('site.carrinho.quantidadeItensCarrinho') }}",
+            method: 'GET',
+            success: function(response) {
+                console.log("Quantidade de itens:", response.quantidade);
+                $('#contador').text(response.quantidade);
+            },
+            error: function(xhr, status, error) {
+                console.error("Erro no AJAX:", error);
+                console.log("Resposta completa:", xhr.responseText);
+            }
+        });
+    });
+</script>
+@endauth
+

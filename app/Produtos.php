@@ -26,6 +26,11 @@ class Produtos extends Model
         return \App\Helpers\ImagemHelper::imagemDoProduto($this->id);
     }
 
+    public function getImagemPastaAttribute()
+    {
+        return \App\Helpers\ImagemHelper::pastaImagensProduto($this->id);
+    }
+
     public function estoque()
     {
         return $this->hasOne(Estoque::class, 'produto_id', 'id');

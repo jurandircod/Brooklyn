@@ -47,7 +47,7 @@ class ProdutosController extends Controller
             'nome' => 'required',
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
-            
+
 
         ], [
             'nome.required' => 'O campo nome é obrigatório',
@@ -200,8 +200,11 @@ class ProdutosController extends Controller
         try {
             $id = $request->input('id');
             $produto = Produtos::find($id);
+            // exemplo: 'imagens/'
+
             $produto->delete();
             return redirect()->back();
+            echo "Todas as imagens foram excluídas.";
         } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'danger');
             return redirect()->back();
@@ -226,17 +229,35 @@ class ProdutosController extends Controller
             // Encontra e exclui o produto
             $produto = Produtos::findOrFail($id);
             $estoque = Estoque::where('produto_id', $id)->first();
-            $estoque->delete();
-            $produto->delete();
+            $diretorio = $produto->imagem_pasta;
 
-            // Recarrega a lista de produtos após exclusão
-            $produtos = Produtos::all(); // Ou sua lógica específica para obter os produtos
+            // Lista todos os arquivos de imagem no diretório (jpg, jpeg, png, gif, webp, etc.)
+            $imagens = glob($diretorio . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
 
-            Alert::alert('Exclusão', 'Produto excluído com sucesso', 'success');
-            return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
+
+            foreach ($imagens as $imagem) {
+                if (is_file($imagem)) {
+                    unlink($imagem); // Exclui o arquivo
+                } else {
+                    throw new \Exception("Erro ao excluir imagens");
+                    exit();
+                }
+            }
+
+            if (rmdir($diretorio)) {
+                $estoque->delete();
+                $produto->delete();
+                $produtos = $this->produtos;
+                Alert::alert('Exclusão', 'Imagens excluídas com sucesso', 'success');
+                return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
+                exit();
+            } else {
+                throw new \Exception("Erro ao excluir a pasta de imagens do produto.");
+            }
         } catch (\Exception $e) {
+            $produtos = $this->produtos; // Ou sua lógica específica para obter os produtos
             Alert::alert('Erro', $e->getMessage(), 'error');
-            return redirect()->route('administrativo.produtos');
+            return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
         }
     }
 

@@ -36,4 +36,18 @@ class ImagemHelper
 
         return asset('images/default-product.png');
     }
+
+    public static function pastaImagensProduto($idProduto){
+        $foto = Fotos::where('produto_id', $idProduto)->first();
+
+        if (!$foto) {
+            return asset('images/default-product.png');
+        }
+
+        $caminhoRelativo = $foto->url_imagem;
+        $caminhoAbsoluto = public_path($caminhoRelativo);
+
+        return $caminhoAbsoluto;
+    }
+    
 }

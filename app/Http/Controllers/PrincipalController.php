@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Produtos;
 use App\Fotos;
+use App\Carrinho;
+use App\ItemCarrinho;
+use Illuminate\Support\Facades\Auth;
 
 class PrincipalController extends Controller
 {
@@ -12,24 +15,32 @@ class PrincipalController extends Controller
     private $produtos;
     private $fotos;
     private $cart;
-
+    private $itens;
     public function __construct()
     {
+        $this->middleware('auth');
         $this->produtos = Produtos::all();
         $this->fotos = Fotos::all();
+        
+        // Em vez de auth()->id()
+        //dd($user_id);
+        //$this->itens = ItemCarrinho::where('carrinho_id', $this->cart->id)->get();
+
     }
 
     public function principal(Request $request)
     {
+        $this->cart = Carrinho::where('user_id', Auth::id())->first();
+        $this->itens = ItemCarrinho::where('carrinho_id', $this->cart->id)->get();
+       
         $fotos = $this->fotos;
         // Carrega todos os produtos COM suas fotos (eager loading)
         $produtos = Produtos::with('fotos')->take(12)->get();
 
-        $caminhoRelativo = $fotos->where('produto_id', 15);
+        $itens = $this->itens;
 
         $cart = $request->query('cart') == 1 ? 1 : null;
 
-        return view('site.principal', compact('produtos', 'cart'));
+        return view('site.principal', compact('produtos', 'cart', 'itens'));
     }
-
 }

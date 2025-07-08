@@ -24,7 +24,6 @@ Route::get('/', 'PrincipalController@principal')->name('site.principal');
 Route::get('/contato', 'ContatoController@contato')->name('site.contato');
 Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
 Route::get('/produtos', 'ShopController@shop')->name('site.shop');
-Route::get('/carrinho', 'CarrinhoController@index')->name('site.carrinho');
 Route::get('/cep/{cep}', 'AddressController@getCityByCep');
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
 
@@ -37,6 +36,18 @@ Route::group(['prefix' => 'perfil'], function () {
     Route::get('/remover/{id}', 'AddressController@remover')->name('site.perfil.removerEndereco');
     Route::post('/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');
 });
+
+//rotas carrinho
+Route::group(['prefix' => 'carrinho'], function () {
+    Route::get('/principal', 'CarrinhoController@index')->name('site.carrinho');
+    Route::group(['prefix' => 'itemCarrinho'], function () {
+        Route::post('/adicionar', [App\Http\Controllers\ItemCarrinhoController::class, 'adicionar'])->name('site.carrinho.itemCarrinho.adicionar');
+        Route::post('/remover/{id}', 'CarrinhoController@remover')->name('site.carrinho.remover');
+    });
+    
+});
+
+Route::get('/quantidade-itens-carrinho', [App\Http\Controllers\ItemCarrinhoController::class, 'quantidadeItensCarrinho'])->name('site.carrinho.quantidadeItensCarrinho');
 
 // Rotas do administrador
 Route::group(['prefix' => 'administrativo'], function () {
@@ -66,6 +77,7 @@ Route::group(['prefix' => 'administrativo'], function () {
         Route::post('/enviaFormAlterar', [App\Http\Controllers\Administrativo\ProdutosController::class, 'atualizar'])->name('administrativo.produto.atualizar');
         Route::post('/excluir', [App\Http\Controllers\Administrativo\ProdutosController::class, 'excluir'])->name('administrativo.produto.excluir');
     });
+
 
     Route::group(['prefix' => 'marca'], function () {
         Route::get('/', [App\Http\Controllers\Administrativo\MarcaController::class, 'index'])->name('administrativo.marca');

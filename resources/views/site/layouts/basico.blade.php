@@ -20,6 +20,8 @@
     <meta name="description" content="Surfside Media">
     <meta name="keywords" content="Surfside Media">
     <meta name="author" content="Surfside Media">
+   
+
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link id="rtl-link" rel="stylesheet" type="text/css" href="{{ asset('css/vendors/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('css/vendors/ion.rangeSlider.min.css') }}">
@@ -29,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/vendors/slick/slick.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/vendors/slick/slick-theme.css') }}">
     <link id="color-link" rel="stylesheet" type="text/css" href="{{ asset('css/demo4.css') }}">
+    
     
 
     <style>

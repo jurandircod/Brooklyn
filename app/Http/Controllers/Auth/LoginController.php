@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;  // Certifique-se de importar Hash
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\User;  // Certifique-se de importar o model User
+use Illuminate\Support\Facades\Log;
 
 
 class LoginController extends Controller
@@ -33,8 +34,8 @@ class LoginController extends Controller
         $this->validate($request, [
             'email' => 'required|email|max:255',
             'password' => 'required|min:6|max:255',
-            
-        ],[
+
+        ], [
             'email.required' => 'O email é obrigatório',
             'email.email' => 'O email é inválido, por favor, informe um email válido',
             'email.max' => 'O email deve ter no máximo 255 caracteres',
@@ -43,9 +44,11 @@ class LoginController extends Controller
             'password.max' => 'O senha deve ter no máximo 255 caracteres',
         ]);
 
-        
+
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Autenticação bem-sucedida, redireciona para a página principal
+            Auth::login(Auth::user(), $request->filled('remember')); // Atualiza a sessão
+            $request->session()->regenerate();
             return redirect()->intended('/principal');
         } else {
             // Usuário ou senha incorretos

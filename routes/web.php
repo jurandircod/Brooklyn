@@ -43,11 +43,16 @@ Route::group(['prefix' => 'carrinho'], function () {
     Route::group(['prefix' => 'itemCarrinho'], function () {
         Route::post('/adicionar', [App\Http\Controllers\ItemCarrinhoController::class, 'adicionar'])->name('site.carrinho.itemCarrinho.adicionar');
         Route::post('/remover/{id}', 'CarrinhoController@remover')->name('site.carrinho.remover');
+        Route::post('/carrinho/itensCarrinho/atualizar-quantidade', [App\Http\Controllers\ItemCarrinhoController::class, 'atualizarQuantidade'])->name('carrinho.atualizar-quantidade');
+        Route::post('/carrinho/itensCarrinho/remover-item', [App\Http\Controllers\ItemCarrinhoController::class, 'removerItem'])->name('carrinho.remover-item');
+        Route::get('/carrinho/itensCarrinho/quantidade', [App\Http\Controllers\ItemCarrinhoController::class, 'quantidadeItensCarrinho'])->name('site.carrinho.quantidadeItensCarrinho');
     });
-    
 });
 
-Route::get('/quantidade-itens-carrinho', [App\Http\Controllers\ItemCarrinhoController::class, 'quantidadeItensCarrinho'])->name('site.carrinho.quantidadeItensCarrinho');
+// rotas produto
+Route::group(['prefix' => 'produto'], function () {
+    Route::get('/{id}', 'ProdutoController@index')->name('site.produto');
+});
 
 // Rotas do administrador
 Route::group(['prefix' => 'administrativo'], function () {

@@ -19,7 +19,7 @@ class CreateItemCarrinhosTable extends Migration
             $table->unsignedBigInteger('produto_id');
             $table->integer('quantidade');
             $table->decimal('preco_unitario', 10, 2);
-            $table->string('tamanho')->nullable(); // caso aplique
+            $table->decimal('preco_total', 10, 2);
             $table->timestamps();
 
             $table->foreign('carrinho_id')->references('id')->on('carrinhos')->onDelete('cascade');

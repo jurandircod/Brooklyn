@@ -20,7 +20,7 @@
     <meta name="description" content="Surfside Media">
     <meta name="keywords" content="Surfside Media">
     <meta name="author" content="Surfside Media">
-   
+
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link id="rtl-link" rel="stylesheet" type="text/css" href="{{ asset('css/vendors/bootstrap.css') }}">
@@ -31,8 +31,10 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/vendors/slick/slick.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/vendors/slick/slick-theme.css') }}">
     <link id="color-link" rel="stylesheet" type="text/css" href="{{ asset('css/demo4.css') }}">
-    
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+
 
     <style>
         .h-logo {

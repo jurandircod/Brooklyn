@@ -1,5 +1,5 @@
 @extends('site.layouts.basico')
-@section('titulo', 'Pefil')
+@section('titulo', 'Registrar')
 
 @section('conteudo')
     @include('site.layouts._auth.register')

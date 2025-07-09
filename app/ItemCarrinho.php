@@ -14,7 +14,7 @@ class ItemCarrinho extends Model
         'produto_id',
         'quantidade',
         'preco_unitario',
-        'tamanho',
+        'preco_total',
     ];
 
     public function carrinho()

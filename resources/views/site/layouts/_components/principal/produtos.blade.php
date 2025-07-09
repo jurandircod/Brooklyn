@@ -8,38 +8,7 @@
                 </div>
             </div>
         </div>
-        <style>
-            .r-price {
-                display: flex;
-                flex-direction: row;
-                gap: 20px;
-            }
 
-            .r-price .main-price {
-                width: 100%;
-            }
-
-            .r-price .rating {
-                padding-left: auto;
-            }
-
-            .product-style-3.product-style-chair .product-title {
-                text-align: left;
-                width: 100%;
-            }
-
-            @media (max-width:600px) {
-
-                .product-box p,
-                .product-box a {
-                    text-align: left;
-                }
-
-                .product-style-3.product-style-chair .main-price {
-                    text-align: right !important;
-                }
-            }
-        </style>
 
 
         <div class="row g-sm-4 g-3">
@@ -47,7 +16,7 @@
                 <div class="col-xl-2 col-lg-2 col-6">
                     <div class="product-box">
                         <div class="img-wrapper">
-                            <a href="product/details.html">
+                            <a href="{{ route('site.produto', ['id' => $produto->id]) }}">
                                 <img src="{{ $produto->imagem_url }}" class="w-100 blur-up lazyload" alt="">
                             </a>
                             <div class="circle-shape"></div>
@@ -64,7 +33,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="javascript:void(0)">
+                                        <a href="{{ route('site.produto', ['id' => $produto->id]) }}">
                                             <i data-feather="eye"></i>
                                         </a>
                                     </li>
@@ -101,7 +70,7 @@
                                     </div>
                                 </div>
                                 <p class="font-light mb-sm-2 mb-0">{{ $produto->material }}</p>
-                                <a href="product/details.html" class="font-default">
+                                <a href="{{ route('site.produto', ['id' => $produto->id]) }}" class="font-default">
                                     <h5>{{ $produto->nome }}</h5>
                                 </a>
                             </div>
@@ -112,7 +81,7 @@
         </div>
     </div>
 </section>
-
+<!-- Adicione no head ou antes do fechamento do body -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const botoes = document.querySelectorAll(".addtocart-btn");
@@ -120,13 +89,27 @@
         botoes.forEach(botao => {
             botao.addEventListener("click", function() {
                 const produtoId = this.getAttribute("data-id");
+                const produtoElement = this.closest('.product-box');
+                const produtoNome = produtoElement.querySelector('h5').textContent;
+                const produtoPreco = produtoElement.querySelector('.theme-color').textContent;
+                const produtoImagem = produtoElement.querySelector('img').src;
+
+                // Mostrar toast de carregamento
+                const loadingToast = Toastify({
+                    text: "Adicionando ao carrinho...",
+                    duration: -1,
+                    gravity: "bottom",
+                    position: "right",
+                    backgroundColor: "#4CAF50",
+                    stopOnFocus: true
+                }).showToast();
 
                 fetch("{{ route('site.carrinho.itemCarrinho.adicionar') }}", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
                             "X-CSRF-TOKEN": '{{ csrf_token() }}',
-                            "Accept": "application/json" // Garante que o back-end saiba que esperamos JSON
+                            "Accept": "application/json"
                         },
                         body: JSON.stringify({
                             produto_id: produtoId,
@@ -134,29 +117,57 @@
                         })
                     })
                     .then(async (res) => {
-                        // Verifica se a resposta é JSON válido
                         const contentType = res.headers.get("content-type");
                         if (contentType && contentType.includes("application/json")) {
                             return res.json();
                         } else {
-                            // Se não for JSON, pega o texto (pode ser HTML de erro)
                             const text = await res.text();
                             throw new Error(text);
                         }
                     })
                     .then(data => {
-                        // Exibe a mensagem do back-end (assumindo que `data.message` existe)
-                        if (data.message) {
-                            console.log("Mensagem do back-end:", data.message);
-                            alert(data.message);
-                        } else {
-                            alert("teste");
-                        }
+                        loadingToast.hideToast();
+
+                        // Mostrar SweetAlert para confirmação
+                        Swal.fire({
+                            title: 'Adicionado ao carrinho!',
+                            html: `
+                                <div style="display: flex; align-items: center; gap: 15px; margin: 10px 0;">
+                                    <img src="${produtoImagem}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                    <div>
+                                        <h6 style="margin: 0 0 5px 0;">${produtoNome}</h6>
+                                        <p style="margin: 0; color: #4CAF50; font-weight: bold;">${produtoPreco}</p>
+                                    </div>
+                                </div>
+                            `,
+                            icon: 'success',
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK',
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+
+                        // Mostrar toast de confirmação
+                        Toastify({
+                            text: `${produtoNome} adicionado ao carrinho!`,
+                            duration: 3000,
+                            gravity: "bottom",
+                            position: "right",
+                            backgroundColor: "#4CAF50",
+                            stopOnFocus: true
+                        }).showToast();
                     })
                     .catch(err => {
-                        // Se o back-end retornar um erro (500, 404, etc.)
+                        loadingToast.hideToast();
+                        Toastify({
+                            text: "Erro ao adicionar ao carrinho",
+                            duration: 3000,
+                            gravity: "bottom",
+                            position: "right",
+                            backgroundColor: "#f44336",
+                            stopOnFocus: true
+                        }).showToast();
                         console.error("Erro na requisição:", err);
-                        alert("Ocorreu um erro ao adicionar o produto ao carrinho.");
                     });
             });
         });

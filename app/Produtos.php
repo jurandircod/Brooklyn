@@ -23,7 +23,27 @@ class Produtos extends Model
     // metodo acessor de helper
     public function getImagemUrlAttribute()
     {
-        return \App\Helpers\ImagemHelper::imagemDoProduto($this->id);
+        return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 0);
+    }
+
+     public function getImagemUrl2Attribute()
+    {
+        return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 1);
+    }
+
+     public function getImagemUrl3Attribute()
+    {
+        return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 2);
+    }
+
+     public function getImagemUrl4Attribute()
+    {
+        return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 3);
+    }
+
+     public function getImagemUrl5Attribute()
+    {
+        return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 4);
     }
 
     public function getImagemPastaAttribute()

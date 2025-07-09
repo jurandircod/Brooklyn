@@ -135,7 +135,8 @@
 
 @auth
 <script>
-    $(document).ready(function () {
+$(document).ready(function () {
+    function atualizarContadorCarrinho() {
         $.ajax({
             url: "{{ route('site.carrinho.quantidadeItensCarrinho') }}",
             method: 'GET',
@@ -148,7 +149,14 @@
                 console.log("Resposta completa:", xhr.responseText);
             }
         });
-    });
+    }
+
+    // Atualiza imediatamente ao carregar a página
+    atualizarContadorCarrinho();
+
+    // Atualiza a cada 5 segundos (5000 milissegundos)
+    setInterval(atualizarContadorCarrinho, 1000);
+});
 </script>
 @endauth
 

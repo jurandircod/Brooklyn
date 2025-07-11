@@ -87,7 +87,9 @@
                                 </td>
                                 <!-- Tamanho -->
                                 <td>
-                                    <h2 id="selected-size-cart">{{ $item->tamanho }}</h2>
+                                    <!-- pega o tamnho e envia pro backend-->
+                                    <h2 data-size-selected>{{ $item->tamanho }}</h2>
+
                                 </td>
                                 <!-- Quantidade -->
                                 <td>
@@ -213,7 +215,7 @@
         function updateQuantity(itemId, quantity, row, inputElement) {
             // Obtém o token CSRF de forma segura
             const csrfToken = getCsrfToken();
-            const sizeSelected = document.getElementById('selected-size-cart').textContent;
+            const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();
             if (!csrfToken) {
                 console.error('CSRF token não encontrado');
                 row.classList.remove('updating');
@@ -309,7 +311,7 @@
     function removeItem(itemId, row) {
         // Mostra loading
         row.classList.add('updating');
-        const sizeSelected = document.getElementById('selected-size-cart').textContent;
+        const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();
         // Obtém o token CSRF
         const csrfToken = getCsrfToken();
 

@@ -28,6 +28,7 @@ class ItemCarrinhoController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Produto sem estoque.']);
             }
 
+
             // Validação por tamanho
             switch ($tamanho) {
                 case "P":
@@ -109,9 +110,10 @@ class ItemCarrinhoController extends Controller
     public function atualizarQuantidade(Request $request)
     {
         try {
-            $user_id = auth()->id() ?? 1; // ID de fallback
+            $user_id = auth()->id() ?? 1;
             $item_id = $request->item_id;
-            $nova_quantidade = $request->quantidade;
+            $nova_quantidade = (int) $request->quantidade;
+            $tamanho = $request->tamanho;
 
             // Busca o item do carrinho
             $item = ItemCarrinho::whereHas('carrinho', function ($query) use ($user_id) {
@@ -120,24 +122,66 @@ class ItemCarrinhoController extends Controller
                 ->where('id', $item_id)
                 ->firstOrFail();
 
-            // Verifica estoque
-            $estoque = Estoque::where('produto_id', $item->produto_id)->first();
-            if ($estoque && $estoque->quantidade < $nova_quantidade) {
+            $quantidadeAtual = $item->quantidade;
+            $diferenca = $nova_quantidade - $quantidadeAtual;
+
+            if ($diferenca === 0) {
+                return response()->json(['status' => 'success']);
+            }
+
+            $estoque = Estoque::where('produto_id', $item->produto_id)->firstOrFail();
+
+            // Mapeia o campo correto conforme o tamanho
+            $mapaTamanho = [
+                'P' => 'quantidadeP',
+                'M' => 'quantidadeM',
+                'G' => 'quantidadeG',
+                'GG' => 'quantidadeGG',
+                '775' => 'quantidade775',
+                '8' => 'quantidade8',
+                '825' => 'quantidade825',
+                '85' => 'quantidade85',
+            ];
+
+            if (!array_key_exists($tamanho, $mapaTamanho)) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Quantidade indisponível em estoque'
+                    'message' => 'Tamanho inválido!'
                 ]);
             }
 
-            // Atualiza o item
+            $campoTamanho = $mapaTamanho[$tamanho];
+
+            // Se estiver aumentando a quantidade no carrinho
+            if ($diferenca > 0) {
+                if ($estoque->$campoTamanho < $diferenca) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Quantidade indisponível em estoque'
+                    ]);
+                }
+
+                // Desconta do estoque
+                $estoque->$campoTamanho -= $diferenca;
+                $estoque->quantidade -= $diferenca;
+            } elseif ($diferenca < 0) {
+                // Se estiver diminuindo, devolve ao estoque
+                $repor = abs($diferenca);
+                $estoque->$campoTamanho += $repor;
+                $estoque->quantidade += $repor;
+            }
+
+            $estoque->save();
+
+            // Atualiza o item no carrinho
             $item->quantidade = $nova_quantidade;
             $item->preco_total = $item->preco_unitario * $nova_quantidade;
             $item->save();
 
-            // Calcula totais do carrinho
+            // Calcula totais
             $carrinho = $item->carrinho;
             $subtotal = $carrinho->itens->sum('preco_total');
-            $taxa = $subtotal * 0.03; // Exemplo de 21% de taxa
+            $taxa = $subtotal * 0.03;
 
             return response()->json([
                 'status' => 'success',
@@ -154,6 +198,7 @@ class ItemCarrinhoController extends Controller
         }
     }
 
+
     public function removerItem(Request $request)
     {
 
@@ -167,42 +212,8 @@ class ItemCarrinhoController extends Controller
                 $query->where('user_id', $user_id);
             })->where('id', $item_id)->firstOrFail();
 
-            $tamanho = $request->input('tamanho');
-            $estoque = $item->produto->estoque;
-            // Atualiza o estoque do produto
-            switch ($tamanho) {
-                case "P":
-                    $estoque->quantidadeP += $item->quantidade;
-                    break;
-                case "M":
-                    $estoque->quantidadeM += $item->quantidade;
-                    break;
-                case "G":
-                    $estoque->quantidadeG += $item->quantidade;
-                    break;
-                case "GG":
-                    $estoque->quantidadeGG += $item->quantidade;
-                    break;
-                case "775":
-                    $estoque->quantidade775 += $item->quantidade;
-                    break;
-                case "8":
-                    $estoque->quantidade8 += $item->quantidade;
-                    break;
-                case "825":
-                    $estoque->quantidade825 += $item->quantidade;
-                    break;
-                case "85":
-                    $estoque->quantidade85 += $item->quantidade;
-                    break;
-            }
-
-            // Salva a atualização do estoque no banco
-            $estoque->save();
-
             // Remove o item do carrinho
             $item->delete();
-
             // Recalcula os valores do carrinho
             $carrinho = Carrinho::where('user_id', $user_id)->first();
             $subtotal = $carrinho ? $carrinho->itens->sum('preco_total') : 0;

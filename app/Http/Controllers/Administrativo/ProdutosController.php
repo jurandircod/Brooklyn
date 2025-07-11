@@ -164,7 +164,6 @@ class ProdutosController extends Controller
         $estoque->quantidade8 = $data['quantidade8'] ?? 0;
         $estoque->quantidade825 = $data['quantidade825'] ?? 0;
         $estoque->quantidade85 = $data['quantidade85'] ?? 0;
-        $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG + $estoque->quantidade775 + $estoque->quantidade8 + $estoque->quantidade825 + $estoque->quantidade85;
         return $estoque;
     }
 

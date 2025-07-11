@@ -32,7 +32,6 @@
                             <th>Valor</th>
                             <th>Material</th>
                             <th>Estoque</th>
-                            <th>Largura</th>
                             <th>Quantidade Total</th>
                             <th>Categoria</th>
                             <th>Marca</th>
@@ -56,17 +55,30 @@
                                 <td>{{ $produto->nome }}</td>
                                 <td>R$: {{ $produto->valor }}</td>
                                 <td>{{ $produto->material }}</td>
-                                <td>
-                                    @if ($estoque != null)
-                                        P: <b>{{ $estoque->quantidadeP }}</b> | M:
-                                        <b>{{ $estoque->quantidadeM }}</b> | G:
-                                        <b>{{ $estoque->quantidadeG }}</b> | GG:
-                                        <b>{{ $estoque->quantidadeGG }}</b>
-                                    @else
-                                        P: <b>0</b> | M: <b>0</b> | G: <b>0</b> | GG: <b>0</b>
-                                    @endif
-                                </td>
-                                <td>{{ $produto->largura }}</td>
+                                @if ($produto->categoria_id == 1)
+                                    <td>
+                                        @if ($estoque != null)
+                                            P: <b>{{ $estoque->quantidadeP }}</b> | M:
+                                            <b>{{ $estoque->quantidadeM }}</b> | G:
+                                            <b>{{ $estoque->quantidadeG }}</b> | GG:
+                                            <b>{{ $estoque->quantidadeGG }}</b>
+                                        @else
+                                            P: <b>0</b> | M: <b>0</b> | G: <b>0</b> | GG: <b>0</b>
+                                        @endif
+                                    </td>
+                                @else
+                                    <td>
+                                        @if ($estoque != null)
+                                            7.5:<b> {{ $estoque->quantidade775 }}</b>| 
+                                            8:<b> {{ $estoque->quantidade8 }}</b> |
+                                           8.25:<b> {{ $estoque->quantidade825 }}</b>| 
+                                            8:<b> {{ $estoque->quantidade85 }}</b> |
+                                        @else
+                                            P: <b>0</b> | M: <b>0</b> | G: <b>0</b> | GG: <b>0</b> | 775:
+                                            <b>0</b> | 8: <b>0</b> | 825: <b>0</b> | 85: <b>0</b>
+                                        @endif
+                                    </td>
+                                @endif
                                 <td>{{ $estoque['quantidade'] ?? 0 }}</td>
                                 <td>{{ $categoria['nome'] ?? 'Sem Categoria' }}</td>
                                 <td>{{ $marca['nome'] ?? 'Sem Marca' }}</td>
@@ -89,7 +101,10 @@
         @json($estoque->quantidadeM ?? 0),
         @json($estoque->quantidadeG ?? 0),
         @json($estoque->quantidadeGG ?? 0),
-        @json($produto->categoria_id)
+        @json($estoque->quantidade775 ?? 0),
+        @json($estoque->quantidade8 ?? 0),
+        @json($estoque->quantidade825 ?? 0),
+        @json($estoque->quantidade85 ?? 0)
     )'>
                                         Alterar
                                     </button>
@@ -113,7 +128,6 @@
                             <th>Valor</th>
                             <th>Material</th>
                             <th>Estoque</th>
-                            <th>Largura</th>
                             <th>Quantidade Total</th>
                             <th>Categoria</th>
                             <th>Marca</th>
@@ -182,7 +196,12 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="categoriaProduto">Categoria</label>
-                                <input class="form-control" id="categoria" name="categoria_id" >
+                                <select class="form-control" id="categoriaProduto" name="categoria_id">
+                                    @foreach ($produtos as $produto)
+                                        <option value="{{ $produto->categoria_id }}">{{ $produto->categoria->nome }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                         </div>
@@ -193,9 +212,9 @@
                                     <option value="">Sem Marca</option>
                                     @foreach ($produtosMarca as $marca)
                                         <option value="{{ $marca->id }}">{{ $marca->nome }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                                        @endforeach
+                                    </select>
+                                </div>
                         </div>
                     </div>
 
@@ -203,46 +222,85 @@
                         <label for="descricaoProduto">Descrição</label>
                         <textarea class="form-control" id="descricaoProduto" name="descricao" rows="3"></textarea>
                     </div>
+                    <div class="card" id="estoqueCardSkt">
+                        <div class="card-header">
+                            <h3 class="card-title">Estoque</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="">Tamanho 7.75</label>
+                                        <input type="number" id="quantidade775" class="form-control"
+                                            name="quantidade775">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidade8">Tamanho 8</label>
+                                        <input type="number" class="form-control" id="quantidade8"
+                                            name="quantidade8">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidade825">Tamanho 8.25</label>
+                                        <input type="number" class="form-control" id="quantidade825"
+                                            name="quantidade825">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidade85">Tamanho 8.5</label>
+                                        <input type="number" class="form-control" id="quantidade85"
+                                            name="quantidade85">
+                                    </div>
+                                </div>
 
-                    
-                        <div class="card" id="estoqueCard">
-                            <div class="card-header">
-                                <h3 class="card-title">Estoque</h3>
                             </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="quantidadeP">Tamanho P</label>
-                                            <input type="number" id="quantidadePC" class="form-control"
-                                                name="quantidadeP">
-                                        </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card" id="estoqueCard">
+                        <div class="card-header">
+                            <h3 class="card-title">Estoque</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidadeP">Tamanho P</label>
+                                        <input type="number" id="quantidadePC" class="form-control"
+                                            name="quantidadeP">
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="quantidadeM">Tamanho M</label>
-                                            <input type="number" class="form-control" id="quantidadeMC"
-                                                name="quantidadeM">
-                                        </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidadeM">Tamanho M</label>
+                                        <input type="number" class="form-control" id="quantidadeMC"
+                                            name="quantidadeM">
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="quantidadeG">Tamanho G</label>
-                                            <input type="number" class="form-control" id="quantidadeGC"
-                                                name="quantidadeG">
-                                        </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidadeG">Tamanho G</label>
+                                        <input type="number" class="form-control" id="quantidadeGC"
+                                            name="quantidadeG">
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="quantidadeGG">Tamanho GG</label>
-                                            <input type="number" class="form-control" id="quantidadeGGC"
-                                                name="quantidadeGG">
-                                        </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidadeGG">Tamanho GG</label>
+                                        <input type="number" class="form-control" id="quantidadeGGC"
+                                            name="quantidadeGG">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    
+                    </div>
+
+
 
 
                 </div>
@@ -258,7 +316,7 @@
 <!-- JavaScript para Preencher Modal -->
 <script>
     function preencherModal(id, nome, valor, material, largura, quantidadeTotal, categoriaId, marcaId, descricao,
-        estoqueP, estoqueM, estoqueG, estoqueGG, categoriaId) {
+        estoqueP, estoqueM, estoqueG, estoqueGG, quantidade775, quantidade8, quantidade825, quantidade85) {
 
         console.log('Valores recebidos na função:', {
             id: id,
@@ -274,15 +332,24 @@
             estoqueM: estoqueM,
             estoqueG: estoqueG,
             estoqueGG: estoqueGG,
-            categoriaId: categoriaId
+            categoriaId: categoriaId,
+            quantidade775: quantidade775,
+            quantidade8: quantidade8,
+            quantidade825: quantidade825,
+            quantidade85: quantidade85
+
         });
+        document.getElementById('quantidade775').value = quantidade775 ?? 0;
+        document.getElementById('quantidade8').value = quantidade8 ?? 0;
+        document.getElementById('quantidade825').value = quantidade825 ?? 0;
+        document.getElementById('quantidade85').value = quantidade85 ?? 0;
         document.getElementById('produtoId').value = id;
         document.getElementById('nomeProduto').value = nome;
         document.getElementById('valorProduto').value = valor;
         document.getElementById('materialProduto').value = material;
         document.getElementById('larguraProduto').value = largura;
         document.getElementById('descricaoProduto').value = descricao;
-        document.getElementById('categoria').value = categoriaId;
+        document.getElementById('categoriaProduto').value = categoriaId;
         document.getElementById('marcaProduto').value = marcaId || '';
         document.getElementById('quantidadePC').value = estoqueP ?? 0;
         document.getElementById('quantidadeMC').value = estoqueM ?? 0;
@@ -291,8 +358,10 @@
 
         if (categoriaId == 2) {
             document.getElementById('estoqueCard').style.display = 'none';
-        }else if (categoriaId == 1) {
+            document.getElementById('estoqueCardSkt').style.display = 'block';
+        } else if (categoriaId == 1) {
             document.getElementById('estoqueCard').style.display = 'block';
+            document.getElementById('estoqueCardSkt').style.display = 'none';
         }
         // espera 100ms para garantir que o modal foi carregado
     }

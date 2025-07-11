@@ -41,6 +41,7 @@
                             <th scope="col">image</th>
                             <th scope="col">Produto</th>
                             <th scope="col">Preço</th>
+                            <th scope="col">Tamanho</th>
                             <th scope="col">Quantidade</th>
                             <th scope="col">total</th>
                             <th scope="col">Ação</th>
@@ -83,6 +84,10 @@
                                 <!-- Preço -->
                                 <td>
                                     <h2>R${{ $item->preco_unitario }}</h2>
+                                </td>
+                                <!-- Tamanho -->
+                                <td>
+                                    <h2 id="selected-size-cart">{{ $item->tamanho }}</h2>
                                 </td>
                                 <!-- Quantidade -->
                                 <td>
@@ -208,7 +213,7 @@
         function updateQuantity(itemId, quantity, row, inputElement) {
             // Obtém o token CSRF de forma segura
             const csrfToken = getCsrfToken();
-
+            const sizeSelected = document.getElementById('selected-size-cart').textContent;
             if (!csrfToken) {
                 console.error('CSRF token não encontrado');
                 row.classList.remove('updating');
@@ -226,7 +231,8 @@
                     },
                     body: JSON.stringify({
                         item_id: itemId,
-                        quantidade: quantity
+                        quantidade: quantity,
+                        tamanho: sizeSelected
                     })
                 })
                 .then(response => {
@@ -237,6 +243,8 @@
                 })
                 .then(data => {
                     if (data.status === 'success') {
+
+
                         // Atualiza a linha
                         const totalCell = row.querySelector('td:nth-child(5) h2');
                         if (totalCell) {
@@ -262,7 +270,7 @@
                 });
         }
 
-        
+
 
         // Função auxiliar para obter o token CSRF
         function getCsrfToken() {
@@ -301,7 +309,7 @@
     function removeItem(itemId, row) {
         // Mostra loading
         row.classList.add('updating');
-
+        const sizeSelected = document.getElementById('selected-size-cart').textContent;
         // Obtém o token CSRF
         const csrfToken = getCsrfToken();
 
@@ -319,7 +327,8 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
-                    item_id: itemId
+                    item_id: itemId,
+                    tamanho: sizeSelected
                 })
             })
             .then(response => {

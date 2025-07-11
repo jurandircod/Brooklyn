@@ -44,13 +44,19 @@ class ProdutosController extends Controller
     {
 
         $validator = Validator::make($request, [
-            'nome' => 'required',
+            'nome' => 'required|string|max:255',
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
-
-
+            'valor' => 'required|max:255|min:1',
+            'url_imagem[]' => 'image|max:2048',
         ], [
+            'valor.integer' => 'O campo valor deve ser um número inteiro',
+            'valor.255' => 'O campo valor deve ser menor que 255',
+            'valor.min' => 'O campo valor deve ser maior que 1',
+            'url_imagem[].required' => 'O campo imagem é obrigatório',
             'nome.required' => 'O campo nome é obrigatório',
+            'nome.string' => 'O campo nome deve ser uma string',
+            'nome.max' => 'O campo nome deve ter no máximo 255 caracteres',
             'categoria_id.required' => 'O campo categoria é obrigatório',
             'categoria_id.integer' => 'O campo categoria deve ser um número inteiro',
             'categoria_id.exists' => 'O campo categoria não existe',
@@ -68,6 +74,7 @@ class ProdutosController extends Controller
 
     public function salvarProduto(Request $request)
     {
+
         $data = $request->all();
         $nomeProduto = $data['nome'] . uniqid();
 
@@ -149,22 +156,16 @@ class ProdutosController extends Controller
     public function criaObjctEstoque($data)
     {
         $estoque = new Estoque;
-        if ($data['quantidade'] == null) {
-
-            $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
-            $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
-            $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
-            $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
-            $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG;
-            return $estoque;
-        } else {
-            $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
-            $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
-            $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
-            $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
-            $estoque->quantidade = $data['quantidade'] ?? 0;
-            return $estoque;
-        }
+        $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
+        $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
+        $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
+        $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
+        $estoque->quantidade775 = $data['quantidade775'] ?? 0;
+        $estoque->quantidade8 = $data['quantidade8'] ?? 0;
+        $estoque->quantidade825 = $data['quantidade825'] ?? 0;
+        $estoque->quantidade85 = $data['quantidade85'] ?? 0;
+        $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG + $estoque->quantidade775 + $estoque->quantidade8 + $estoque->quantidade825 + $estoque->quantidade85;
+        return $estoque;
     }
 
     public function criarImagem($caminhoFoto)
@@ -229,20 +230,34 @@ class ProdutosController extends Controller
             // Encontra e exclui o produto
             $produto = Produtos::findOrFail($id);
             $estoque = Estoque::where('produto_id', $id)->first();
-            $diretorio = $produto->imagem_pasta;
 
-            // Lista todos os arquivos de imagem no diretório (jpg, jpeg, png, gif, webp, etc.)
-            $imagens = glob($diretorio . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
+            // verifica se é uma pasta
+            if (is_dir($produto->pasta)) {
+                $diretorio = $produto->pasta;
+
+                // Lista todos os arquivos de imagem no diretório (jpg, jpeg, png, gif, webp, etc.)
+                $imagens = glob($diretorio . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
 
 
-            foreach ($imagens as $imagem) {
-                if (is_file($imagem)) {
-                    unlink($imagem); // Exclui o arquivo
-                } else {
-                    throw new \Exception("Erro ao excluir imagens");
-                    exit();
+                foreach ($imagens as $imagem) {
+                    if (is_file($imagem)) {
+                        unlink($imagem); // Exclui o arquivo
+                    } else {
+                        throw new \Exception("Erro ao excluir imagens");
+                        exit();
+                    }
                 }
+            } else {
+                // caso não haja pasta, exclui diretório
+                $estoque->delete();
+                $produto->delete();
+                $produtos = $this->produtos;
+                Alert::alert('Exclusão', 'Imagens excluídas com sucesso', 'success');
+                return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
+                exit();
             }
+
+
 
             if (rmdir($diretorio)) {
                 $estoque->delete();
@@ -267,43 +282,29 @@ class ProdutosController extends Controller
         $id = $data['id'];
         $produto = Produtos::find($id);
         $estoque = Estoque::where('produto_id', $id)->first();
-
         try {
-            // define se é camisas ou não
-            if ($data['categoria_id'] == 1) {
 
-                if (empty($id)) {
-                    throw new \Exception("ID do produto não informado");
-                }
-
+            if (empty($id)) {
+                throw new \Exception("ID do produto não informado");
+            } else {
                 // verifique se existe uma tabela estoque, se não existir ele cria uma
                 if (empty($estoque)) {
-                    $estoque = new Estoque();
+                    $estoque = $this->criaObjctEstoque($data);
                     $estoque->produto_id = $id;
-                    $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
-                    $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
-                    $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
-                    $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
-                    $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG;
                     $estoque->save();
+                    $produto->update($data);
                     Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
                     return redirect()->route('administrativo.produtos');
                     exit();
                 } else {
-                    $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
-                    $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
-                    $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
-                    $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
-                    $estoque->quantidade = $estoque->quantidadeP + $estoque->quantidadeM + $estoque->quantidadeG + $estoque->quantidadeGG;
+                    $estoque = $this->criaObjctEstoque($data);
+                    $estoque->produto_id = $id;
                     $estoque->update();
+                    $produto->update($data);
                     Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
                     return redirect()->route('administrativo.produtos');
                     exit();
                 }
-            } else {
-                $produto->update($data);
-                Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
-                return redirect()->route('administrativo.produtos');
             }
         } catch (\Exception $e) {
 

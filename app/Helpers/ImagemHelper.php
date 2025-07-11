@@ -58,6 +58,19 @@ class ImagemHelper
         return $imagem ? asset($caminhoRelativo . '/' . $imagem) : ($posicao === 0 ? asset('images/default-product.png') : '');
     }
 
+    public static function pastaImagensMarca($idProduto){
+        $foto = Fotos::where('produto_id', $idProduto)->first();
+
+        if (!$foto) {
+            return asset('images/default-product.png');
+        }
+
+        $caminhoRelativo = $foto->url_imagem;
+        $caminhoAbsoluto = public_path($caminhoRelativo);
+
+        return $caminhoAbsoluto;
+    }
+
     public static function pastaImagensProduto($idProduto)
     {
         $foto = Fotos::where('produto_id', $idProduto)->first();

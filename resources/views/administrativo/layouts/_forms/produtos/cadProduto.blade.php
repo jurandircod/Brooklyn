@@ -137,18 +137,18 @@
                                     <input type="text" name="material" id="material" class="form-control"
                                         placeholder="Digite o tipo de material" value="{{ old('material') }}">
                                 </div>
-
-                                <div class="col-md-5 mb-3" id="skateSection" style="display: none;">
-                                    <label for="largura">Largura do shape</label>
-                                    <select name="largura" id="largura" class="form-control">
-                                        <option value="">Selecione</option>
-                                        @foreach (['7,75', '8', '8,125', '8,5', '8,75', '9'] as $largura)
-                                            <option value="{{ $largura }}"
-                                                {{ old('largura') == $largura ? 'selected' : '' }}>{{ $largura }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                
+                                <div class="col-md-5 mb-3">
+                                    <label for="inputGroupFile02" class="form-label">Imagens do Produto <span
+                                            style="color: red">*</span></label>
+                                    <input type="file" class="form-control" id="inputGroupFile02"
+                                        name="url_imagem[]" multiple accept="image/png, image/jpeg, image/jpg"
+                                        onchange="verificarLimiteFotos()">
+                                        @error('url_imagem[]')
+                                            <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
+                                        @enderror
                                 </div>
+                 
 
                                 <div class="col-md-6 mb-3" id="quantidadeSection" style="display: block">
                                     <label for="quantidade" class="form-label">Quantidade em Estoque <span
@@ -162,16 +162,9 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="inputGroupFile02" class="form-label">Imagens do Produto <span
-                                            style="color: red">*</span></label>
-                                    <input type="file" class="form-control" id="inputGroupFile02"
-                                        name="url_imagem[]" multiple accept="image/png, image/jpeg, image/jpg"
-                                        onchange="verificarLimiteFotos()">
-                                </div>
                             </div>
 
-                            <!-- Tamanhos -->
+                            <!-- Tamanhos camisas-->
                             <div class="row mb-3" id="sizeSection" style="display: none;">
                                 <div class="col-md-12 mb-3">
                                     <div class="row">
@@ -192,6 +185,34 @@
                                 <div class="col-md-12 mb-3">
                                     <div class="mb-2"><b>Selecione os tamanhos</b></div>
                                     @foreach (['P', 'M', 'G', 'GG'] as $size)
+                                        <label class="size-option"
+                                            data-size="{{ $size }}">{{ $size }}</label>
+                                    @endforeach
+                                </div>
+                            </div>
+
+
+                            <!-- Tamanhos skates-->
+                            <div class="row mb-3" id="skateSection" style="display: none;">
+                                <div class="col-md-12 mb-3">
+                                    <div class="row">
+                                        @foreach (['775', '8', '825', '85'] as $size)
+                                            <div class="col-md-3">
+                                                <label for="quantidade{{ $size }}"
+                                                    class="form-label">Quantidade em Estoque Tamanho
+                                                    {{ $size }}</label>
+                                                <input type="number" class="form-control"
+                                                    id="quantidade{{ $size }}"
+                                                    name="quantidade{{ $size }}"
+                                                    value="{{ old('quantidade' . $size) }}"
+                                                    placeholder="Digite a quantidade" min="0" disabled>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="mb-2"><b>Selecione os tamanhos</b></div>
+                                    @foreach (['775', '8', '825', '85'] as $size)
                                         <label class="size-option"
                                             data-size="{{ $size }}">{{ $size }}</label>
                                     @endforeach
@@ -324,6 +345,7 @@
 
         const selectedText = categoria.options[categoria.selectedIndex]?.text || '';
         const sizeSection = document.getElementById('sizeSection');
+       
         const skateSection = document.getElementById('skateSection');
         const quantidadeSection = document.getElementById('quantidadeSection');
 
@@ -332,15 +354,17 @@
         if (selectedText === 'Camisas') {
             sizeSection.style.display = 'block';
             skateSection.style.display = 'none';
+            
             quantidadeSection.style.display = 'none';
         } else if (selectedText === 'Skates') {
             sizeSection.style.display = 'none';
+            
             skateSection.style.display = 'block';
-            quantidadeSection.style.display = 'block';
+            quantidadeSection.style.display = 'none';
         } else {
             // Outras categorias
             sizeSection.style.display = 'none';
-            skateSection.style.display = 'none';
+            
             quantidadeSection.style.display = 'block';
         }
     }, 100);

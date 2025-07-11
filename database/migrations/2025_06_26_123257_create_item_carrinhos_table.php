@@ -20,6 +20,7 @@ class CreateItemCarrinhosTable extends Migration
             $table->integer('quantidade');
             $table->decimal('preco_unitario', 10, 2);
             $table->decimal('preco_total', 10, 2);
+            $table->string('tamanho')->nullable();
             $table->timestamps();
 
             $table->foreign('carrinho_id')->references('id')->on('carrinhos')->onDelete('cascade');

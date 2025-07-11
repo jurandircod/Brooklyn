@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
 
 class Produtos extends Model
 {
@@ -21,6 +22,10 @@ class Produtos extends Model
     }
 
     // metodo acessor de helper
+    public function getPastaAttribute(){
+        return \App\Helpers\ImagemHelper::pastaImagensProduto($this->id);
+    }
+
     public function getImagemUrlAttribute()
     {
         return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 0);

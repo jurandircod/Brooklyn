@@ -13,61 +13,86 @@ class ItemCarrinhoController extends Controller
 {
     public function adicionar(Request $request)
     {
+        $user_id = auth()->id() ?? 1;
 
-
-        $user_id = auth()->id() ?? 1; // ID de fallback
-
-        // Busca ou cria o carrinho do usuário
-        $carrinho = Carrinho::firstOrCreate(
-            ['user_id' => $user_id],
-        );
+        $carrinho = Carrinho::firstOrCreate(['user_id' => $user_id]);
 
         try {
-
             $produto = Produtos::findOrFail($request->produto_id);
             $estoque = new Estoque;
             $estoqueProduto = $estoque->listarEstoque($produto->id);
+            $tamanho = $request->input('tamanho');
+            $quantidadeSolicitada = $request->input('quantidade', 1);
 
-
-            if (isset($estoqueProduto)) {
-                // Verifica se o estoque está cheio
-                if ($estoqueProduto->quantidade < $request->input('quantidade', 1)) {
-                    // Se não estiver cheio, verifica se o estoque tem espaço
-                    return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                }
-            } else {
-                // Se não tiver estoque, retorna erro
-                return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+            if (!$estoqueProduto) {
+                return response()->json(['status' => 'error', 'message' => 'Produto sem estoque.']);
             }
 
-            // Verifica se já existe o mesmo produto no carrinho
+            // Validação por tamanho
+            switch ($tamanho) {
+                case "P":
+                    if ($estoqueProduto->quantidadeP < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    $estoqueProduto->quantidadeP -= $quantidadeSolicitada;
+                    break;
+                case "M":
+                    if ($estoqueProduto->quantidadeM < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    $estoqueProduto->quantidadeM -= $quantidadeSolicitada;
+                    break;
+                case "G":
+                    if ($estoqueProduto->quantidadeG < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    $estoqueProduto->quantidadeG -= $quantidadeSolicitada;
+                    break;
+                case "GG":
+                    if ($estoqueProduto->quantidadeGG < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    $estoqueProduto->quantidadeGG -= $quantidadeSolicitada;
+                    break;
+                case "8":
+                    if ($estoqueProduto->quantidade8 < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    $estoqueProduto->quantidade8 -= $quantidadeSolicitada;
+                    break;
+                case "825":
+                    if ($estoqueProduto->quantidade825 < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    $estoqueProduto->quantidade825 -= $quantidadeSolicitada;
+                    break;
+                case "85":
+                    if ($estoqueProduto->quantidade85 < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    $estoqueProduto->quantidade85 -= $quantidadeSolicitada;
+                    break;
+                default:
+                    return response()->json(['status' => 'error', 'message' => 'Tamanho inválido!']);
+            }
+
+            // Atualiza o estoque total
+            $estoqueProduto->quantidade -= $quantidadeSolicitada;
+            $estoqueProduto->save();
+
+            // Verifica se item igual já existe no carrinho com mesmo tamanho
             $itemExistente = ItemCarrinho::where('carrinho_id', $carrinho->id)
                 ->where('produto_id', $produto->id)
+                ->where('tamanho', $tamanho)
                 ->first();
 
             if ($itemExistente) {
-                // Atualiza a quantidade
-                $itemExistente->quantidade += $request->input('quantidade', 1);
-                $itemExistente->preco_total = $itemExistente->quantidade * $produto->valor;
+                $itemExistente->quantidade += $quantidadeSolicitada;
+                $itemExistente->preco_total = $itemExistente->quantidade * $itemExistente->preco_unitario;
                 $itemExistente->save();
-                return response()->json(['status' => 'sucess', 'message' => 'Produto adicionado ao carrinho!']);
-                exit();
             } else {
-                // Cria novo item
                 ItemCarrinho::create([
                     'carrinho_id' => $carrinho->id,
                     'produto_id' => $produto->id,
-                    'quantidade' => $request->input('quantidade', 1),
+                    'quantidade' => $quantidadeSolicitada,
                     'preco_unitario' => $produto->valor,
-                    'preco_total' => $produto->valor,
+                    'preco_total' => $produto->valor * $quantidadeSolicitada,
+                    'tamanho' => $tamanho
                 ]);
-                return response()->json(['status' => 'sucess', 'message' => 'Produto adicionado ao carrinho!']);
-                exit();
             }
+
+            return response()->json(['status' => 'sucess', 'message' => 'Produto adicionado ao carrinho!']);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => "$e"]);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
+
 
     public function quantidadeItensCarrinho()
     {
@@ -131,23 +156,57 @@ class ItemCarrinhoController extends Controller
 
     public function removerItem(Request $request)
     {
+
+
         try {
-            $user_id = auth()->id() ?? 1; // ID de fallback
+            $user_id = auth()->id() ?? 1; // Fallback para teste
             $item_id = $request->item_id;
 
-            // Busca e remove o item do carrinho
+            // Busca o item do carrinho
             $item = ItemCarrinho::whereHas('carrinho', function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
-            })
-                ->where('id', $item_id)
-                ->firstOrFail();
+            })->where('id', $item_id)->firstOrFail();
 
+            $tamanho = $request->input('tamanho');
+            $estoque = $item->produto->estoque;
+            // Atualiza o estoque do produto
+            switch ($tamanho) {
+                case "P":
+                    $estoque->quantidadeP += $item->quantidade;
+                    break;
+                case "M":
+                    $estoque->quantidadeM += $item->quantidade;
+                    break;
+                case "G":
+                    $estoque->quantidadeG += $item->quantidade;
+                    break;
+                case "GG":
+                    $estoque->quantidadeGG += $item->quantidade;
+                    break;
+                case "775":
+                    $estoque->quantidade775 += $item->quantidade;
+                    break;
+                case "8":
+                    $estoque->quantidade8 += $item->quantidade;
+                    break;
+                case "825":
+                    $estoque->quantidade825 += $item->quantidade;
+                    break;
+                case "85":
+                    $estoque->quantidade85 += $item->quantidade;
+                    break;
+            }
+
+            // Salva a atualização do estoque no banco
+            $estoque->save();
+
+            // Remove o item do carrinho
             $item->delete();
 
-            // Calcula novos totais
+            // Recalcula os valores do carrinho
             $carrinho = Carrinho::where('user_id', $user_id)->first();
             $subtotal = $carrinho ? $carrinho->itens->sum('preco_total') : 0;
-            $taxa = $subtotal * 0.21; // Exemplo de 21% de taxa
+            $taxa = $subtotal * 0.21;
 
             return response()->json([
                 'status' => 'success',

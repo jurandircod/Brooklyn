@@ -27,19 +27,16 @@
                             <div class="cart-wrap">
                                 <ul>
                                     <li>
-                                        <a href="javascript:void(0)" class="addtocart-btn"
-                                            data-id="{{ $produto->id }}">
-                                            <i data-feather="shopping-cart"></i>
-                                        </a>
+                                        @if($produto->categoria_id != 2 && $produto->categoria_id != 1)
+                                            <a href="javascript:void(0)" class="addtocart-btn"
+                                                data-id="{{ $produto->id }}">
+                                                <i data-feather="shopping-cart"></i>
+                                            </a>
+                                        @endif
                                     </li>
                                     <li>
                                         <a href="{{ route('site.produto', ['id' => $produto->id]) }}">
                                             <i data-feather="eye"></i>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0)" class="wishlist">
-                                            <i data-feather="heart"></i>
                                         </a>
                                     </li>
                                 </ul>
@@ -93,6 +90,7 @@
                 const produtoNome = produtoElement.querySelector('h5').textContent;
                 const produtoPreco = produtoElement.querySelector('.theme-color').textContent;
                 const produtoImagem = produtoElement.querySelector('img').src;
+                const tamanho = "quantidade";
 
                 // Mostrar toast de carregamento
                 const loadingToast = Toastify({
@@ -113,7 +111,8 @@
                         },
                         body: JSON.stringify({
                             produto_id: produtoId,
-                            quantidade: 1
+                            quantidade: 1,
+                            tamanho: tamanho
                         })
                     })
                     .then(async (res) => {

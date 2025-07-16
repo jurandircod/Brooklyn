@@ -20,7 +20,6 @@ class CreatePedidosTable extends Migration
             $table->enum('status', ['aguardando', 'pago', 'enviado', 'entregue', 'cancelado'])->default('aguardando');
             $table->decimal('total', 10, 2);
             $table->timestamps();
-
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('endereco_id')->references('id')->on('enderecos')->onDelete('set null');
         });

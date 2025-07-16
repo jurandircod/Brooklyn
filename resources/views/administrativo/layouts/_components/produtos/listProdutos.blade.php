@@ -43,10 +43,12 @@
                     <tbody>
                         @foreach ($produtos as $produto)
                             @php
-                                $estoque = $listarEstoque->listarEstoque($produto->id);
-                                $categoria = $listarCategoria->listarCategoria($produto->categoria_id);
+                                $estoque = $produto->estoque->listarEstoque($produto->id);
+                                $categoria = $produto->categoria->listarCategoria($produto->categoria_id);
                                 $marca =
-                                    $produto->marca_id != null ? $listarMarca->listarMarca($produto->marca_id) : null;
+                                    $produto->marca_id != null
+                                        ? $produto->marca->listarMarca($produto->marca_id)
+                                        : null;
                             @endphp
 
                             <tr>
@@ -69,9 +71,9 @@
                                 @else
                                     <td>
                                         @if ($estoque != null)
-                                            7.5:<b> {{ $estoque->quantidade775 }}</b>| 
+                                            7.5:<b> {{ $estoque->quantidade775 }}</b>|
                                             8:<b> {{ $estoque->quantidade8 }}</b> |
-                                           8.25:<b> {{ $estoque->quantidade825 }}</b>| 
+                                            8.25:<b> {{ $estoque->quantidade825 }}</b>|
                                             8:<b> {{ $estoque->quantidade85 }}</b> |
                                         @else
                                             P: <b>0</b> | M: <b>0</b> | G: <b>0</b> | GG: <b>0</b> | 775:
@@ -91,8 +93,7 @@
         @json($produto->id), 
         @json($produto->nome), 
         @json($produto->valor), 
-        @json($produto->material), 
-        @json($produto->largura), 
+        @json($produto->material),  
         @json($estoque['quantidade'] ?? 0),
         @json($produto->categoria_id),
         @json($produto->marca_id),
@@ -186,36 +187,42 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="larguraProduto">Largura</label>
-                                <input type="text" class="form-control" id="larguraProduto" name="largura">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
                                 <label for="categoriaProduto">Categoria</label>
                                 <select class="form-control" id="categoriaProduto" name="categoria_id">
-                                    @foreach ($produtos as $produto)
-                                        <option value="{{ $produto->categoria_id }}">{{ $produto->categoria->nome }}
+                                    @foreach ($categorias as $categorias)
+                                        <option value="{{ $categorias->id }}">{{ $categorias->nome }}</option>
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
 
                         </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="marcaProduto">Marca</label>
                                 <select class="form-control" id="marcaProduto" name="marca_id">
                                     <option value="">Sem Marca</option>
-                                    @foreach ($produtosMarca as $marca)
+                                    @foreach ($marcas as $marca)
                                         <option value="{{ $marca->id }}">{{ $marca->nome }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
+                        <div class="col-md-6" id="estoqueProd">
+                            <div class="form-group">
+                                <label for="quantidade">Quantidade</label>
+                                <input type="number" class="form-control" id="quantidadeProduto"
+                                    name="quantidadeProduto" placeholder="Digite a quantidade" min="1"
+                                    value="1" style="width: 100px;">
+                            </div>
+                        </div>
+
+
+
+
                     </div>
 
                     <div class="form-group">
@@ -231,28 +238,27 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Tamanho 7.75</label>
-                                        <input type="number" id="quantidade775" class="form-control"
-                                            name="quantidade775">
+                                        <input type="number" id="quanti775" class="form-control" name="quanti775">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade8">Tamanho 8</label>
-                                        <input type="number" class="form-control" id="quantidade8"
+                                        <input type="number" class="form-control" id="quanti8"
                                             name="quantidade8">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade825">Tamanho 8.25</label>
-                                        <input type="number" class="form-control" id="quantidade825"
+                                        <input type="number" class="form-control" id="quanti825"
                                             name="quantidade825">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade85">Tamanho 8.5</label>
-                                        <input type="number" class="form-control" id="quantidade85"
+                                        <input type="number" class="form-control" id="quanti85"
                                             name="quantidade85">
                                     </div>
                                 </div>
@@ -315,7 +321,7 @@
 
 <!-- JavaScript para Preencher Modal -->
 <script>
-    function preencherModal(id, nome, valor, material, largura, quantidadeTotal, categoriaId, marcaId, descricao,
+    function preencherModal(id, nome, valor, material, quantidadeTotal, categoriaId, marcaId, descricao,
         estoqueP, estoqueM, estoqueG, estoqueGG, quantidade775, quantidade8, quantidade825, quantidade85) {
 
         console.log('Valores recebidos na função:', {
@@ -323,7 +329,7 @@
             nome: nome,
             valor: valor,
             material: material,
-            largura: largura,
+
             quantidadeTotal: quantidadeTotal,
             categoriaId: categoriaId,
             marcaId: marcaId,
@@ -339,15 +345,15 @@
             quantidade85: quantidade85
 
         });
-        document.getElementById('quantidade775').value = quantidade775 ?? 0;
-        document.getElementById('quantidade8').value = quantidade8 ?? 0;
-        document.getElementById('quantidade825').value = quantidade825 ?? 0;
-        document.getElementById('quantidade85').value = quantidade85 ?? 0;
+        document.getElementById('quantidadeProduto').value = quantidadeTotal ?? 0;
+        document.getElementById('quanti775').value = quantidade775 ?? 0;
+        document.getElementById('quanti8').value = quantidade8 ?? 0;
+        document.getElementById('quanti825').value = quantidade825 ?? 0;
+        document.getElementById('quanti85').value = quantidade85 ?? 0;
         document.getElementById('produtoId').value = id;
         document.getElementById('nomeProduto').value = nome;
         document.getElementById('valorProduto').value = valor;
         document.getElementById('materialProduto').value = material;
-        document.getElementById('larguraProduto').value = largura;
         document.getElementById('descricaoProduto').value = descricao;
         document.getElementById('categoriaProduto').value = categoriaId;
         document.getElementById('marcaProduto').value = marcaId || '';
@@ -359,8 +365,14 @@
         if (categoriaId == 2) {
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'block';
+            document.getElementById('estoqueProd').style.display = 'none';
         } else if (categoriaId == 1) {
             document.getElementById('estoqueCard').style.display = 'block';
+            document.getElementById('estoqueCardSkt').style.display = 'none';
+            document.getElementById('estoqueProd').style.display = 'none';
+        } else {
+            document.getElementById('estoqueProd').style.display = 'block';
+            document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'none';
         }
         // espera 100ms para garantir que o modal foi carregado

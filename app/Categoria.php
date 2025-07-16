@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Categoria extends Model
 {
+    protected $table = 'categorias';
 
     public function produtos()
     {
@@ -16,5 +17,10 @@ class Categoria extends Model
     public function listarCategoria(Int $produtoId){
         $produtoCategoria = Categoria::where('id', $produtoId)->first();
         return $produtoCategoria; 
+    }
+
+    public function contarProdutosCategoria(){
+        $produtosCategoria = $this->produtos()->count();
+        return $produtosCategoria;
     }
 }

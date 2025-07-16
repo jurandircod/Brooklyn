@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\App;
 
 class Produtos extends Model
 {
-
+    protected $table = 'produtos';
     protected $fillable = ['nome', 'valor', 'material', 'categoria_id', 'marca_id', 'descricao', 'largura'];
+    protected $appends = ['imagem_url'];
     // Define o relacionamento "uma categoria tem muitos produtos"
     public function categoria()
     {
@@ -19,6 +20,11 @@ class Produtos extends Model
     {
         return $this->hasMany(Fotos::class, 'produto_id');
         //                     Modelo filho ↑   ↑ Coluna real no banco
+    }
+
+    public function marca()
+    {
+        return $this->belongsTo(Marca::class);
     }
 
     // metodo acessor de helper

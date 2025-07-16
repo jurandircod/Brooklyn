@@ -20,6 +20,7 @@
     <meta name="description" content="Surfside Media">
     <meta name="keywords" content="Surfside Media">
     <meta name="author" content="Surfside Media">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
     <link rel="preconnect" href="https://fonts.gstatic.com">

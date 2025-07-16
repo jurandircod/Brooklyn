@@ -9,6 +9,8 @@ class Estoque extends Model
 {
     protected $fillable = ['quantidade', 'produto_id', 'quantidadeP', 'quantidadeM', 'quantidadeG', 'quantidadeGG', 'quantidade775', 'quantidade8', 'quantidade825', 'quantidade85'];
     
+    protected $table = 'estoques';
+    
     public function produto()
     {
         return $this->belongsTo(Produtos::class, 'produto_id', 'id');

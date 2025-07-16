@@ -1,93 +1,4 @@
-<style>
-    header .profile-dropdown ul li {
-        display: block;
-        padding: 5px 20px;
-        border-bottom: 1px solid #ddd;
-        line-height: 35px;
-    }
 
-    header .profile-dropdown ul li:last-child {
-        border-color: #fff;
-    }
-
-    header .profile-dropdown ul {
-        padding: 10px 0;
-        min-width: 250px;
-    }
-
-    .name-usr {
-        background: #e87316;
-        padding: 8px 12px;
-        color: #fff;
-        font-weight: bold;
-        text-transform: uppercase;
-        line-height: 24px;
-    }
-
-    .name-usr span {
-        margin-right: 10px;
-    }
-
-    @media (max-width:600px) {
-        .h-logo {
-            max-width: 150px !important;
-        }
-
-        i.sidebar-bar {
-            font-size: 22px;
-        }
-
-        .mobile-menu ul li a svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .mobile-menu ul li a span {
-            margin-top: 0px;
-            font-size: 12px;
-        }
-
-        .name-usr {
-            padding: 5px 12px;
-        }
-    }
-</style>
-
-
-<div class="mobile-menu d-sm-none">
-    <ul>
-        <li>
-            <a href="demo3.php" class="active">
-                <i data-feather="home"></i>
-                <span>Home</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)">
-                <i data-feather="align-justify"></i>
-                <span>Category</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)">
-                <i data-feather="shopping-bag"></i>
-                <span>Cart</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)">
-                <i data-feather="heart"></i>
-                <span>Wishlist</span>
-            </a>
-        </li>
-        <li>
-            <a href="user-dashboard.php">
-                <i data-feather="user"></i>
-                <span>Account</span>
-            </a>
-        </li>
-    </ul>
-</div>
 <section class="breadcrumb-section section-b-space" style="padding-top:20px;padding-bottom:20px;">
     <ul class="circles">
         <li></li>
@@ -221,75 +132,74 @@
                                         </h6>
                                     @endif
 
-                                    <h6 class="error-message">please select size</h6>
+                                    <h6 class="error-message"
+                                        style="{{ in_array($produto->categoria_id, [1, 2]) ? '' : 'display: none;' }}">
+                                        please select size</h6>
 
                                     <div class="size-box">
                                         <ul>
                                             @if ($produto->categoria_id == 1)
-                                                <li>
-                                                    <a href="javascript:void(0)" class="size-option"
-                                                        data-size="P">P</a>
-                                                    <a href="javascript:void(0)">{{ $estoque->quantidadeP }}</a>
+                                                <li><a href="javascript:void(0)" class="size-option"
+                                                        data-size="P">P</a> <a
+                                                        href="javascript:void(0)">{{ $estoque->quantidadeP }}</a></li>
+                                                <li><a href="javascript:void(0)" class="size-option"
+                                                        data-size="M">M</a> <a
+                                                        href="javascript:void(0)">{{ $estoque->quantidadeM }}</a></li>
+                                                <li><a href="javascript:void(0)" class="size-option"
+                                                        data-size="G">G</a> <a
+                                                        href="javascript:void(0)">{{ $estoque->quantidadeG }}</a></li>
+                                                <li><a href="javascript:void(0)" class="size-option"
+                                                        data-size="GG">GG</a> <a
+                                                        href="javascript:void(0)">{{ $estoque->quantidadeGG }}</a>
                                                 </li>
-                                                <li>
-                                                    <a href="javascript:void(0)" class="size-option"
-                                                        data-size="M">M</a>
-                                                    <a href="javascript:void(0)">{{ $estoque->quantidadeM }}</a>
+                                            @elseif ($produto->categoria_id == 2)
+                                                <h6 class="product-title size-text">Tamanhos</h6>
+                                                <li><a href="javascript:void(0)" class="size-option"
+                                                        data-size="775">7.75</a> <a
+                                                        href="javascript:void(0)">{{ $estoque->quantidade775 }}</a>
                                                 </li>
-                                                <li>
-                                                    <a href="javascript:void(0)" class="size-option"
-                                                        data-size="G">G</a>
-                                                    <a href="javascript:void(0)">{{ $estoque->quantidadeG }}</a>
+                                                <li><a href="javascript:void(0)" class="size-option"
+                                                        data-size="8">8</a> <a
+                                                        href="javascript:void(0)">{{ $estoque->quantidade8 }}</a></li>
+                                                <li><a href="javascript:void(0)" class="size-option"
+                                                        data-size="825">8.25</a> <a
+                                                        href="javascript:void(0)">{{ $estoque->quantidade825 }}</a>
                                                 </li>
-                                                <li>
-                                                    <a href="javascript:void(0)" class="size-option"
-                                                        data-size="GG">GG</a>
-                                                    <a href="javascript:void(0)">{{ $estoque->quantidadeGG }}</a>
+                                                <li><a href="javascript:void(0)" class="size-option"
+                                                        data-size="85">8.5</a> <a
+                                                        href="javascript:void(0)">{{ $estoque->quantidade85 }}</a>
                                                 </li>
                                             @else
-                                                <h6 class="product-title size-text">Tamanhos</h6>
-                                                <li>
-                                                    <a href="javascript:void(0)" class="size-option"
-                                                        data-size="775">7.75</a>
-                                                    <a href="javascript:void(0)">{{ $estoque->quantidade775 }}</a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0)" class="size-option"
-                                                        data-size="8">8</a>
-                                                    <a href="javascript:void(0)">{{ $estoque->quantidade8 }}</a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0)" class="size-option"
-                                                        data-size="825">8.25</a>
-                                                    <a href="javascript:void(0)">{{ $estoque->quantidade825 }}</a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0)" class="size-option"
-                                                        data-size="85">8.5</a>
-                                                    <a href="javascript:void(0)">{{ $estoque->quantidade85 }}</a>
-                                                </li>
+                                                <h6 class="product-title size-text">Quantidade</h6>
                                             @endif
+
+                                            <input type="number" id="quantidade" name="quantidade"
+                                                class="form-control" min="1" value="1"
+                                                style="width: 100px;" />
+                                            <small id="quantidade-error" style="color: red; display: none;">Quantidade
+                                                indisponível para o estoque selecionado</small>
                                         </ul>
                                     </div>
 
                                     <input type="hidden" id="selected-size" name="selected_size">
-
                                 </div>
 
-                                <input type="number" id="quantidade" name="quantidade" class="form-control"
-                                    min="1" value="1" style="width: 100px;" />
-                                <small id="quantidade-error" style="color: red; display: none;">Quantidade
-                                    indisponível para o estoque selecionado</small>
+                                <!-- Script para informar se o produto tem tamanho -->
+                                <script>
+                                    const temTamanho = {{ in_array($produto->categoria_id, [1, 2]) ? 'true' : 'false' }};
+                                </script>
 
+
+
+                                <div class="product-buttons">
+                                    <a href="javascript:void(0)" data-id="{{ $produto->id }}" id="cartEffect"
+                                        class="addtocart-btn btn btn-solid hover-solid btn-animation">
+                                        <i class="fa fa-shopping-cart"></i>
+                                        <span>Adicionar ao carrinho</span>
+                                    </a>
+                                </div>
                             </div>
 
-                            <div class="product-buttons">
-                                <a href="javascript:void(0)" data-id="{{ $produto->id }}" id="cartEffect"
-                                    class="addtocart-btn btn btn-solid hover-solid btn-animation">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    <span>Adicionar ao carrinho</span>
-                                </a>
-                            </div>
 
                             <ul class="product-count shipping-order">
                                 <li>
@@ -1296,86 +1206,103 @@
 <!-- product section end -->
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let selectedSize = null;
-        let estoqueDisponivel = {
-            @if ($produto->categoria_id == 1)
-                P: {{ $estoque->quantidadeP }},
-                M: {{ $estoque->quantidadeM }},
-                G: {{ $estoque->quantidadeG }},
-                GG: {{ $estoque->quantidadeGG }},
-            @else
-                775: {{ $estoque->quantidade775 }},
-                8: {{ $estoque->quantidade8 }},
-                825: {{ $estoque->quantidade825 }},
-                85: {{ $estoque->quantidade85 }},
-            @endif
+document.addEventListener("DOMContentLoaded", function () {
+    let selectedSize = null;
+    const temTamanho = {{ isset($produto->categoria_id) && in_array($produto->categoria_id, [1, 2]) ? 'true' : 'false' }};
+
+    let estoqueDisponivel = {};
+    @if (isset($produto->categoria_id) && $produto->categoria_id == 1)
+        estoqueDisponivel = {
+            P: {{ isset($estoque->quantidadeP) ? $estoque->quantidadeP : 0 }},
+            M: {{ isset($estoque->quantidadeM) ? $estoque->quantidadeM : 0 }},
+            G: {{ isset($estoque->quantidadeG) ? $estoque->quantidadeG : 0 }},
+            GG: {{ isset($estoque->quantidadeGG) ? $estoque->quantidadeGG : 0 }},
         };
+    @elseif (isset($produto->categoria_id) && $produto->categoria_id == 2)
+        estoqueDisponivel = {
+            "775": {{ isset($estoque->quantidade775) ? $estoque->quantidade775 : 0 }},
+            "8": {{ isset($estoque->quantidade8) ? $estoque->quantidade8 : 0 }},
+            "825": {{ isset($estoque->quantidade825) ? $estoque->quantidade825 : 0 }},
+            "85": {{ isset($estoque->quantidade85) ? $estoque->quantidade85 : 0 }},
+        };
+    @else
+        estoqueDisponivel = {
+            quantidade: {{ isset($estoque->quantidade) ? $estoque->quantidade : 0 }},
+            tamanho: 'quantidade',
+        };
+    @endif
 
-        const sizeOptions = document.querySelectorAll(".size-option");
-        const inputQuantidade = document.getElementById("quantidade");
-        const errorMessage = document.querySelector(".error-message");
-        const errorQuantidade = document.getElementById("quantidade-error");
+    // Validate estoqueDisponivel to prevent runtime errors
+    if (!Object.keys(estoqueDisponivel).length) {
+        console.error("Erro: estoqueDisponivel não foi inicializado corretamente.");
+        estoqueDisponivel = { quantidade: 0 };
+    }
 
-        // Seleção de tamanho
-        sizeOptions.forEach(option => {
-            option.addEventListener("click", function () {
-                sizeOptions.forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedSize = this.getAttribute('data-size');
-                document.getElementById('selected-size').value = selectedSize;
+    const sizeOptions = document.querySelectorAll(".size-option");
+    const inputQuantidade = document.getElementById("quantidade");
+    const errorMessage = document.querySelector(".error-message");
+    const errorQuantidade = document.getElementById("quantidade-error");
 
-                errorMessage.style.display = 'none';
-                errorQuantidade.style.display = 'none';
+    sizeOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            sizeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedSize = this.getAttribute('data-size');
+            document.getElementById('selected-size').value = selectedSize;
 
-                // Atualiza o valor máximo permitido com base no estoque
-                const estoque = estoqueDisponivel[selectedSize] || 1;
-                inputQuantidade.max = estoque;
-                inputQuantidade.value = 1;
-            });
+            errorMessage.style.display = 'none';
+            errorQuantidade.style.display = 'none';
+
+            const estoque = estoqueDisponivel[selectedSize] || 1;
+            inputQuantidade.max = estoque;
+            inputQuantidade.value = 1;
         });
+    });
 
-        const botoes = document.querySelectorAll(".addtocart-btn");
+    const botoes = document.querySelectorAll(".addtocart-btn");
 
-        botoes.forEach(botao => {
-            botao.addEventListener("click", function () {
-                if (!selectedSize) {
-                    errorMessage.style.display = 'block';
-                    return;
-                }
+    botoes.forEach(botao => {
+        botao.addEventListener("click", function () {
+            if (temTamanho && !selectedSize) {
+                errorMessage.style.display = 'block';
+                return;
+            }
 
-                const quantidade = parseInt(inputQuantidade.value);
-                const estoqueMaximo = estoqueDisponivel[selectedSize] || 0;
+            const quantidade = parseInt(inputQuantidade.value);
+            const estoqueKey = selectedSize || 'quantidade';
+            const estoqueMaximo = estoqueDisponivel[estoqueKey] || 0;
 
-                if (quantidade > estoqueMaximo) {
-                    errorQuantidade.style.display = 'block';
-                    return;
-                }
+            if (isNaN(quantidade) || quantidade <= 0 || quantidade > estoqueMaximo) {
+                errorQuantidade.style.display = 'block';
+                return;
+            }
 
-                const produtoId = this.getAttribute("data-id");
+            const produtoId = this.getAttribute("data-id");
 
-                const loadingToast = Toastify({
-                    text: "Adicionando ao carrinho...",
-                    duration: -1,
-                    gravity: "top",
-                    position: "right",
-                    backgroundColor: "#4CAF50",
-                    stopOnFocus: true
-                }).showToast();
+            const loadingToast = Toastify({
+                text: "Adicionando ao carrinho...",
+                duration: -1,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#4CAF50",
+                stopOnFocus: true
+            }).showToast();
 
-                fetch("{{ route('site.carrinho.itemCarrinho.adicionar') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": '{{ csrf_token() }}',
-                        "Accept": "application/json"
-                    },
-                    body: JSON.stringify({
-                        produto_id: produtoId,
-                        quantidade: quantidade,
-                        tamanho: selectedSize
-                    })
+            console.log(quantidade);
+
+            fetch("{{ route('site.carrinho.itemCarrinho.adicionar') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": '{{ csrf_token() }}',
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    produto_id: produtoId,
+                    quantidade: quantidade,
+                    tamanho: estoqueKey,
                 })
+            })
                 .then(async (res) => {
                     const contentType = res.headers.get("content-type");
                     if (contentType && contentType.includes("application/json")) {
@@ -1423,9 +1350,20 @@
                             stopOnFocus: true
                         }).showToast();
                     }
+                })
+                .catch(error => {
+                    loadingToast.hideToast();
+                    console.error("Erro na requisição:", error);
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Falha na comunicação com o servidor.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 });
-            });
         });
     });
+});
 </script>
+
 

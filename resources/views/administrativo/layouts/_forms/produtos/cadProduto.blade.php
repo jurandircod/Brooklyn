@@ -93,7 +93,7 @@
                                         <select class="form-control" name="categoria_id" id="categoria">
                                             <option value="" {{ old('categoria_id') === null ? 'selected' : '' }}>
                                                 Escolha uma Categoria</option>
-                                            @foreach ($produtosCategorias as $categoria)
+                                            @foreach ($categorias as $categoria)
                                                 <option value="{{ $categoria->id }}"
                                                     {{ old('categoria_id') == $categoria->id ? 'selected' : '' }}>
                                                     {{ $categoria->nome }}</option>
@@ -117,7 +117,7 @@
                                         <select class="form-control" name="marca_id" id="marca">
                                             <option value="" {{ old('marca_id') === null ? 'selected' : '' }}>
                                                 Escolha uma Marca</option>
-                                            @foreach ($produtosMarca as $marca)
+                                            @foreach ($marcas as $marca)
                                                 <option value="{{ $marca->id }}"
                                                     {{ old('marca_id') == $marca->id ? 'selected' : '' }}>
                                                     {{ $marca->nome }}</option>
@@ -364,7 +364,6 @@
         } else {
             // Outras categorias
             sizeSection.style.display = 'none';
-            
             quantidadeSection.style.display = 'block';
         }
     }, 100);

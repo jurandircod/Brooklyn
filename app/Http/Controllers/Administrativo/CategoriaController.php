@@ -26,12 +26,11 @@ class CategoriaController extends Controller
 
     public function salvarCategoria(Request $request)
     {
-
         $rotaCategoria = $request->all();
         if ($rotaCategoria['rotaCategoria'] == 1) {
             $data['nome'] = $rotaCategoria['nomeCategoria'];
             $data['descricao'] = $rotaCategoria['descricaoCategoria'];
-            
+
             $validator = $this->validarInput($data);
             Alert::alert('Categoria', 'Salva com sucesso', 'success');
             if ($validator->fails()) {
@@ -93,11 +92,16 @@ class CategoriaController extends Controller
     public function excluirCategoria(Request $request)
     {
         try {
-
             Categoria::findOrFail($request->input('categoria_id'));
-            Categoria::where('id', $request->input('categoria_id'))->delete();
-            Alert::alert('Exclusão', 'Categoria excluída com sucesso', 'success');
-            return redirect()->route('administrativo.produto.categoria');
+            $categoria = Categoria::where('id', $request->input('categoria_id'))->first();
+
+            if ($categoria->id == 1 || $categoria->id == 2) {
+                throw new \Exception("Essa categoria não pode ser excluída");
+            } else {
+                $categoria->delete();
+                Alert::alert('Exclusão', 'Categoria excluída com sucesso', 'success');
+                return redirect()->route('administrativo.produto.categoria');
+            }
         } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.produto.categoria');
@@ -108,6 +112,10 @@ class CategoriaController extends Controller
     {
         try {
             $categoria = Categoria::findOrFail($request->input('categoria_id'));
+
+            if ($categoria->id == 1 || $categoria->id == 2) {
+                throw new \Exception("essa categoria não pode ser alterada");
+            }
             $categoria->update([
                 'nome' => $request->input('nome'),
                 'descricao' => $request->input('descricao'),
@@ -119,6 +127,7 @@ class CategoriaController extends Controller
             return redirect()->route('administrativo.produto.categoria');
         }
     }
+
 
     public function enviaFormAlterar(Request $request)
     {

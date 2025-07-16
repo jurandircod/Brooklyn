@@ -58,7 +58,8 @@ class ImagemHelper
         return $imagem ? asset($caminhoRelativo . '/' . $imagem) : ($posicao === 0 ? asset('images/default-product.png') : '');
     }
 
-    public static function pastaImagensMarca($idProduto){
+    public static function pastaImagensMarca($idProduto)
+    {
         $foto = Fotos::where('produto_id', $idProduto)->first();
 
         if (!$foto) {
@@ -68,7 +69,8 @@ class ImagemHelper
         $caminhoRelativo = $foto->url_imagem;
         $caminhoAbsoluto = public_path($caminhoRelativo);
 
-        return $caminhoAbsoluto;
+        // Corrige as barras para o formato do Windows
+        return str_replace('/', '\\', $caminhoAbsoluto);
     }
 
     public static function pastaImagensProduto($idProduto)
@@ -82,6 +84,6 @@ class ImagemHelper
         $caminhoRelativo = $foto->url_imagem;
         $caminhoAbsoluto = public_path($caminhoRelativo);
 
-        return $caminhoAbsoluto;
+        return str_replace('/', '\\', $caminhoAbsoluto);
     }
 }

@@ -1,3 +1,96 @@
+
+
+<style>
+    header .profile-dropdown ul li {
+        display: block;
+        padding: 5px 20px;
+        border-bottom: 1px solid #ddd;
+        line-height: 35px;
+    }
+
+    header .profile-dropdown ul li:last-child {
+        border-color: #fff;
+    }
+
+    header .profile-dropdown ul {
+        padding: 10px 0;
+        min-width: 250px;
+    }
+
+    .name-usr {
+        background: #e87316;
+        padding: 8px 12px;
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+        line-height: 24px;
+    }
+
+    .name-usr span {
+        margin-right: 10px;
+    }
+
+    @media (max-width:600px) {
+        .h-logo {
+            max-width: 150px !important;
+        }
+
+        i.sidebar-bar {
+            font-size: 22px;
+        }
+
+        .mobile-menu ul li a svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .mobile-menu ul li a span {
+            margin-top: 0px;
+            font-size: 12px;
+        }
+
+        .name-usr {
+            padding: 5px 12px;
+        }
+    }
+</style>
+
+
+<div class="mobile-menu d-sm-none">
+    <ul>
+        <li>
+            <a href="demo3.php" class="active">
+                <i data-feather="home"></i>
+                <span>Home</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0)">
+                <i data-feather="align-justify"></i>
+                <span>Category</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0)">
+                <i data-feather="shopping-bag"></i>
+                <span>Cart</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0)">
+                <i data-feather="heart"></i>
+                <span>Wishlist</span>
+            </a>
+        </li>
+        <li>
+            <a href="user-dashboard.php">
+                <i data-feather="user"></i>
+                <span>Account</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
 <header class="header-style-2" id="home">
     <div class="main-header navbar-searchbar" data-bs-theme="dark">
         <div class="container-fluid-lg">

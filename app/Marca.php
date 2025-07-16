@@ -11,8 +11,18 @@ class Marca extends Model
         'descricao',
     ];
 
+    public function produtos()
+    {
+        return $this->hasMany(Produtos::class, 'marca_id', 'id');
+    }
+
     public function listarMarca(Int $produtoId){
         $produtoMarca = Marca::where('id', $produtoId)->first();
         return $produtoMarca; 
+    }
+
+    public function contarProdutosMarca(){
+        $produtosMarca = $this->produtos()->count();
+        return $produtosMarca;
     }
 }

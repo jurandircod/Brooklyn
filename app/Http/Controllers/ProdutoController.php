@@ -18,8 +18,11 @@ class ProdutoController extends Controller
     }
     public function index($id)
     {
-        $produtos = $this->produtos;
+        $produtos = $this->produtos->where('id', $id)->first();
         $estoque = $this->estoque->where('produto_id', $id)->first();
+        if(!$estoque and !$produtos){
+            return redirect()->route('site.principal');
+        }
         $produto = Produtos::find($id);
         return view('site.produto', compact('produtos', 'produto', 'estoque'));
     }

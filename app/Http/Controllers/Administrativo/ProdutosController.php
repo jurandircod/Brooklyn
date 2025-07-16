@@ -11,6 +11,8 @@ use App\Categoria;
 use App\Marca;
 use App\Fotos;
 use App\Estoque;
+use App\Http\Controllers\ExistenciaController;
+use App\ItemCarrinho;
 use Psr\EventDispatcher\StoppableEventInterface;
 
 class ProdutosController extends Controller
@@ -31,13 +33,17 @@ class ProdutosController extends Controller
     }
     public function index()
     {
-        $produtos = $this->produtos;
-        $produtosCategorias = $this->categorias;
-        $produtosMarca = $this->marca;
-        $listarCategoria = new Categoria;
-        $listarEstoque = new Estoque;
-        $listarMarca = new Marca;
-        return view('administrativo.produto', compact('produtos', 'produtosCategorias', 'produtosMarca', 'listarEstoque', 'listarCategoria', 'listarMarca'));
+        $produtos = Produtos::all();
+        $categorias = Categoria::all();
+        $marcas = Marca::all();
+        $estoques = Estoque::all();
+
+        return view('administrativo.produto', compact(
+            'produtos',
+            'categorias',
+            'marcas',
+            'estoques'
+        ));
     }
 
     public function validarInput($request)
@@ -99,6 +105,7 @@ class ProdutosController extends Controller
                 $produto = Produtos::create($data);
                 Alert::alert('Produto', 'Salva com sucesso', 'success');
                 $estoque['produto_id'] = $produto->id;
+                $estoque->quantidade = $data['quantidade'];
                 $estoque->save();
                 $caminhoFoto = '/uploads/produtos/' . $nomeProduto . '/';
                 $this->criarFotos($caminhoFoto, $produto);
@@ -219,6 +226,9 @@ class ProdutosController extends Controller
 
     public function excluir(Request $request)
     {
+        $id = $request->input('produto_id');
+        $this->produtos = Produtos::all();
+        ExistenciaController::produtoExiste($id);
         try {
             $id = $request->input('produto_id');
             // Validação básica
@@ -228,45 +238,27 @@ class ProdutosController extends Controller
 
             // Encontra e exclui o produto
             $produto = Produtos::findOrFail($id);
-            $estoque = Estoque::where('produto_id', $id)->first();
+            $item = itemCarrinho::where('produto_id', $id)->first();
+            if (!$item) {
+                $estoque = Estoque::where('produto_id', $id)->first();
 
-            // verifica se é uma pasta
-            if (is_dir($produto->pasta)) {
+                // verifica se é uma pasta
                 $diretorio = $produto->pasta;
-
-                // Lista todos os arquivos de imagem no diretório (jpg, jpeg, png, gif, webp, etc.)
-                $imagens = glob($diretorio . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
-
-
-                foreach ($imagens as $imagem) {
-                    if (is_file($imagem)) {
-                        unlink($imagem); // Exclui o arquivo
-                    } else {
-                        throw new \Exception("Erro ao excluir imagens");
-                        exit();
-                    }
+                if ($this->excluiPasta($diretorio)) {
+                    $estoque->delete();
+                    $produto->delete();
+                    $produtos = $this->produtos;
+                    Alert::alert('Exclusão', 'Imagens excluídas com sucesso', 'success');
+                    return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
+                    exit();
+                } else {
+                    throw new \Exception("Erro ao excluir a pasta de imagens do produto.");
                 }
             } else {
-                // caso não haja pasta, exclui diretório
-                $estoque->delete();
-                $produto->delete();
+                Alert::alert('Exclusão', 'Erro ao excluir produto, já está em um carrinho, DESATIVE O PRODUTO', 'error');
                 $produtos = $this->produtos;
-                Alert::alert('Exclusão', 'Imagens excluídas com sucesso', 'success');
                 return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
                 exit();
-            }
-
-
-
-            if (rmdir($diretorio)) {
-                $estoque->delete();
-                $produto->delete();
-                $produtos = $this->produtos;
-                Alert::alert('Exclusão', 'Imagens excluídas com sucesso', 'success');
-                return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
-                exit();
-            } else {
-                throw new \Exception("Erro ao excluir a pasta de imagens do produto.");
             }
         } catch (\Exception $e) {
             $produtos = $this->produtos; // Ou sua lógica específica para obter os produtos
@@ -280,35 +272,90 @@ class ProdutosController extends Controller
         $data = $request->all();
         $id = $data['id'];
         $produto = Produtos::find($id);
-        $estoque = Estoque::where('produto_id', $id)->first();
+
+        if (empty($id)) {
+            Alert::alert('Erro', 'ID do produto não informado', 'error');
+            return redirect()->route('administrativo.produtos');
+        }
+
         try {
+            // Verifica se já existe estoque
+            $estoque = Estoque::where('produto_id', $id)->first();
 
-            if (empty($id)) {
-                throw new \Exception("ID do produto não informado");
+            if (!$estoque && ($data['categoria_id'] == 1 || $data['categoria_id'] == 2)) {
+                // Criando novo estoque de camisas ou skates
+                $estoque = $this->criaObjctEstoque($data);
+                $estoque->produto_id = $id;
+                $estoque->quantidade = 0;
+                $estoque->save();
+            } else if (($data['categoria_id'] == 1 || $data['categoria_id'] == 2)) {
+                // Atualizando estoque existente de camisas ou skates
+                $estoque->fill($this->criaObjctEstoque($data)->toArray());
+                $estoque->quantidade = 0;
+                $estoque->save();
             } else {
-                // verifique se existe uma tabela estoque, se não existir ele cria uma
-                if (empty($estoque)) {
-                    $estoque = $this->criaObjctEstoque($data);
-                    $estoque->produto_id = $id;
-                    $estoque->save();
-                    $produto->update($data);
-                    Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
-                    return redirect()->route('administrativo.produtos');
-                    exit();
-                } else {
-                    $estoque = $this->criaObjctEstoque($data);
-                    $estoque->produto_id = $id;
-                    $estoque->update();
-                    $produto->update($data);
-                    Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
-                    return redirect()->route('administrativo.produtos');
-                    exit();
-                }
+                // Atualizando estoque existente de outros produtos
+                $estoque->fill($this->criaObjctEstoque($data)->toArray());
+                $estoque->quantidade = 0;
+                $estoque->quantidade = $data['quantidadeProduto'];
+                $estoque->save();
             }
-        } catch (\Exception $e) {
 
+            $produto->update($data);
+
+            Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
+            return redirect()->route('administrativo.produtos');
+        } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.produtos');
         }
+    }
+
+    private function excluiPasta($urlDiretorio)
+    {
+        // verifica se é uma pasta
+        if (is_dir($urlDiretorio)) {
+
+            // Lista todos os arquivos de imagem no diretório (jpg, jpeg, png, gif, webp, etc.)
+            $formatosPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'com'];
+            $imagens = [];
+
+            // Lista todos os arquivos de imagem no diretório (jpg, jpeg, png, gif, webp, etc.)
+            foreach (scandir($urlDiretorio) as $arquivo) {
+                $extensao = strtolower(pathinfo($arquivo, PATHINFO_EXTENSION));
+                if (in_array($extensao, $formatosPermitidos)) {
+                    $imagens[] = $urlDiretorio . $arquivo;
+                }
+            }
+
+            // Verifica se a pasta está vazia e exclui o diretório
+            foreach ($imagens as $imagem) {
+                if (is_file($imagem)) {
+                    unlink($imagem);
+                    if ($this->pastaEstaVazia($urlDiretorio)) {
+                        if (rmdir($urlDiretorio)) {
+                            return true;
+                        } else {
+                            throw new \Exception("Erro ao excluir imagens, diretório não vazio");
+                            exit();
+                        }
+                    } else {
+                        throw new \Exception("Erro ao excluir imagens, pasta contem arquivos");
+                        exit();
+                    }
+                    // Exclui o arquivo
+                } else {
+                    throw new \Exception("Erro ao excluir imagens");
+                    exit();
+                }
+            }
+        }
+    }
+
+    private function pastaEstaVazia($caminho)
+    {
+        $arquivos = scandir($caminho);
+        // Remove "." e ".." que sempre aparecem
+        return count(array_diff($arquivos, ['.', '..'])) === 0;
     }
 }

@@ -23,9 +23,12 @@ Route::get('/principal', 'PrincipalController@principal')->name('site.principal'
 Route::get('/', 'PrincipalController@principal')->name('site.principal');
 Route::get('/contato', 'ContatoController@contato')->name('site.contato');
 Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
-Route::get('/produtos', 'ShopController@shop')->name('site.shop');
+Route::get('/pesquisa', 'ShopController@index')->name('site.shop');
+Route::post('/pesquisa/filtrar', 'ShopController@filtrar')->name('site.pesquisa.filtrar');
 Route::get('/cep/{cep}', 'AddressController@getCityByCep');
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
+
+
 
 // Rotas relacionadas ao perfil
 Route::group(['prefix' => 'perfil'], function () {

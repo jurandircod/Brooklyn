@@ -52,7 +52,7 @@
                             <tr>
                                 <!-- Imagem do produto -->
                                 <td>
-                                    <a href="{{ asset('product/details.html') }}">
+                                    <a href="{{ route('site.produto', ['id' => $item->produto->id]) }}">
                                         <img src="{{ $item->produto->imagem_url }}" class="blur-up lazyloaded"
                                             alt="">
                                     </a>
@@ -88,7 +88,26 @@
                                 <!-- Tamanho -->
                                 <td>
                                     <!-- pega o tamnho e envia pro backend-->
-                                    <h2 data-size-selected>{{ $item->tamanho }}</h2>
+                                    @if ($item->tamanho == 'P')
+                                        <h2 data-size-selected="P">P</h2>
+                                    @elseif ($item->tamanho == 'M')
+                                        <h2 data-size-selected="M">M</h2>
+                                    @elseif ($item->tamanho == 'G')
+                                        <h2 data-size-selected="G">G</h2>
+                                    @elseif ($item->tamanho == 'GG')
+                                        <h2 data-size-selected="GG">GG</h2>
+                                    @elseif ($item->tamanho == '775')
+                                        <h2 data-size-selected="775">7.75</h2>
+                                    @elseif ($item->tamanho == '8')
+                                        <h2 data-size-selected="8">8</h2>
+                                    @elseif ($item->tamanho == '825')
+                                        <h2 data-size-selected="825">8.25</h2>
+                                    @elseif ($item->tamanho == '85')
+                                        <h2 data-size-selected="85">8.5</h2>
+                                    @else
+                                        <h2>Produto Padrão</h2>
+                                        <h2 hidden data-size-selected="quantidade">quantidade</h2>
+                                    @endif
 
                                 </td>
                                 <!-- Quantidade -->
@@ -165,8 +184,6 @@
                                         <h3>Total</h3>
                                         <h6>Subtotal <span>R$</span></h6>
                                         <h6>Taxa <span>R$</span></h6>
-
-
                                         <h6>Total <span>$</span></h6>
                                     </div>
                                     <div class="bottom-details">
@@ -184,130 +201,126 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Seleciona todos os inputs de quantidade
-        const quantityInputs = document.querySelectorAll('input[name="quantity"]');
+document.addEventListener('DOMContentLoaded', function() {
+    // Seleciona todos os inputs de quantidade
+    const quantityInputs = document.querySelectorAll('input[name="quantity"]');
 
-        // Adiciona evento de change a cada input
-        quantityInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                const row = this.closest('tr');
-                const itemId = this.getAttribute('data-item-id');
-                const newQuantity = this.value;
+    // Adiciona evento de change a cada input
+    quantityInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const row = this.closest('tr');
+            const itemId = this.getAttribute('data-item-id');
+            const newQuantity = this.value;
 
-                // Validação básica
-                if (newQuantity < 1) {
-                    this.value = 1;
-                    return;
-                }
-
-                // Mostra loading
-                row.classList.add('updating');
-
-                // Chama a função de atualização
-                updateQuantity(itemId, newQuantity, row, this);
-            });
-        });
-
-
-
-        // Função para atualizar quantidade via AJAX
-        function updateQuantity(itemId, quantity, row, inputElement) {
-            // Obtém o token CSRF de forma segura
-            const csrfToken = getCsrfToken();
-            const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();
-            if (!csrfToken) {
-                console.error('CSRF token não encontrado');
-                row.classList.remove('updating');
-                inputElement.value = inputElement.defaultValue;
-                alert('Erro de segurança. Por favor, recarregue a página.');
+            // Validação básica
+            if (newQuantity < 1) {
+                this.value = 1;
                 return;
             }
 
-            fetch('{{ route('carrinho.atualizar-quantidade') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({
-                        item_id: itemId,
-                        quantidade: quantity,
-                        tamanho: sizeSelected
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro na resposta do servidor');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'success') {
+            // Mostra loading
+            row.classList.add('updating');
 
-
-                        // Atualiza a linha
-                        const totalCell = row.querySelector('td:nth-child(5) h2');
-                        if (totalCell) {
-                            totalCell.textContent = 'R$' + data.item_total;
-                        }
-
-                        // Atualiza os totais do carrinho
-                        updateCartTotals(data);
-
-                        // Atualiza o valor padrão para futuras reversões
-                        inputElement.defaultValue = quantity;
-                    } else {
-                        throw new Error(data.message || 'Erro ao atualizar quantidade');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.message);
-                    inputElement.value = inputElement.defaultValue;
-                })
-                .finally(() => {
-                    row.classList.remove('updating');
-                });
-        }
-
-
-
-        // Função auxiliar para obter o token CSRF
-        function getCsrfToken() {
-            return document.querySelector('meta[name="csrf-token"]')?.content ||
-                document.querySelector('input[name="_token"]')?.value;
-        }
-
-        // Função para atualizar os totais do carrinho
-        function updateCartTotals(data) {
-            const subtotalElement = document.querySelector('.top-details h6:nth-child(2) span');
-            const taxElement = document.querySelector('.top-details h6:nth-child(3) span');
-            const totalElement = document.querySelector('.top-details h6:nth-child(4) span');
-
-            if (subtotalElement) subtotalElement.textContent = 'R$' + data.subtotal;
-            if (taxElement) taxElement.textContent = 'R$' + data.taxa;
-            if (totalElement) totalElement.textContent = 'R$' + data.total;
-        }
-
-    });
-
-
-    // Adiciona evento de clique para os botões de remover
-    document.addEventListener('DOMContentLoaded', function() {
-        // Delegação de eventos para lidar com elementos dinâmicos
-        document.querySelector('tbody').addEventListener('click', function(e) {
-            if (e.target.closest('.remove-item')) {
-                const removeBtn = e.target.closest('.remove-item');
-                const itemId = removeBtn.getAttribute('data-item-id');
-                const row = removeBtn.closest('tr');
-
-                removeItem(itemId, row);
-            }
+            // Chama a função de atualização
+            updateQuantity(itemId, newQuantity, row, this);
         });
     });
 
+    // Adiciona evento de clique para os botões de remover
+    document.querySelector('tbody').addEventListener('click', function(e) {
+        if (e.target.closest('.remove-item')) {
+            const removeBtn = e.target.closest('.remove-item');
+            const itemId = removeBtn.getAttribute('data-item-id');
+            const row = removeBtn.closest('tr');
+
+            removeItem(itemId, row);
+        }
+    });
+
+    // Função para atualizar quantidade via AJAX
+    function updateQuantity(itemId, quantity, row, inputElement) {
+        // Obtém o token CSRF de forma segura
+        const csrfToken = getCsrfToken();
+        const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();
+        if (!csrfToken) {
+            console.error('CSRF token não encontrado');
+            row.classList.remove('updating');
+            inputElement.value = inputElement.defaultValue;
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Erro de segurança. Por favor, recarregue a página.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        fetch('{{ route('carrinho.atualizar-quantidade') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    quantidade: quantity,
+                    tamanho: sizeSelected
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta do servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Atualiza a linha (preço total está na coluna 6)
+                    const totalCell = row.querySelector('td:nth-child(6) h2');
+                    if (totalCell) {
+                        totalCell.textContent = formatCurrency(data.item_total);
+                    }
+
+                    // Atualiza os totais do carrinho
+                    updateCartTotals(data);
+
+                    // Atualiza o valor padrão para futuras reversões
+                    inputElement.defaultValue = quantity;
+
+                    // Mostra notificação de sucesso
+                    Toastify({
+                        text: 'Item atualizado com sucesso!',
+                        duration: 3000,
+                        gravity: "bottom",
+                        position: "right",
+                        backgroundColor: "#4CAF50",
+                        stopOnFocus: true
+                    }).showToast();
+                } else {
+                    throw new Error(data.message || 'Erro ao atualizar quantidade');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: error.message,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    timer: 5000,
+                    timerProgressBar: true
+                });
+                inputElement.value = inputElement.defaultValue;
+            })
+            .finally(() => {
+                row.classList.remove('updating');
+            });
+    }
+
+    // Função para remover item do carrinho
     function removeItem(itemId, row) {
         // Mostra loading
         row.classList.add('updating');
@@ -317,7 +330,13 @@
 
         if (!csrfToken) {
             console.error('CSRF token não encontrado');
-            alert('Erro de segurança. Por favor, recarregue a página.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Erro de segurança. Por favor, recarregue a página.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
             return;
         }
 
@@ -341,24 +360,41 @@
             })
             .then(data => {
                 if (data.status === 'success') {
-                    // Remove a linha da tabela
-                    row.remove();
-
-                    // Atualiza os totais do carrinho
-                    updateCartTotals(data);
-
-                    // Atualiza o contador de itens no cabeçalho (se existir)
-                    updateCartCounter(data.quantidade_itens);
-
-                    // Mostra mensagem de sucesso
-                    showAlert('Item removido do carrinho', 'success');
+                    // Aplica animação de fade-out antes de remover
+                    row.style.transition = 'opacity 0.5s ease';
+                    row.style.opacity = '0';
+                    setTimeout(() => {
+                        row.remove();
+                        // Atualiza os totais do carrinho
+                        updateCartTotals(data);
+                        // Atualiza o contador de itens no cabeçalho (se existir)
+                        updateCartCounter(data.quantidade_itens);
+                        // Mostra mensagem de sucesso com SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sucesso',
+                            text: 'Item removido do carrinho com sucesso!',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK',
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }, 500);
                 } else {
                     throw new Error(data.message || 'Erro ao remover item');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showAlert(error.message, 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: error.message,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    timer: 5000,
+                    timerProgressBar: true
+                });
             })
             .finally(() => {
                 row.classList.remove('updating');
@@ -373,28 +409,36 @@
         });
     }
 
-    // Função para mostrar alertas
-    function showAlert(message, type) {
-        // Você pode implementar um sistema de notificação mais sofisticado aqui
-        alert(message);
-    }
-
-    // Função para atualizar totais (reutilizada da implementação anterior)
-    function updateCartTotals(data) {
-        const subtotalElement = document.querySelector('.top-details h6:nth-child(2) span');
-        const taxElement = document.querySelector('.top-details h6:nth-child(3) span');
-        const totalElement = document.querySelector('.top-details h6:nth-child(4) span');
-
-        if (subtotalElement) subtotalElement.textContent = 'R$' + data.subtotal;
-        if (taxElement) taxElement.textContent = 'R$' + data.taxa;
-        if (totalElement) totalElement.textContent = 'R$' + data.total;
-    }
-
-    // Função para obter CSRF token (reutilizada da implementação anterior)
+    // Função auxiliar para obter o token CSRF
     function getCsrfToken() {
         return document.querySelector('meta[name="csrf-token"]')?.content ||
             document.querySelector('input[name="_token"]')?.value;
     }
+
+    // Função para formatar valores monetários
+    function formatCurrency(value) {
+        const number = parseFloat(value.replace(/[^0-9,]/g, '').replace(',', '.'));
+        if (isNaN(number)) {
+            return 'R$ 0,00';
+        }
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(number);
+    }
+
+    // Função para atualizar os totais do carrinho
+    function updateCartTotals(data) {
+        console.log('data.total:', data.total);
+        const subtotalElement = document.querySelector('.top-details h6:nth-child(2) span');
+        const taxElement = document.querySelector('.top-details h6:nth-child(3) span');
+        const totalElement = document.querySelector('.top-details h6:nth-child(4) span');
+
+        if (subtotalElement) subtotalElement.textContent = formatCurrency(data.subtotal);
+        if (taxElement) taxElement.textContent = formatCurrency(data.taxa);
+        if (totalElement) totalElement.textContent = formatCurrency(data.total);
+    }
+});
 </script>
 
 <style>

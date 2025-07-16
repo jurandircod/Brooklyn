@@ -22,7 +22,7 @@ class Produtos extends Migration
         $table->foreign('categoria_id')->references('id')->on('categorias');
         $table->unsignedBigInteger('marca_id')->nullable();
         $table->foreign('marca_id')->references('id')->on('marcas');
-        $table->string('largura')->nullable();
+        $table->enum('estado', ['ativo', 'inativo'])->default('ativo');
         $table->string('descricao')->nullable();
         $table->timestamps();
     });

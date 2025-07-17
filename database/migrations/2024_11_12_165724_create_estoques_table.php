@@ -26,6 +26,7 @@ class CreateEstoquesTable extends Migration
             $table->double('quantidade8')->default(0);
             $table->double('quantidade825')->default(0);
             $table->double('quantidade85')->default(0);
+            $table->enum('ativo', ['S', 'N'])->default('S');
             $table->timestamps();
         });
     }

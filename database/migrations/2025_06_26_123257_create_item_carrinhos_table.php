@@ -22,7 +22,6 @@ class CreateItemCarrinhosTable extends Migration
             $table->decimal('preco_total', 10, 2);
             $table->string('tamanho')->nullable();
             $table->timestamps();
-
             $table->foreign('carrinho_id')->references('id')->on('carrinhos')->onDelete('cascade');
             $table->foreign('produto_id')->references('id')->on('produtos')->onDelete('cascade');
         });

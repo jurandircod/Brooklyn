@@ -14,10 +14,14 @@ class ItemCarrinhoController extends Controller
 {
     public function adicionar(Request $request)
     {
-        $user_id = auth()->id() ?? 1;
-        $carrinho = Carrinho::firstOrCreate(['user_id' => $user_id]);
 
         try {
+            $user_id = auth()->id();
+            if (!$user_id) {
+                throw new \Exception('Usuário não autenticado.');
+                exit;
+            }
+            $carrinho = Carrinho::firstOrCreate(['user_id' => $user_id]);
             // verifica se o produto existe
             ExistenciaController::produtoExiste($request->produto_id);
             $produto = Produtos::findOrFail($request->produto_id);
@@ -25,11 +29,11 @@ class ItemCarrinhoController extends Controller
             $estoqueProduto = $estoque->listarEstoque($produto->id);
             $tamanho = $request->input('tamanho');
             $quantidadeSolicitada = $request->input('quantidade', 1);
+            number_format($quantidadeSolicitada, 2, ',', '.');
 
             if (!$estoqueProduto) {
                 return response()->json(['status' => 'error', 'message' => 'Produto sem estoque.']);
             }
-
 
             // Validação por tamanho
             switch ($tamanho) {
@@ -73,7 +77,9 @@ class ItemCarrinhoController extends Controller
                     $estoqueProduto->quantidade -= $quantidadeSolicitada;
                     break;
                 case "quantidade":
-                    if ($estoqueProduto->quantidade < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    if ($estoqueProduto->quantidade < $quantidadeSolicitada) {
+                        return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
+                    }
                     $estoqueProduto->quantidade -= $quantidadeSolicitada;
                     break;
                 default:
@@ -104,7 +110,7 @@ class ItemCarrinhoController extends Controller
                 ]);
             }
 
-            return response()->json(['status' => 'sucess', 'message' => 'Produto adicionado ao carrinho!']);
+            return response()->json(['status' => 'sucess', 'message' =>' produto adicionado ao carrinho!']);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -130,18 +136,18 @@ class ItemCarrinhoController extends Controller
             $item_id = $request->item_id;
             // verifica se o produto existe
             ExistenciaController::itemExiste($item_id);
-            
+
             //verifica se o produto existe
             $nova_quantidade = (int) $request->quantidade;
             $tamanho = $request->tamanho;
-            
+
             // Busca o item do carrinho
             $item = ItemCarrinho::whereHas('carrinho', function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
             })
-            ->where('id', $item_id)
-            ->firstOrFail();
-            
+                ->where('id', $item_id)
+                ->firstOrFail();
+
             $quantidadeAtual = $item->quantidade;
             $diferenca = $nova_quantidade - $quantidadeAtual;
 
@@ -227,7 +233,7 @@ class ItemCarrinhoController extends Controller
             $user_id = auth()->id() ?? 1; // Fallback para teste
             $item_id = $request->item_id;
             // verifica se o produto existe
-           ExistenciaController::itemExiste($item_id);
+            ExistenciaController::itemExiste($item_id);
             // Busca o item do carrinho
             $item = ItemCarrinho::whereHas('carrinho', function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
@@ -255,5 +261,4 @@ class ItemCarrinhoController extends Controller
             ], 500);
         }
     }
-
 }

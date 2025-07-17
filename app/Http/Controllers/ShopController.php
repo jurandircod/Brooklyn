@@ -37,7 +37,7 @@ class ShopController extends Controller
         // Validação
         $validator = Validator::make($request->all(), [
             'sizes' => 'nullable|array',
-            'sizes.*' => 'string',
+            'sizes.*' => 'string|in:P,M,G,GG,7.75,8,8.25,8.5',
             'categorias' => 'nullable|array',
             'categorias.*' => 'integer|exists:categorias,id',
             'marcas' => 'nullable|array',
@@ -54,67 +54,78 @@ class ShopController extends Controller
             ], 422);
         }
 
-        // Converter strings para inteiros
+        // Converter strings para inteiros e filtrar valores falsy
         $categorias = array_filter(array_map('intval', $request->input('categorias', [])));
         $marcas = array_filter(array_map('intval', $request->input('marcas', [])));
         $sizes = array_filter($request->input('sizes', []));
 
         // Construir a query com eager loading
-        $query = Produtos::query()->with(['categoria', 'marca', 'fotos', 'estoque']);
+        $query = Produtos::query()->with(['categoria', 'marca', 'fotos']);
 
-        switch ($sizes) {
-            case 'P':
-                $query->where('quantidadeP', 'quantidadeP');
-                break;
-            case 'M':
-                $query->where('quantidadeM', 'quantidadeM');
-                break;
-            case 'G':
-                $query->where('quantidadeG', 'quantidadeG');
-                break;
-            case 'GG':
-                $query->where('quantidadeGG', 'quantidadeGG');
-                break;
-            case '7.75':
-                $query->where('quantidade775', 'quantidade775');
-                break;
-            case '8':
-                $query->where('quantidade8', 'quantidade8');
-                break;
-            case '8.25':
-                $query->where('quantidade825', 'quantidade825');
-                break;
-            case '8.5':
-                $query->where('quantidade85', 'quantidade85');
-                break;
-            default:
-                $query->where('quantidade', 'quantidade');
-                break;
+        // Mapear tamanhos para colunas de estoque
+        $sizeColumns = [
+            'P' => 'quantidadeP',
+            'M' => 'quantidadeM',
+            'G' => 'quantidadeG',
+            'GG' => 'quantidadeGG',
+            '7.75' => 'quantidade775',
+            '8' => 'quantidade8',
+            '8.25' => 'quantidade825',
+            '8.5' => 'quantidade85',
+        ];
+
+        // Filtro por tamanhos no estoque com leftJoin
+        if (!empty($sizes)) {
+            $query->leftJoin('estoques', 'produtos.id', '=', 'estoques.produto_id')
+                ->where(function ($query) use ($sizes, $sizeColumns) {
+                    foreach ($sizes as $size) {
+                        if (isset($sizeColumns[$size])) {
+                            $query->orWhere(function ($q) use ($sizeColumns, $size) {
+                                $q->whereNotNull('estoques.id')
+                                    ->where('estoques.' . $sizeColumns[$size], '>', 0);
+                            });
+                        }
+                    }
+                });
         }
+
         // Filtro por categorias
         if (!empty($categorias)) {
-            $query->whereIn('categoria_id', $categorias);
+            $query->whereIn('produtos.categoria_id', $categorias);
         }
 
         // Filtro por marcas
         if (!empty($marcas)) {
-            $query->whereIn('marca_id', $marcas);
+            $query->whereIn('produtos.marca_id', $marcas);
         }
 
         // Filtro por faixa de preço
         if ($request->filled('min_price')) {
-            $query->where('valor', '>=', $request->input('min_price'));
+            $query->where('produtos.valor', '>=', $request->input('min_price'));
         }
         if ($request->filled('max_price')) {
-            $query->where('valor', '<=', $request->input('max_price'));
+            $query->where('produtos.valor', '<=', $request->input('max_price'));
         }
+
+        // Garantir produtos distintos e selecionar apenas colunas de produtos
+        $query->select('produtos.*')->distinct();
 
         // Executar a query
         $products = $query->get();
 
-        // Logar a query e os resultados
+        // Logar os produtos com detalhes das fotos
         Log::info('Query executada:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
-        Log::info('Produtos encontrados:', ['count' => $products->count(), 'data' => $products->toArray()]);
+        Log::info('Produtos encontrados:', [
+            'count' => $products->count(),
+            'data' => $products->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'nome' => $product->nome,
+                    'imagem_url' => $product->imagem_url,
+                    'fotos' => $product->fotos->toArray(),
+                ];
+            })->toArray()
+        ]);
 
         return response()->json([
             'status' => 'success',

@@ -43,7 +43,7 @@
                     <tbody>
                         @foreach ($produtos as $produto)
                             @php
-                                $estoque = $produto->estoque->listarEstoque($produto->id);
+                                $estoque = $estoques->firstWhere('id', $produto->id);
                                 $categoria = $produto->categoria->listarCategoria($produto->categoria_id);
                                 $marca =
                                     $produto->marca_id != null

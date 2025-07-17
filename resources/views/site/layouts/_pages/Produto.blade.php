@@ -1317,7 +1317,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     if (data.status === 'sucess' || data.status === 'success') {
                         Swal.fire({
-                            title: 'Adicionado ao carrinho!',
+                            title: data.message,
                             icon: 'success',
                             showConfirmButton: true,
                             confirmButtonText: 'OK',

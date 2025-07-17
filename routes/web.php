@@ -23,12 +23,14 @@ Route::get('/principal', 'PrincipalController@principal')->name('site.principal'
 Route::get('/', 'PrincipalController@principal')->name('site.principal');
 Route::get('/contato', 'ContatoController@contato')->name('site.contato');
 Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
-Route::get('/pesquisa', 'ShopController@index')->name('site.shop');
-Route::post('/pesquisa/filtrar', 'ShopController@filtrar')->name('site.pesquisa.filtrar');
 Route::get('/cep/{cep}', 'AddressController@getCityByCep');
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
+Route::get('/fazerPedido', 'fazerPedido@index')->name('site.fazerPedido')->middleware('auth');
 
-
+Route::group(['prefix' => 'pesquisa'], function () {
+    Route::get('/pesquisa', 'ShopController@index')->name('site.shop');
+    Route::post('/pesquisa/filtrar', 'ShopController@filtrar')->name('site.pesquisa.filtrar');
+});
 
 // Rotas relacionadas ao perfil
 Route::group(['prefix' => 'perfil'], function () {
@@ -60,6 +62,10 @@ Route::group(['prefix' => 'produto'], function () {
 // Rotas do administrador
 Route::group(['prefix' => 'administrativo'], function () {
     Route::get('/', [App\Http\Controllers\Administrativo\PrincipalController::class, 'index'])->name('administrativo.principal');
+
+    Route::get('/vendas', 'RelatorioController@produtosMaisVendidos')
+    ->name('relatorios.produtos-mais-vendidos')
+    ->middleware('auth');
     
     //rotas de permissoes
     Route::group(['prefix' => 'permissoes'], function () {

@@ -10,20 +10,31 @@ class EstoqueObserver
     public function saving(Estoque $estoque)
     {
         // Soma todos os campos de tamanho
-        $quantidadrAtual = $estoque->quantidade;
-        $quantidadeTotal = $estoque->quantidade =
-            ($estoque->quantidadeP ?? 0) +
-            ($estoque->quantidadeM ?? 0) +
-            ($estoque->quantidadeG ?? 0) +
-            ($estoque->quantidadeGG ?? 0) +
-            ($estoque->quantidade775 ?? 0) +
-            ($estoque->quantidade8 ?? 0) +
-            ($estoque->quantidade825 ?? 0) +
-            ($estoque->quantidade85 ?? 0) +
-            ($estoque->quantidade ?? 0);
-        $diferenca = $quantidadeTotal - $quantidadrAtual;
-        if ($diferenca > 0) {
-            $estoque->quantidade = $diferenca;
+        // Verifica se é um produto com tamanhos específicos (camiseta, skate, etc.)
+        $temTamanhosEspecificos =
+            ($estoque->quantidadeP > 0) ||
+            ($estoque->quantidadeM > 0) ||
+            ($estoque->quantidadeG > 0) ||
+            ($estoque->quantidadeGG > 0) ||
+            ($estoque->quantidade775 > 0) ||
+            ($estoque->quantidade8 > 0) ||
+            ($estoque->quantidade825 > 0) ||
+            ($estoque->quantidade85 > 0);
+
+        if ($temTamanhosEspecificos) {
+            // Produto com tamanhos específicos: soma apenas os campos de tamanho
+            $estoque->quantidade =
+                ($estoque->quantidadeP ?? 0) +
+                ($estoque->quantidadeM ?? 0) +
+                ($estoque->quantidadeG ?? 0) +
+                ($estoque->quantidadeGG ?? 0) +
+                ($estoque->quantidade775 ?? 0) +
+                ($estoque->quantidade8 ?? 0) +
+                ($estoque->quantidade825 ?? 0) +
+                ($estoque->quantidade85 ?? 0);
+        } else {
+            // Produto sem tamanhos específicos: usa apenas o campo quantidade
+            $estoque->quantidade = $estoque->quantidade ?? 0;
         }
     }
     /**
@@ -35,17 +46,6 @@ class EstoqueObserver
     public function created(Estoque $estoque)
     {
         //           
-        $estoque->quantidade = 0;
-        $estoque->quantidade =
-            ($estoque->quantidadeP ?? 0) +
-            ($estoque->quantidadeM ?? 0) +
-            ($estoque->quantidadeG ?? 0) +
-            ($estoque->quantidadeGG ?? 0) +
-            ($estoque->quantidade775 ?? 0) +
-            ($estoque->quantidade8 ?? 0) +
-            ($estoque->quantidade825 ?? 0) +
-            ($estoque->quantidade85 ?? 0) +
-            ($estoque->quantidade ?? 0);
     }
 
     /**

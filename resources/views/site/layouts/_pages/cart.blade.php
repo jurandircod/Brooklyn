@@ -187,7 +187,7 @@
                                         <h6>Total <span>$</span></h6>
                                     </div>
                                     <div class="bottom-details">
-                                        <a href="checkout">Processar pagamento</a>
+                                        <a href="{{ route('site.fazerPedido') }}">Processar pagamento</a>
                                     </div>
                                 </div>
                             </div>
@@ -201,244 +201,244 @@
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Seleciona todos os inputs de quantidade
-    const quantityInputs = document.querySelectorAll('input[name="quantity"]');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleciona todos os inputs de quantidade
+        const quantityInputs = document.querySelectorAll('input[name="quantity"]');
 
-    // Adiciona evento de change a cada input
-    quantityInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            const row = this.closest('tr');
-            const itemId = this.getAttribute('data-item-id');
-            const newQuantity = this.value;
+        // Adiciona evento de change a cada input
+        quantityInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const row = this.closest('tr');
+                const itemId = this.getAttribute('data-item-id');
+                const newQuantity = this.value;
 
-            // Validação básica
-            if (newQuantity < 1) {
-                this.value = 1;
+                // Validação básica
+                if (newQuantity < 1) {
+                    this.value = 1;
+                    return;
+                }
+
+                // Mostra loading
+                row.classList.add('updating');
+
+                // Chama a função de atualização
+                updateQuantity(itemId, newQuantity, row, this);
+            });
+        });
+
+        // Adiciona evento de clique para os botões de remover
+        document.querySelector('tbody').addEventListener('click', function(e) {
+            if (e.target.closest('.remove-item')) {
+                const removeBtn = e.target.closest('.remove-item');
+                const itemId = removeBtn.getAttribute('data-item-id');
+                const row = removeBtn.closest('tr');
+
+                removeItem(itemId, row);
+            }
+        });
+
+        // Função para atualizar quantidade via AJAX
+        function updateQuantity(itemId, quantity, row, inputElement) {
+            // Obtém o token CSRF de forma segura
+            const csrfToken = getCsrfToken();
+            const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();
+            if (!csrfToken) {
+                console.error('CSRF token não encontrado');
+                row.classList.remove('updating');
+                inputElement.value = inputElement.defaultValue;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro de segurança. Por favor, recarregue a página.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
                 return;
             }
 
-            // Mostra loading
-            row.classList.add('updating');
-
-            // Chama a função de atualização
-            updateQuantity(itemId, newQuantity, row, this);
-        });
-    });
-
-    // Adiciona evento de clique para os botões de remover
-    document.querySelector('tbody').addEventListener('click', function(e) {
-        if (e.target.closest('.remove-item')) {
-            const removeBtn = e.target.closest('.remove-item');
-            const itemId = removeBtn.getAttribute('data-item-id');
-            const row = removeBtn.closest('tr');
-
-            removeItem(itemId, row);
-        }
-    });
-
-    // Função para atualizar quantidade via AJAX
-    function updateQuantity(itemId, quantity, row, inputElement) {
-        // Obtém o token CSRF de forma segura
-        const csrfToken = getCsrfToken();
-        const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();
-        if (!csrfToken) {
-            console.error('CSRF token não encontrado');
-            row.classList.remove('updating');
-            inputElement.value = inputElement.defaultValue;
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: 'Erro de segurança. Por favor, recarregue a página.',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-
-        fetch('{{ route('carrinho.atualizar-quantidade') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    item_id: itemId,
-                    quantidade: quantity,
-                    tamanho: sizeSelected
+            fetch('{{ route('carrinho.atualizar-quantidade') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        item_id: itemId,
+                        quantidade: quantity,
+                        tamanho: sizeSelected
+                    })
                 })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro na resposta do servidor');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'success') {
-                    // Atualiza a linha (preço total está na coluna 6)
-                    const totalCell = row.querySelector('td:nth-child(6) h2');
-                    if (totalCell) {
-                        totalCell.textContent = formatCurrency(data.item_total);
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na resposta do servidor');
                     }
-
-                    // Atualiza os totais do carrinho
-                    updateCartTotals(data);
-
-                    // Atualiza o valor padrão para futuras reversões
-                    inputElement.defaultValue = quantity;
-
-                    // Mostra notificação de sucesso
-                    Toastify({
-                        text: 'Item atualizado com sucesso!',
-                        duration: 3000,
-                        gravity: "bottom",
-                        position: "right",
-                        backgroundColor: "#4CAF50",
-                        stopOnFocus: true
-                    }).showToast();
-                } else {
-                    throw new Error(data.message || 'Erro ao atualizar quantidade');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro',
-                    text: error.message,
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'OK',
-                    timer: 5000,
-                    timerProgressBar: true
-                });
-                inputElement.value = inputElement.defaultValue;
-            })
-            .finally(() => {
-                row.classList.remove('updating');
-            });
-    }
-
-    // Função para remover item do carrinho
-    function removeItem(itemId, row) {
-        // Mostra loading
-        row.classList.add('updating');
-        const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();
-        // Obtém o token CSRF
-        const csrfToken = getCsrfToken();
-
-        if (!csrfToken) {
-            console.error('CSRF token não encontrado');
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: 'Erro de segurança. Por favor, recarregue a página.',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-
-        fetch('{{ route('carrinho.remover-item') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    item_id: itemId,
-                    tamanho: sizeSelected
+                    return response.json();
                 })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro na resposta do servidor');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'success') {
-                    // Aplica animação de fade-out antes de remover
-                    row.style.transition = 'opacity 0.5s ease';
-                    row.style.opacity = '0';
-                    setTimeout(() => {
-                        row.remove();
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Atualiza a linha (preço total está na coluna 6)
+                        const totalCell = row.querySelector('td:nth-child(6) h2');
+                        if (totalCell) {
+                            totalCell.textContent = formatCurrency(data.item_total);
+                        }
+
                         // Atualiza os totais do carrinho
                         updateCartTotals(data);
-                        // Atualiza o contador de itens no cabeçalho (se existir)
-                        updateCartCounter(data.quantidade_itens);
-                        // Mostra mensagem de sucesso com SweetAlert2
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Sucesso',
-                            text: 'Item removido do carrinho com sucesso!',
-                            confirmButtonColor: '#3085d6',
-                            confirmButtonText: 'OK',
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
-                    }, 500);
-                } else {
-                    throw new Error(data.message || 'Erro ao remover item');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+
+                        // Atualiza o valor padrão para futuras reversões
+                        inputElement.defaultValue = quantity;
+
+                        // Mostra notificação de sucesso
+                        Toastify({
+                            text: 'Item atualizado com sucesso!',
+                            duration: 3000,
+                            gravity: "bottom",
+                            position: "right",
+                            backgroundColor: "#4CAF50",
+                            stopOnFocus: true
+                        }).showToast();
+                    } else {
+                        throw new Error(data.message || 'Erro ao atualizar quantidade');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: error.message,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK',
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                    inputElement.value = inputElement.defaultValue;
+                })
+                .finally(() => {
+                    row.classList.remove('updating');
+                });
+        }
+
+        // Função para remover item do carrinho
+        function removeItem(itemId, row) {
+            // Mostra loading
+            row.classList.add('updating');
+            const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();
+            // Obtém o token CSRF
+            const csrfToken = getCsrfToken();
+
+            if (!csrfToken) {
+                console.error('CSRF token não encontrado');
                 Swal.fire({
                     icon: 'error',
                     title: 'Erro',
-                    text: error.message,
+                    text: 'Erro de segurança. Por favor, recarregue a página.',
                     confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'OK',
-                    timer: 5000,
-                    timerProgressBar: true
+                    confirmButtonText: 'OK'
                 });
-            })
-            .finally(() => {
-                row.classList.remove('updating');
-            });
-    }
+                return;
+            }
 
-    // Função auxiliar para atualizar contador de itens
-    function updateCartCounter(count) {
-        const counterElements = document.querySelectorAll('.cart-count');
-        counterElements.forEach(el => {
-            el.textContent = count;
-        });
-    }
-
-    // Função auxiliar para obter o token CSRF
-    function getCsrfToken() {
-        return document.querySelector('meta[name="csrf-token"]')?.content ||
-            document.querySelector('input[name="_token"]')?.value;
-    }
-
-    // Função para formatar valores monetários
-    function formatCurrency(value) {
-        const number = parseFloat(value.replace(/[^0-9,]/g, '').replace(',', '.'));
-        if (isNaN(number)) {
-            return 'R$ 0,00';
+            fetch('{{ route('carrinho.remover-item') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        item_id: itemId,
+                        tamanho: sizeSelected
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na resposta do servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Aplica animação de fade-out antes de remover
+                        row.style.transition = 'opacity 0.5s ease';
+                        row.style.opacity = '0';
+                        setTimeout(() => {
+                            row.remove();
+                            // Atualiza os totais do carrinho
+                            updateCartTotals(data);
+                            // Atualiza o contador de itens no cabeçalho (se existir)
+                            updateCartCounter(data.quantidade_itens);
+                            // Mostra mensagem de sucesso com SweetAlert2
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso',
+                                text: 'Item removido do carrinho com sucesso!',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK',
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
+                        }, 500);
+                    } else {
+                        throw new Error(data.message || 'Erro ao remover item');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: error.message,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK',
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                })
+                .finally(() => {
+                    row.classList.remove('updating');
+                });
         }
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        }).format(number);
-    }
 
-    // Função para atualizar os totais do carrinho
-    function updateCartTotals(data) {
-        console.log('data.total:', data.total);
-        const subtotalElement = document.querySelector('.top-details h6:nth-child(2) span');
-        const taxElement = document.querySelector('.top-details h6:nth-child(3) span');
-        const totalElement = document.querySelector('.top-details h6:nth-child(4) span');
+        // Função auxiliar para atualizar contador de itens
+        function updateCartCounter(count) {
+            const counterElements = document.querySelectorAll('.cart-count');
+            counterElements.forEach(el => {
+                el.textContent = count;
+            });
+        }
 
-        if (subtotalElement) subtotalElement.textContent = formatCurrency(data.subtotal);
-        if (taxElement) taxElement.textContent = formatCurrency(data.taxa);
-        if (totalElement) totalElement.textContent = formatCurrency(data.total);
-    }
-});
+        // Função auxiliar para obter o token CSRF
+        function getCsrfToken() {
+            return document.querySelector('meta[name="csrf-token"]')?.content ||
+                document.querySelector('input[name="_token"]')?.value;
+        }
+
+        // Função para formatar valores monetários
+        function formatCurrency(value) {
+            const number = parseFloat(value.replace(/[^0-9,]/g, '').replace(',', '.'));
+            if (isNaN(number)) {
+                return 'R$ 0,00';
+            }
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(number);
+        }
+
+        // Função para atualizar os totais do carrinho
+        function updateCartTotals(data) {
+            console.log('data.total:', data.total);
+            const subtotalElement = document.querySelector('.top-details h6:nth-child(2) span');
+            const taxElement = document.querySelector('.top-details h6:nth-child(3) span');
+            const totalElement = document.querySelector('.top-details h6:nth-child(4) span');
+
+            if (subtotalElement) subtotalElement.textContent = formatCurrency(data.subtotal);
+            if (taxElement) taxElement.textContent = formatCurrency(data.taxa);
+            if (totalElement) totalElement.textContent = formatCurrency(data.total);
+        }
+    });
 </script>
 
 <style>

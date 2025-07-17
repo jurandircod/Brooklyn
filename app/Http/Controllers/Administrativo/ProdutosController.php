@@ -6,50 +6,38 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\Produtos;
-use App\Categoria;
-use App\Marca;
-use App\Fotos;
-use App\Estoque;
+use App\{Produtos, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
 use App\Http\Controllers\ExistenciaController;
-use App\ItemCarrinho;
-use Psr\EventDispatcher\StoppableEventInterface;
+use Exception;
 
 class ProdutosController extends Controller
 {
-
-    private $produtos;
-    private $categorias;
-    private $marca;
-    private $estoques;
-
+    protected $produtos;
+    protected $categorias;
+    protected $marcas;
+    protected $estoques;
 
     public function __construct()
     {
-        $this->marca = Marca::all();
+        $this->marcas = Marca::all();
         $this->produtos = Produtos::all();
         $this->categorias = Categoria::all();
         $this->estoques = Estoque::all();
     }
+
     public function index()
     {
-        $produtos = Produtos::all();
-        $categorias = Categoria::all();
-        $marcas = Marca::all();
-        $estoques = Estoque::all();
-
-        return view('administrativo.produto', compact(
-            'produtos',
-            'categorias',
-            'marcas',
-            'estoques'
-        ));
+        return view('administrativo.produto', [
+            'produtos' => $this->produtos,
+            'categorias' => $this->categorias,
+            'marcas' => $this->marcas,
+            'estoques' => $this->estoques
+        ]);
     }
 
     public function validarInput($request)
     {
-
-        $validator = Validator::make($request, [
+        return Validator::make($request, [
             'nome' => 'required|string|max:255',
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
@@ -71,291 +59,224 @@ class ProdutosController extends Controller
             'marca_id.exists' => 'O campo marca não existe',
             'quantidade.integer' => 'O campo quantidade deve ser um número inteiro',
             'valor.required' => 'O campo valor é obrigatório',
-
-
         ]);
-
-        return $validator;
     }
 
     public function salvarProduto(Request $request)
     {
-
         $data = $request->all();
-        $nomeProduto = $data['nome'] . uniqid();
-
-
-        $estoque = $this->criaObjctEstoque($data);
-        $this->criarCaminhoFoto($nomeProduto);
-
-        if (empty($data['marca_id']) || !is_numeric($data['marca_id'])) {
-            $data['marca_id'] = null;
-        }
-
         $validator = $this->validarInput($data);
+
         if ($validator->fails()) {
-            Alert::alert('Produto', 'Preencha os campos obrigatórios', 'error');
-            return redirect()
-                ->route('administrativo.produtos')
-                ->withErrors($validator)
-                ->withInput();
-        } else {
-            try {
-                $data = $this->formatDataParaProduto($data);
-                $produto = Produtos::create($data);
-                Alert::alert('Produto', 'Salva com sucesso', 'success');
-                $estoque['produto_id'] = $produto->id;
-                $estoque->quantidade = $data['quantidade'];
-                $estoque->save();
-                $caminhoFoto = '/uploads/produtos/' . $nomeProduto . '/';
-                $this->criarFotos($caminhoFoto, $produto);
-                return redirect()->route('administrativo.produtos');
-            } catch (\Exception $e) {
-                Alert::alert('Erro', $e->getMessage(), 'error');
-                return redirect()->route('administrativo.produtos');
-            }
+            return $this->redirectWithError('Preencha os campos obrigatórios');
+        }
+
+        try {
+            $data = $this->prepareProductData($data);
+            $produto = $this->createProductWithStock($data);
+
+            $this->handleProductImages($produto, $data['nome']);
+
+            Alert::success('Produto', 'Salvo com sucesso');
+            return redirect()->route('administrativo.produtos');
+        } catch (Exception $e) {
+            return $this->redirectWithError($e->getMessage());
         }
     }
 
-    public function criarCaminhoFoto($nomeProduto)
+    protected function prepareProductData(array $data): array
     {
-        $caminho = public_path() . '/uploads/produtos/' . $nomeProduto;
-        $this->criarPasta($caminho);
-
-        $caminhoFoto = public_path() . '/uploads/produtos/' . $nomeProduto . '/';
-        $this->criarImagem($caminhoFoto);
-    }
-
-    public function criarPasta($caminho)
-    {
-
-        if (!file_exists($caminho)) { // Verifica se a pasta já existe para evitar erros
-            if (mkdir($caminho, 0777, true)) {
-                return true;
-            } else {
-                return true;
-            }
-        }
-    }
-
-    public function formatDataParaProduto($data)
-    {
-
-        $data['valor'] = str_replace(['R$', ' '], '', $data['valor']);
-        $data['valor'] = str_replace(',', '.', $data['valor']);
-        unset($data['url_imagem']);
-        unset($data['quantidadeP']);
-        unset($data['quantidadeM']);
-        unset($data['quantidadeG']);
-        unset($data['quantidadeGG']);
+        $data['valor'] = str_replace(['R$', ' ', ','], ['', '', '.'], $data['valor']);
         $data['nome'] = str_replace('.', '-', $data['nome']);
+        $data['marca_id'] = empty($data['marca_id']) || !is_numeric($data['marca_id']) ? null : $data['marca_id'];
+
+        unset(
+            $data['url_imagem'],
+            $data['quantidadeP'],
+            $data['quantidadeM'],
+            $data['quantidadeG'],
+            $data['quantidadeGG']
+        );
+
         return $data;
     }
 
-    public function criarFotos($caminhoFoto, $produto)
+    protected function createProductWithStock(array $data)
     {
+        $produto = Produtos::create($data);
+        $estoque = $this->createStockObject($data);
+        $estoque->produto_id = $produto->id;
+        $estoque->save();
+
+        return $produto;
+    }
+
+    protected function handleProductImages(Produtos $produto, string $productName)
+    {
+        $folderName = $productName . uniqid();
+        $imagePath = public_path("/uploads/produtos/{$folderName}/");
+
+        $this->createFolder($imagePath);
+        $this->uploadImages($imagePath);
+
         Fotos::create([
-            'url_imagem' => $caminhoFoto,
+            'url_imagem' => "/uploads/produtos/{$folderName}/",
             'produto_id' => $produto->id
         ]);
     }
 
-    public function criaObjctEstoque($data)
+    protected function createStockObject(array $data): Estoque
     {
-        $estoque = new Estoque;
-        $estoque->quantidadeP = $data['quantidadeP'] ?? 0;
-        $estoque->quantidadeM = $data['quantidadeM'] ?? 0;
-        $estoque->quantidadeG = $data['quantidadeG'] ?? 0;
-        $estoque->quantidadeGG = $data['quantidadeGG'] ?? 0;
-        $estoque->quantidade775 = $data['quantidade775'] ?? 0;
-        $estoque->quantidade8 = $data['quantidade8'] ?? 0;
-        $estoque->quantidade825 = $data['quantidade825'] ?? 0;
-        $estoque->quantidade85 = $data['quantidade85'] ?? 0;
-        return $estoque;
+        return new Estoque([
+            'quantidadeP' => $data['quantidadeP'] ?? 0,
+            'quantidadeM' => $data['quantidadeM'] ?? 0,
+            'quantidadeG' => $data['quantidadeG'] ?? 0,
+            'quantidadeGG' => $data['quantidadeGG'] ?? 0,
+            'quantidade775' => $data['quantidade775'] ?? 0,
+            'quantidade8' => $data['quantidade8'] ?? 0,
+            'quantidade825' => $data['quantidade825'] ?? 0,
+            'quantidade85' => $data['quantidade85'] ?? 0,
+        ]);
     }
 
-    public function criarImagem($caminhoFoto)
+    protected function uploadImages(string $destinationPath): array
     {
-        $caminhosFotos = []; // Array para armazenar os caminhos das fotos
+        $uploadedPaths = [];
 
-        foreach ($_FILES['url_imagem']['tmp_name'] as $index => $tmpName) {
-            // Verifica se o arquivo foi enviado sem erros
-            if ($_FILES['url_imagem']['error'][$index] === UPLOAD_ERR_OK) {
-                // Nome original do arquivo
-                $nomeOriginal = $_FILES['url_imagem']['name'][$index];
+        foreach ($_FILES['url_imagem']['tmp_name'] ?? [] as $index => $tmpName) {
+            if ($_FILES['url_imagem']['error'][$index] !== UPLOAD_ERR_OK) {
+                continue;
+            }
 
-                // Caminho completo para salvar a imagem
-                $caminhoCompleto = $caminhoFoto . basename($nomeOriginal);
+            $fileName = basename($_FILES['url_imagem']['name'][$index]);
+            $fullPath = $destinationPath . $fileName;
 
-                // Move o arquivo temporário para o caminho de destino
-                if (move_uploaded_file($tmpName, $caminhoCompleto)) {
-                    $caminhosFotos[] = $caminhoCompleto; // Armazena o caminho no array
-                } else {
-                    $this->redirecionaError("Erro ao enviar o arquivo.");
-                }
+            if (move_uploaded_file($tmpName, $fullPath)) {
+                $uploadedPaths[] = $fullPath;
             } else {
-                $this->redirecionaError("Erro ao enviar o arquivo.");
+                $this->redirectWithError("Erro ao enviar o arquivo.");
             }
         }
 
-        return $caminhosFotos; // Retorna o array com todos os caminhos das fotos
+        return $uploadedPaths;
     }
 
-    public function deleteProduto(Request $request)
+    protected function createFolder(string $path): bool
     {
-
-        try {
-            $id = $request->input('id');
-            $produto = Produtos::find($id);
-            // exemplo: 'imagens/'
-
-            $produto->delete();
-            return redirect()->back();
-            echo "Todas as imagens foram excluídas.";
-        } catch (\Exception $e) {
-            Alert::alert('Erro', $e->getMessage(), 'danger');
-            return redirect()->back();
+        if (!file_exists($path)) {
+            return mkdir($path, 0777, true);
         }
-    }
-
-    public function redirecionaError($mensagem)
-    {
-        Alert::alert('Erro', $mensagem, 'danger');
-        return redirect()->back();
+        return true;
     }
 
     public function excluir(Request $request)
     {
-        $id = $request->input('produto_id');
-        $this->produtos = Produtos::all();
-        ExistenciaController::produtoExiste($id);
         try {
             $id = $request->input('produto_id');
-            // Validação básica
-            if (empty($id)) {
-                throw new \Exception("ID do produto não informado");
-            }
+            $this->validateProductId($id);
 
-            // Encontra e exclui o produto
             $produto = Produtos::findOrFail($id);
-            $item = itemCarrinho::where('produto_id', $id)->first();
-            if (!$item) {
-                $estoque = Estoque::where('produto_id', $id)->first();
 
-                // verifica se é uma pasta
-                $diretorio = $produto->pasta;
-                if ($this->excluiPasta($diretorio)) {
-                    $estoque->delete();
-                    $produto->delete();
-                    $produtos = $this->produtos;
-                    Alert::alert('Exclusão', 'Imagens excluídas com sucesso', 'success');
-                    return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
-                    exit();
-                } else {
-                    throw new \Exception("Erro ao excluir a pasta de imagens do produto.");
-                }
-            } else {
-                Alert::alert('Exclusão', 'Erro ao excluir produto, já está em um carrinho, DESATIVE O PRODUTO', 'error');
-                $produtos = $this->produtos;
-                return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
-                exit();
+            if (ItemCarrinho::where('produto_id', $id)->exists()) {
+                return $this->redirectWithError(
+                    'Erro ao excluir produto, já está em um carrinho, DESATIVE O PRODUTO',
+                    'Exclusão',
+                    'error'
+                );
             }
-        } catch (\Exception $e) {
-            $produtos = $this->produtos; // Ou sua lógica específica para obter os produtos
-            Alert::alert('Erro', $e->getMessage(), 'error');
-            return redirect()->route('administrativo.produtos', ['produtos' => $produtos]);
+
+            $this->deleteProductWithDependencies($produto);
+
+            Alert::success('Exclusão', 'Imagens excluídas com sucesso');
+            return redirect()->route('administrativo.produtos', ['produtos' => $this->produtos]);
+        } catch (Exception $e) {
+            return $this->redirectWithError($e->getMessage());
         }
+    }
+
+    protected function deleteProductWithDependencies(Produtos $produto)
+    {
+        $this->deleteProductImages($produto->pasta);
+
+        Estoque::where('produto_id', $produto->id)->delete();
+        $produto->delete();
+    }
+
+    protected function deleteProductImages(string $directory)
+    {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'com'];
+        $images = array_filter(scandir($directory), function ($file) use ($allowedExtensions) {
+            $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            return in_array($extension, $allowedExtensions);
+        });
+
+        foreach ($images as $image) {
+            $imagePath = $directory . $image;
+            if (is_file($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        if ($this->isDirectoryEmpty($directory)) {
+            rmdir($directory);
+        }
+    }
+
+    protected function isDirectoryEmpty(string $path): bool
+    {
+        return count(array_diff(scandir($path), ['.', '..'])) === 0;
     }
 
     public function atualizar(Request $request)
     {
-        $data = $request->all();
-        $id = $data['id'];
-        $produto = Produtos::find($id);
-
-        if (empty($id)) {
-            Alert::alert('Erro', 'ID do produto não informado', 'error');
-            return redirect()->route('administrativo.produtos');
-        }
-
         try {
-            // Verifica se já existe estoque
-            $estoque = Estoque::where('produto_id', $id)->first();
+            $data = $request->all();
+            $this->validateProductId($data['id'] ?? null);
 
-            if (!$estoque && ($data['categoria_id'] == 1 || $data['categoria_id'] == 2)) {
-                // Criando novo estoque de camisas ou skates
-                $estoque = $this->criaObjctEstoque($data);
-                $estoque->produto_id = $id;
-                $estoque->quantidade = 0;
-                $estoque->save();
-            } else if (($data['categoria_id'] == 1 || $data['categoria_id'] == 2)) {
-                // Atualizando estoque existente de camisas ou skates
-                $estoque->fill($this->criaObjctEstoque($data)->toArray());
-                $estoque->quantidade = 0;
-                $estoque->save();
-            } else {
-                // Atualizando estoque existente de outros produtos
-                $estoque->fill($this->criaObjctEstoque($data)->toArray());
-                $estoque->quantidade = 0;
-                $estoque->quantidade = $data['quantidadeProduto'];
-                $estoque->save();
-            }
-
+            $produto = Produtos::findOrFail($data['id']);
+            $this->updateProductStock($produto, $data);
             $produto->update($data);
 
-            Alert::alert('Alteração', 'Alteração realizada com sucesso', 'success');
+            Alert::success('Alteração', 'Alteração realizada com sucesso');
             return redirect()->route('administrativo.produtos');
-        } catch (\Exception $e) {
-            Alert::alert('Erro', $e->getMessage(), 'error');
-            return redirect()->route('administrativo.produtos');
+        } catch (Exception $e) {
+            return $this->redirectWithError($e->getMessage());
         }
     }
 
-    private function excluiPasta($urlDiretorio)
+    protected function updateProductStock(Produtos $produto, array $data)
     {
-        // verifica se é uma pasta
-        if (is_dir($urlDiretorio)) {
+        $estoque = Estoque::firstOrNew(['produto_id' => $produto->id]);
+        $estoque->fill($this->createStockObject($data)->toArray());
 
-            // Lista todos os arquivos de imagem no diretório (jpg, jpeg, png, gif, webp, etc.)
-            $formatosPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'com'];
-            $imagens = [];
+        if (in_array($data['categoria_id'], [1, 2])) {
+            $estoque->quantidade = 0; // Observer calculará automaticamente
+        } else {
+            $estoque->quantidade = $data['quantidadeProduto'] ?? 0;
+        }
 
-            // Lista todos os arquivos de imagem no diretório (jpg, jpeg, png, gif, webp, etc.)
-            foreach (scandir($urlDiretorio) as $arquivo) {
-                $extensao = strtolower(pathinfo($arquivo, PATHINFO_EXTENSION));
-                if (in_array($extensao, $formatosPermitidos)) {
-                    $imagens[] = $urlDiretorio . $arquivo;
-                }
-            }
+        $estoque->save();
+    }
 
-            // Verifica se a pasta está vazia e exclui o diretório
-            foreach ($imagens as $imagem) {
-                if (is_file($imagem)) {
-                    unlink($imagem);
-                    if ($this->pastaEstaVazia($urlDiretorio)) {
-                        if (rmdir($urlDiretorio)) {
-                            return true;
-                        } else {
-                            throw new \Exception("Erro ao excluir imagens, diretório não vazio");
-                            exit();
-                        }
-                    } else {
-                        throw new \Exception("Erro ao excluir imagens, pasta contem arquivos");
-                        exit();
-                    }
-                    // Exclui o arquivo
-                } else {
-                    throw new \Exception("Erro ao excluir imagens");
-                    exit();
-                }
-            }
+    protected function validateProductId($id)
+    {
+        if (empty($id)) {
+            throw new Exception("ID do produto não informado");
         }
     }
 
-    private function pastaEstaVazia($caminho)
-    {
-        $arquivos = scandir($caminho);
-        // Remove "." e ".." que sempre aparecem
-        return count(array_diff($arquivos, ['.', '..'])) === 0;
+    protected function redirectWithError(
+        string $message,
+        string $title = 'Erro',
+        string $type = 'error'
+    ) {
+        Alert::alert($title, $message, $type);
+        return redirect()->route('administrativo.produtos')
+            ->withInput()
+            ->withErrors([$title => $message]);
     }
 }

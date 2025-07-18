@@ -44,11 +44,8 @@ class LoginController extends Controller
             'password.max' => 'O senha deve ter no máximo 255 caracteres',
         ]);
 
-
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            // Autenticação bem-sucedida, redireciona para a página principal
-            Auth::login(Auth::user(), $request->filled('remember')); // Atualiza a sessão
-            $request->session()->regenerate();
+            $request->session()->regenerate(); // Mantém essa linha, é boa prática
             return redirect()->intended('/principal');
         } else {
             // Usuário ou senha incorretos

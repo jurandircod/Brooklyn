@@ -7,6 +7,7 @@ use App\Categoria;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
+use App\Produtos;
 
 class CategoriaController extends Controller
 {
@@ -94,9 +95,9 @@ class CategoriaController extends Controller
         try {
             Categoria::findOrFail($request->input('categoria_id'));
             $categoria = Categoria::where('id', $request->input('categoria_id'))->first();
-
-            if ($categoria->id == 1 || $categoria->id == 2) {
-                throw new \Exception("Essa categoria não pode ser excluída");
+            $categoriaPossuiProdutos = Produtos::where('categoria_id', $request->input('categoria_id'))->count();
+            if (($categoria->id == 1 || $categoria->id == 2) or $categoriaPossuiProdutos > 0) {
+                throw new \Exception("Essa categoria não pode ser excluída, pois possui produtos cadastrados");
             } else {
                 $categoria->delete();
                 Alert::alert('Exclusão', 'Categoria excluída com sucesso', 'success');

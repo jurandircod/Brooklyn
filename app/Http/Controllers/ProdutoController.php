@@ -11,6 +11,7 @@ class ProdutoController extends Controller
 
     private $produtos;
     private $estoque;
+    private $produtosDaMesmaCategoria;
     public function __construct()
     {
         $this->produtos = Produtos::all();
@@ -23,7 +24,8 @@ class ProdutoController extends Controller
         if(!$estoque and !$produtos){
             return redirect()->route('site.principal');
         }
+        $produtosDaMesmaCategoria = $this->produtos->where('categoria_id', $produtos->categoria_id);
         $produto = Produtos::find($id);
-        return view('site.produto', compact('produtos', 'produto', 'estoque'));
+        return view('site.produto', compact('produtos', 'produto', 'estoque', 'produtosDaMesmaCategoria'));
     }
 }

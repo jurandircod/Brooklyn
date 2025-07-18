@@ -87,12 +87,18 @@ class PermissoesController extends Controller
     public function removerPermissao(Request $request)
     {
         try {
-            $permissoes = $this->permissoes;
             $id = $request->input('role_id');
+            // verifica se o usuário possui permissão
+            $usuarioAtivo = User::where('role_id', $id)->get();
             $permissao = Permissoes::find($id);
-            $permissao->delete();
-            Alert::alert('Exclusão', 'Permissão excluída com sucesso', 'success');
-            return redirect()->route('administrativo.permissoes', compact('permissoes'));
+            if ($usuarioAtivo->isEmpty()) {
+                $permissao->delete();
+                Alert::alert('Exclusão', 'Permissão excluída com sucesso', 'success');
+                return redirect()->route('administrativo.permissoes', compact('permissoes'));
+            } else {
+                Alert::alert('Erro', 'Não é possível excluir essa permissão, pois possui usuários associados', 'error');
+                return redirect()->route('administrativo.permissoes', compact('permissoes'));
+            }
         } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.permissoes', compact('permissoes'));

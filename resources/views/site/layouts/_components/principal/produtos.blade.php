@@ -174,12 +174,14 @@
                         }
                     })
                     .then(data => {
-                        loadingToast.hideToast();
 
-                        // Mostrar SweetAlert para confirmação
-                        Swal.fire({
-                            title: 'Adicionado ao carrinho!',
-                            html: `
+                        if (data.status === 'sucess' || data.status === 'success') {
+                            loadingToast.hideToast();
+
+                            // Mostrar SweetAlert para confirmação
+                            Swal.fire({
+                                title: 'Adicionado ao carrinho!',
+                                html: `
                                 <div style="display: flex; align-items: center; gap: 15px; margin: 10px 0;">
                                     <img src="${produtoImagem}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
                                     <div>
@@ -188,27 +190,38 @@
                                     </div>
                                 </div>
                             `,
-                            icon: 'success',
-                            showConfirmButton: true,
-                            confirmButtonText: 'OK',
-                            timer: 3000,
-                            timerProgressBar: true
-                        });
+                                icon: 'success',
+                                showConfirmButton: true,
+                                confirmButtonText: 'OK',
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
 
-                        // Mostrar toast de confirmação
-                        Toastify({
-                            text: `${data.message} adicionado ao carrinho!`,
-                            duration: 3000,
-                            gravity: "bottom",
-                            position: "right",
-                            backgroundColor: "#4CAF50",
-                            stopOnFocus: true
-                        }).showToast();
+                            // Mostrar toast de confirmação
+                            Toastify({
+                                text: `${data.message} adicionado ao carrinho!`,
+                                duration: 3000,
+                                gravity: "bottom",
+                                position: "right",
+                                backgroundColor: "#4CAF50",
+                                stopOnFocus: true
+                            }).showToast();
+                        } else {
+                            loadingToast.hideToast();
+                            Toastify({
+                                text: "Erro ao adicionar ao carrinho",
+                                duration: 3000,
+                                gravity: "bottom",
+                                position: "right",
+                                backgroundColor: "#f44336",
+                                stopOnFocus: true
+                            }).showToast();
+                        }
                     })
                     .catch(err => {
                         loadingToast.hideToast();
                         Toastify({
-                            text: "Erro ao adicionar ao carrinho",
+                            text: "estoque insuficiente",
                             duration: 3000,
                             gravity: "bottom",
                             position: "right",

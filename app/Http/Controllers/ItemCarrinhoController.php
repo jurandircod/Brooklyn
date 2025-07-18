@@ -28,7 +28,7 @@ class ItemCarrinhoController extends Controller
             $estoque = new Estoque;
             $estoqueProduto = $estoque->listarEstoque($produto->id);
             $tamanho = $request->input('tamanho');
-            $quantidadeSolicitada = $request->input('quantidade', 1);
+            $quantidadeSolicitada = $request->input('quantidade');
             number_format($quantidadeSolicitada, 2, ',', '.');
 
             if (!$estoqueProduto) {
@@ -230,7 +230,7 @@ class ItemCarrinhoController extends Controller
 
 
         try {
-            $user_id = auth()->id() ?? 1; // Fallback para teste
+            $user_id = auth()->id(); // Fallback para teste
             $item_id = $request->item_id;
             // verifica se o produto existe
             ExistenciaController::itemExiste($item_id);

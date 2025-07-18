@@ -20,12 +20,20 @@ Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'
 Route::post('/register/salvar', [App\Http\Controllers\Auth\RegisterController::class, 'register'])->name('registerSalvar');
 Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegisterForm'])->name('register');
 Route::get('/principal', 'PrincipalController@principal')->name('site.principal');
-Route::get('/', 'PrincipalController@principal')->name('site.principal');
+Route::middleware('auth')->get('/', 'PrincipalController@principal')->name('site.principal');
 Route::get('/contato', 'ContatoController@contato')->name('site.contato');
 Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
 Route::get('/cep/{cep}', 'AddressController@getCityByCep');
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
 Route::get('/fazerPedido', 'fazerPedido@index')->name('site.fazerPedido')->middleware('auth');
+
+Route::get('/teste-auth', function () {
+    return response()->json([
+        'logado' => auth()->check(),
+        'id' => auth()->id(),
+        'user' => auth()->user(),
+    ]);
+});
 
 Route::group(['prefix' => 'pesquisa'], function () {
     Route::get('/pesquisa', 'ShopController@index')->name('site.shop');
@@ -66,6 +74,8 @@ Route::group(['prefix' => 'administrativo'], function () {
     Route::get('/vendas', 'RelatorioController@produtosMaisVendidos')
     ->name('relatorios.produtos-mais-vendidos')
     ->middleware('auth');
+
+    Route::get('/tabelas', 'TabelasControllers@index')->name('administrativo.tabelas');
     
     //rotas de permissoes
     Route::group(['prefix' => 'permissoes'], function () {

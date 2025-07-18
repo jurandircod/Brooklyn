@@ -127,6 +127,12 @@
                                 <p>Estoque</p>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('administrativo.tabelas') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon text-xs"></i>
+                                <p>Tabelas</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>

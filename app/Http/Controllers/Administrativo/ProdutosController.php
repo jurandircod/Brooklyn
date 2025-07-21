@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\{Produtos, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
+use App\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
 use App\Http\Controllers\ExistenciaController;
 use Exception;
 
@@ -20,7 +20,7 @@ class ProdutosController extends Controller
     public function __construct()
     {
         $this->marcas = Marca::all();
-        $this->produtos = Produtos::all();
+        $this->produtos = Produto::all();
         $this->categorias = Categoria::all();
         $this->estoques = Estoque::all();
     }
@@ -28,11 +28,16 @@ class ProdutosController extends Controller
     public function index()
     {
         return view('administrativo.produto', [
-            'produtos' => $this->produtos,
+            'produtos' => $this->myProducts(),
             'categorias' => $this->categorias,
             'marcas' => $this->marcas,
             'estoques' => $this->estoques
         ]);
+    }
+
+    public function myProducts(){
+        $itens = Produto::where('user_id', auth()->id())->get();
+        return $itens;
     }
 
     public function validarInput($request)
@@ -41,8 +46,8 @@ class ProdutosController extends Controller
             'nome' => 'required|string|max:255',
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
-            'valor' => 'required|max:255|min:1',
-            'url_imagem[]' => 'image|max:2048',
+            'valor' => 'required|min:0.01',
+            'url_imagem.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
             'valor.integer' => 'O campo valor deve ser um número inteiro',
             'valor.255' => 'O campo valor deve ser menor que 255',
@@ -68,11 +73,15 @@ class ProdutosController extends Controller
         $validator = $this->validarInput($data);
 
         if ($validator->fails()) {
-            return $this->redirectWithError('Preencha os campos obrigatórios');
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
+        
         try {
             $data = $this->prepareProductData($data);
+            
             $produto = $this->createProductWithStock($data);
 
             $this->handleProductImages($produto, $data['nome']);
@@ -80,6 +89,7 @@ class ProdutosController extends Controller
             Alert::success('Produto', 'Salvo com sucesso');
             return redirect()->route('administrativo.produtos');
         } catch (Exception $e) {
+            
             return $this->redirectWithError($e->getMessage());
         }
     }
@@ -89,21 +99,14 @@ class ProdutosController extends Controller
         $data['valor'] = str_replace(['R$', ' ', ','], ['', '', '.'], $data['valor']);
         $data['nome'] = str_replace('.', '-', $data['nome']);
         $data['marca_id'] = empty($data['marca_id']) || !is_numeric($data['marca_id']) ? null : $data['marca_id'];
-
-        unset(
-            $data['url_imagem'],
-            $data['quantidadeP'],
-            $data['quantidadeM'],
-            $data['quantidadeG'],
-            $data['quantidadeGG']
-        );
-
         return $data;
     }
 
     protected function createProductWithStock(array $data)
     {
-        $produto = Produtos::create($data);
+        
+        $data['user_id'] = auth()->id();
+        $produto = Produto::create($data);
         $estoque = $this->createStockObject($data);
         $estoque->produto_id = $produto->id;
         $estoque->save();
@@ -111,7 +114,7 @@ class ProdutosController extends Controller
         return $produto;
     }
 
-    protected function handleProductImages(Produtos $produto, string $productName)
+    protected function handleProductImages(Produto $produto, string $productName)
     {
         $folderName = $productName . uniqid();
         $imagePath = public_path("/uploads/produtos/{$folderName}/");
@@ -175,7 +178,7 @@ class ProdutosController extends Controller
             $id = $request->input('produto_id');
             $this->validateProductId($id);
 
-            $produto = Produtos::findOrFail($id);
+            $produto = Produto::findOrFail($id);
 
             if (ItemCarrinho::where('produto_id', $id)->exists()) {
                 return $this->redirectWithError(
@@ -194,7 +197,7 @@ class ProdutosController extends Controller
         }
     }
 
-    protected function deleteProductWithDependencies(Produtos $produto)
+    protected function deleteProductWithDependencies(Produto $produto)
     {
         $this->deleteProductImages($produto->pasta);
 
@@ -237,7 +240,7 @@ class ProdutosController extends Controller
             $data = $request->all();
             $this->validateProductId($data['id'] ?? null);
 
-            $produto = Produtos::findOrFail($data['id']);
+            $produto = Produto::findOrFail($data['id']);
             $this->updateProductStock($produto, $data);
             $produto->update($data);
 
@@ -248,7 +251,7 @@ class ProdutosController extends Controller
         }
     }
 
-    protected function updateProductStock(Produtos $produto, array $data)
+    protected function updateProductStock(Produto $produto, array $data)
     {
         $estoque = Estoque::firstOrNew(['produto_id' => $produto->id]);
         $estoque->fill($this->createStockObject($data)->toArray());
@@ -275,8 +278,6 @@ class ProdutosController extends Controller
         string $type = 'error'
     ) {
         Alert::alert($title, $message, $type);
-        return redirect()->route('administrativo.produtos')
-            ->withInput()
-            ->withErrors([$title => $message]);
+        return redirect()->route('administrativo.produtos');
     }
 }

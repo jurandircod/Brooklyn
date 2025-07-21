@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Produtos;
+use App\Produto;
 use App\Fotos;
 use App\Carrinho;
 use App\ItemCarrinho;
@@ -23,7 +23,7 @@ class PrincipalController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->produtos = Produtos::all();
+        $this->produtos = Produto::all();
         $this->fotos = Fotos::all();
         // Em vez de auth()->id()
         //dd($user_id);
@@ -38,7 +38,7 @@ class PrincipalController extends Controller
 
         $fotos = $this->fotos;
         // Carrega todos os produtos COM suas fotos (eager loading)
-        $produtos = Produtos::with('fotos')->take(12)->get();
+        $produtos = Produto::with('fotos')->take(12)->get();
 
         $itens = $this->itens;
 

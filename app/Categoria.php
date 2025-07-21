@@ -10,7 +10,7 @@ class Categoria extends Model
 
     public function produtos()
     {
-        return $this->hasMany(Produtos::class);
+        return $this->hasMany(Produto::class);
     }
     protected $fillable = ['nome', 'descricao'];
 

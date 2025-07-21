@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
-use App\Permissoes;
+use App\Permissao;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
@@ -17,7 +17,7 @@ class PermissoesController extends Controller
 
     public function __construct()
     {
-        $this->permissoes = Permissoes::all();
+        $this->permissoes = Permissao::all();
         $this->usuarios = User::all();
     }
 
@@ -66,7 +66,7 @@ class PermissoesController extends Controller
         } else {
             Alert::alert('Permissão', 'Salva com sucesso', 'success');
             try {
-                Permissoes::create($request->all());
+                Permissao::create($request->all());
                 return redirect()->route('administrativo.permissoes');
             } catch (\Exception $e) {
                 Alert::alert('Erro', $e->getMessage(), 'error');
@@ -80,7 +80,7 @@ class PermissoesController extends Controller
 
         $permissoes = $this->permissoes;
         $id = $request->input('role_id');
-        $permissao = Permissoes::find($id);
+        $permissao = Permissao::find($id);
         return view('administrativo.permissoes', compact('permissao', 'permissoes'));
     }
 
@@ -90,7 +90,7 @@ class PermissoesController extends Controller
             $id = $request->input('role_id');
             // verifica se o usuário possui permissão
             $usuarioAtivo = User::where('role_id', $id)->get();
-            $permissao = Permissoes::find($id);
+            $permissao = Permissao::find($id);
             if ($usuarioAtivo->isEmpty()) {
                 $permissao->delete();
                 Alert::alert('Exclusão', 'Permissão excluída com sucesso', 'success');
@@ -115,7 +115,7 @@ class PermissoesController extends Controller
             // pega informações para exibir a tabela permissoes na view        
             $permissoes = $this->permissoes;
             // pega o valor da role_id antiga
-            $permissao = Permissoes::where('role_id', $idEditar)->first();
+            $permissao = Permissao::where('role_id', $idEditar)->first();
 
             $data = $request->all();
             // insere os novos dados na tabela permissoes
@@ -132,7 +132,7 @@ class PermissoesController extends Controller
     {
         
         if (Auth::check()) {
-            $permissoesUser = Permissoes::where('role_id', Auth::user()->role_id)->get();
+            $permissoesUser = Permissao::where('role_id', Auth::user()->role_id)->get();
         } else {
             $permissoesUser = collect(); 
         }

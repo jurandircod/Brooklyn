@@ -12,21 +12,23 @@ class Produtos extends Migration
      * @return void
      */
     public function up()
-{
-    Schema::create('produtos', function (Blueprint $table) {
-        $table->id();
-        $table->string('nome');
-        $table->double('valor');
-        $table->string('material')->nullable();
-        $table->unsignedBigInteger('categoria_id');
-        $table->foreign('categoria_id')->references('id')->on('categorias');
-        $table->unsignedBigInteger('marca_id')->nullable();
-        $table->foreign('marca_id')->references('id')->on('marcas');
-        $table->enum('estado', ['ativo', 'inativo'])->default('ativo');
-        $table->string('descricao')->nullable();
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('produtos', function (Blueprint $table) {
+            $table->id();
+            $table->string('nome');
+            $table->double('valor');
+            $table->string('material')->nullable();
+            $table->unsignedBigInteger('categoria_id');
+            $table->foreign('categoria_id')->references('id')->on('categorias');
+            $table->unsignedBigInteger('marca_id')->nullable();
+            $table->foreign('marca_id')->references('id')->on('marcas');
+            $table->enum('estado', ['ativo', 'inativo'])->default('ativo');
+            $table->string('descricao')->nullable();
+            $table->unsignedBigInteger('user_id'); // pode ajustar a posição
+            $table->timestamps();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        });
+    }
 
 
     /**
@@ -40,7 +42,7 @@ class Produtos extends Migration
             $table->dropForeign(['categoria_id']);
             $table->dropForeign(['marca_id']);
         });
-        
+
         Schema::dropIfExists('produtos');
     }
 }

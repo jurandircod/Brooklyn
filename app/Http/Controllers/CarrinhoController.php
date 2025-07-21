@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Carrinho;
 use App\ItemCarrinho;
-use App\Produtos;
+use App\Produto;
 
 class CarrinhoController extends Controller
 {
@@ -17,7 +17,7 @@ class CarrinhoController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->produto = Produtos::all();
+        $this->produto = Produto::all();
     }
     public function index()
     {

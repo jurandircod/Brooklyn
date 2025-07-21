@@ -3,12 +3,10 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\App;
-
-class Produtos extends Model
+class Produto extends Model
 {
     protected $table = 'produtos';
-    protected $fillable = ['nome', 'valor', 'material', 'categoria_id', 'marca_id', 'descricao', 'largura'];
+    protected $fillable = ['nome', 'valor', 'material', 'categoria_id', 'marca_id', 'descricao', 'largura', 'user_id'];
     protected $appends = ['imagem_url'];
     // Define o relacionamento "uma categoria tem muitos produtos"
     public function categoria()
@@ -27,6 +25,10 @@ class Produtos extends Model
         return $this->belongsTo(Marca::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     // metodo acessor de helper
     public function getPastaAttribute(){
         return \App\Helpers\ImagemHelper::pastaImagensProduto($this->id);

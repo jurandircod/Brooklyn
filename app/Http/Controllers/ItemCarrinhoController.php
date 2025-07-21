@@ -5,13 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Carrinho;
 use App\ItemCarrinho;
-use App\Produtos;
+use App\Produto;
 use App\Estoque;
 use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\Auth;
 
+
 class ItemCarrinhoController extends Controller
 {
+    private $itemCarrinho;
+    private $tamanhoMap = [
+        0 => 'quantidadeP',
+        1 => 'quantidadeM',
+        2 => 'quantidadeG',
+        3 => 'quantidadeGG',
+        4 => 'quantidade775',
+        5 => 'quantidade8',
+        6 => 'quantidade825',
+        7 => 'quantidade85',
+    ];
+
+    public function __construct()
+    {
+        $this->itemCarrinho = new ItemCarrinho;
+    }
+
     public function adicionar(Request $request)
     {
 
@@ -24,76 +42,29 @@ class ItemCarrinhoController extends Controller
             $carrinho = Carrinho::firstOrCreate(['user_id' => $user_id]);
             // verifica se o produto existe
             ExistenciaController::produtoExiste($request->produto_id);
-            $produto = Produtos::findOrFail($request->produto_id);
+            $produto = Produto::findOrFail($request->produto_id);
             $estoque = new Estoque;
             $estoqueProduto = $estoque->listarEstoque($produto->id);
             $tamanho = $request->input('tamanho');
             $quantidadeSolicitada = $request->input('quantidade');
             number_format($quantidadeSolicitada, 2, ',', '.');
 
+
             if (!$estoqueProduto) {
                 return response()->json(['status' => 'error', 'message' => 'Produto sem estoque.']);
             }
 
-            // Validação por tamanho
-            switch ($tamanho) {
-                case "P":
-                    if ($estoqueProduto->quantidadeP < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                    $estoqueProduto->quantidadeP -= $quantidadeSolicitada;
-                    $estoqueProduto->quantidade -= $quantidadeSolicitada;
 
-                    break;
-                case "M":
-                    if ($estoqueProduto->quantidadeM < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                    $estoqueProduto->quantidadeM -= $quantidadeSolicitada;
-                    $estoqueProduto->quantidade -= $quantidadeSolicitada;
+            // Atualiza Estoque
+            $verificaResposta = $this->AtualizaEstoque($tamanho, $estoqueProduto, $quantidadeSolicitada);
 
-                    break;
-                case "G":
-                    if ($estoqueProduto->quantidadeG < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                    $estoqueProduto->quantidadeG -= $quantidadeSolicitada;
-                    $estoqueProduto->quantidade -= $quantidadeSolicitada;
-
-                    break;
-                case "GG":
-                    if ($estoqueProduto->quantidadeGG < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                    $estoqueProduto->quantidadeGG -= $quantidadeSolicitada;
-                    $estoqueProduto->quantidade -= $quantidadeSolicitada;
-
-                    break;
-                case "8":
-                    if ($estoqueProduto->quantidade8 < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                    $estoqueProduto->quantidade8 -= $quantidadeSolicitada;
-                    $estoqueProduto->quantidade -= $quantidadeSolicitada;
-                    break;
-                case "825":
-                    if ($estoqueProduto->quantidade825 < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                    $estoqueProduto->quantidade825 -= $quantidadeSolicitada;
-                    $estoqueProduto->quantidade -= $quantidadeSolicitada;
-                    break;
-                case "85":
-                    if ($estoqueProduto->quantidade85 < $quantidadeSolicitada) return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                    $estoqueProduto->quantidade85 -= $quantidadeSolicitada;
-                    $estoqueProduto->quantidade -= $quantidadeSolicitada;
-                    break;
-                case "quantidade":
-                    if ($estoqueProduto->quantidade < $quantidadeSolicitada) {
-                        return response()->json(['status' => 'error', 'message' => 'Estoque insuficiente!']);
-                    }
-                    $estoqueProduto->quantidade -= $quantidadeSolicitada;
-                    break;
-                default:
-                    return response()->json(['status' => 'error', 'message' => 'Tamanho inválido!']);
+            
+            if(!$verificaResposta){
+                return response()->json(['status'=> 'error', 'message' => 'Estoque Indisponível']);
             }
 
-            // Atualiza o estoque total
-            $estoqueProduto->save();
-
             // Verifica se item igual já existe no carrinho com mesmo tamanho
-            $itemExistente = ItemCarrinho::where('carrinho_id', $carrinho->id)
-                ->where('produto_id', $produto->id)
-                ->where('tamanho', $tamanho)
-                ->first();
+            $itemExistente = $this->itemCarrinho->VerificaItemCarrinho($carrinho->id, $produto->id, $tamanho);
 
             if ($itemExistente) {
                 $itemExistente->quantidade += $quantidadeSolicitada;
@@ -110,12 +81,72 @@ class ItemCarrinhoController extends Controller
                 ]);
             }
 
-            return response()->json(['status' => 'sucess', 'message' =>' produto adicionado ao carrinho!']);
+            return response()->json(['status' => 'sucess', 'message' => ' produto adicionado ao carrinho!']);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 
+    private function AtualizaEstoque($tamanho, Estoque $estoqueProduto, $quantidadeSolicitada)
+    {
+        switch ($tamanho) {
+            case "P":
+                if ($estoqueProduto->quantidadeP < $quantidadeSolicitada) return false;
+                $estoqueProduto->quantidadeP -= $quantidadeSolicitada;
+                $estoqueProduto->quantidade -= $quantidadeSolicitada;
+
+                break;
+            case "M":
+                if ($estoqueProduto->quantidadeM < $quantidadeSolicitada) return false;
+                $estoqueProduto->quantidadeM -= $quantidadeSolicitada;
+                $estoqueProduto->quantidade -= $quantidadeSolicitada;
+
+                break;
+            case "G":
+                if ($estoqueProduto->quantidadeG < $quantidadeSolicitada) return false;
+                $estoqueProduto->quantidadeG -= $quantidadeSolicitada;
+                $estoqueProduto->quantidade -= $quantidadeSolicitada;
+
+                break;
+            case "GG":
+                if ($estoqueProduto->quantidadeGG < $quantidadeSolicitada) return false;
+                $estoqueProduto->quantidadeGG -= $quantidadeSolicitada;
+                $estoqueProduto->quantidade -= $quantidadeSolicitada;
+
+                break;
+            case "8":
+                if ($estoqueProduto->quantidade8 < $quantidadeSolicitada) return false;
+                $estoqueProduto->quantidade8 -= $quantidadeSolicitada;
+                $estoqueProduto->quantidade -= $quantidadeSolicitada;
+                break;
+            case "825":
+                if ($estoqueProduto->quantidade825 < $quantidadeSolicitada) return false;
+                $estoqueProduto->quantidade825 -= $quantidadeSolicitada;
+                $estoqueProduto->quantidade -= $quantidadeSolicitada;
+                break;
+            case "85":
+                if ($estoqueProduto->quantidade85 < $quantidadeSolicitada) return false;
+                $estoqueProduto->quantidade85 -= $quantidadeSolicitada;
+                $estoqueProduto->quantidade -= $quantidadeSolicitada;
+                break;
+            case "quantidade":
+                if ($estoqueProduto->quantidade < $quantidadeSolicitada) {
+                    return false;
+                    break;
+                    exit();
+                }
+                $estoqueProduto->quantidade -= $quantidadeSolicitada;
+                //zera os estoques de outras categorias, caso tenha
+                foreach ($this->tamanhoMap as $t) {
+                    $estoqueProduto->$t = 0;
+                };
+                break;
+            default:
+                return false;
+        }
+        $estoqueProduto->save();
+        return true;
+    }
 
     public function quantidadeItensCarrinho()
     {
@@ -132,7 +163,7 @@ class ItemCarrinhoController extends Controller
     public function atualizarQuantidade(Request $request)
     {
         try {
-            $user_id = auth()->id() ?? 1;
+            $user_id = auth()->id();
             $item_id = $request->item_id;
             // verifica se o produto existe
             ExistenciaController::itemExiste($item_id);

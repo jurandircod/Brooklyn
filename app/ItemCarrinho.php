@@ -1,8 +1,9 @@
 <?php
 
 namespace App;
+
 use App\Carrinho;
-use App\Produtos;
+
 use Illuminate\Database\Eloquent\Model;
 
 class ItemCarrinho extends Model
@@ -25,7 +26,14 @@ class ItemCarrinho extends Model
 
     public function produto()
     {
-        return $this->belongsTo(Produtos::class);
+        return $this->belongsTo(Produto::class);
+    }
+
+    public function VerificaItemCarrinho($carrinhoId, $produtoId, $tamanho)
+    {
+        return ItemCarrinho::where('carrinho_id', $carrinhoId)
+            ->where('produto_id', $produtoId)
+            ->where('tamanho', $tamanho)
+            ->first();
     }
 }
-

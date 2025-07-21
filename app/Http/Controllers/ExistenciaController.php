@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Carrinho;
 use App\ItemCarrinho;
-use App\Produtos;
+use App\Produto;
 use App\Estoque;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,7 +38,7 @@ class ExistenciaController extends Controller
 
     public static function produtoExiste($produto_id)
     {
-        $produto = Produtos::find($produto_id);
+        $produto = Produto::find($produto_id);
         if (!$produto) {
             throw new \Exception("Produto não encontrado ou deletado");
         }

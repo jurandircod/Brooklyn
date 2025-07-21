@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use App\Pedido;
-use App\Produtos;
+use App\Produto;
 use App\User;
 use Carbon\Carbon;
 use App\Categoria;
@@ -16,7 +16,7 @@ class PrincipalController extends Controller
     {
         // Dados para os cards
         $totalVendas = Pedido::where('status', 'entregue')->count();
-        $totalProdutos = Produtos::count();
+        $totalProdutos = Produto::count();
         $totalUsuarios = User::count();
         $pedidosPendentes = Pedido::where('status', 'aguardando')->count();
         
@@ -102,7 +102,7 @@ class PrincipalController extends Controller
         }
         
         // Últimos produtos cadastrados
-        $produtos = Produtos::with('categoria')
+        $produtos = Produto::with('categoria')
             ->orderBy('created_at', 'desc')
             ->take(2)
             ->get();

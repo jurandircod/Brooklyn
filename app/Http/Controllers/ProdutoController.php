@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Produtos;
+use App\Produto;
 use App\Estoque;
 
 class ProdutoController extends Controller
@@ -14,7 +14,7 @@ class ProdutoController extends Controller
     private $produtosDaMesmaCategoria;
     public function __construct()
     {
-        $this->produtos = Produtos::all();
+        $this->produtos = Produto::all();
         $this->estoque = Estoque::all();
     }
     public function index($id)
@@ -25,7 +25,7 @@ class ProdutoController extends Controller
             return redirect()->route('site.principal');
         }
         $produtosDaMesmaCategoria = $this->produtos->where('categoria_id', $produtos->categoria_id);
-        $produto = Produtos::find($id);
+        $produto = Produto::find($id);
         return view('site.produto', compact('produtos', 'produto', 'estoque', 'produtosDaMesmaCategoria'));
     }
 }

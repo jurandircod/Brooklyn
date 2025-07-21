@@ -1,5 +1,3 @@
-
-
 <style>
     .h-logo {
         max-width: 185px !important;
@@ -87,8 +85,9 @@
                     </li>
 
                     <li class="nav-item mb-2">
-                        <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 6) || (isset($_GET['activeTab']) && $_GET['activeTab'] == 6)) active @endif" id="3-tab" data-bs-toggle="tab" data-bs-target="#save"
-                            type="button"><i class="fas fa-angle-right"></i>Endereços salvos</button>
+                        <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 6) || (isset($_GET['activeTab']) && $_GET['activeTab'] == 6)) active @endif"
+                            id="3-tab" data-bs-toggle="tab" data-bs-target="#save" type="button"><i
+                                class="fas fa-angle-right"></i>Endereços salvos</button>
                     </li>
 
                     <li class="nav-item mb-2">
@@ -116,13 +115,12 @@
                         <div class="dashboard-right">
                             <div class="dashboard">
                                 <div class="page-title title title1 title-effect">
-                                    <h2>My Dashboard</h2>
+                                    <h2>Informações Pessoais</h2>
                                 </div>
                                 <div class="welcome-msg">
-                                    <h6 class="font-light">Hello, <span>MARK JECNO !</span></h6>
-                                    <p class="font-light">From your My Account Dashboard you have the ability to
-                                        view a snapshot of your recent account activity and update your account
-                                        information. Select a link below to view or edit information.</p>
+                                    <h6 class="font-light">Ola, <span>{{ Auth::user()->name }}</span></h6>
+                                    <p class="font-light">Veja no painel de controle a informação que você deseja
+                                        editar.</p>
                                 </div>
 
                                 <div class="order-box-contain my-4">
@@ -137,7 +135,7 @@
                                                     <img src="assets/images/svg/box1.png"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                     <div>
-                                                        <h5 class="font-light">total order</h5>
+                                                        <h5 class="font-light">Total de Pedidos</h5>
                                                         <h3>3648</h3>
                                                     </div>
                                                 </div>
@@ -154,7 +152,7 @@
                                                     <img src="assets/images/svg/sent1.png"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                     <div>
-                                                        <h5 class="font-light">pending orders</h5>
+                                                        <h5 class="font-light">Pedidos Pendentes</h5>
                                                         <h3>215</h3>
                                                     </div>
                                                 </div>
@@ -171,7 +169,7 @@
                                                     <img src="assets/images/svg/wishlist1.png"
                                                         class="img-fluid blur-up lazyload" alt="">
                                                     <div>
-                                                        <h5 class="font-light">wishlist</h5>
+                                                        <h5 class="font-light">Carrinhos</h5>
                                                         <h3>63874</h3>
                                                     </div>
                                                 </div>
@@ -182,53 +180,30 @@
 
                                 <div class="box-account box-info">
                                     <div class="box-head">
-                                        <h3>Account Information</h3>
+                                        <h3>Informações de Conta</h3>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <div class="box">
                                                 <div class="box-title">
-                                                    <h4>Contact Information</h4><a href="javascript:void(0)">Edit</a>
+                                                    <h4>Contato</h4><a
+                                                        href="{{ route('site.perfil.exibirEndereco') }}">Editar</a>
                                                 </div>
                                                 <div class="box-content">
-                                                    <h6 class="font-light">MARK JECNO</h6>
-                                                    <h6 class="font-light">MARk-JECNO@gmail.com</h6>
-                                                    <a href="javascript:void(0)">Change Password</a>
+                                                    <h6 class="font-light">{{ Auth::user()->name }}</h6>
+                                                    <h6 class="font-light">{{ Auth::user()->email }}</h6>
+                                                    <a href="#">Alterar Senha</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="box">
                                                 <div class="box-title">
-                                                    <h4>Newsletters</h4><a href="javascript:void(0)">Edit</a>
+                                                    <h4>Noticias</h4><a href="#">Editar</a>
                                                 </div>
                                                 <div class="box-content">
-                                                    <h6 class="font-light">You are currently not subscribed to any
+                                                    <h6 class="font-light">Você não está inscrito em nenhuma
                                                         newsletter.</h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="box address-box">
-                                            <div class="box-title">
-                                                <h4>Address Book</h4><a href="javascript:void(0)">Manage
-                                                    Addresses</a>
-                                            </div>
-                                            <div class="box-content">
-                                                <div class="row g-4">
-                                                    <div class="col-sm-6">
-                                                        <h6 class="font-light">Default Billing Address</h6>
-                                                        <h6 class="font-light">You have not set a default
-                                                            billing address.</h6>
-                                                        <a href="javascript:void(0)">Edit Address</a>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <h6 class="font-light">Default Shipping Address</h6>
-                                                        <h6 class="font-light">You have not set a default
-                                                            shipping address.</h6>
-                                                        <a href="javascript:void(0)">Edit Address</a>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

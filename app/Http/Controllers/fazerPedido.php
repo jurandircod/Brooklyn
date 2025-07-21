@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Produtos;
+use App\Produto;
 use App\Categoria;
 use App\Marca;
 use App\Endereco;
@@ -24,7 +24,7 @@ class fazerPedido extends Controller
 
     public function __construct()
     {
-        $this->produtos = Produtos::all();
+        $this->produtos = Produto::all();
         $this->categorias = Categoria::all();
         $this->marcas = Marca::all();
     }

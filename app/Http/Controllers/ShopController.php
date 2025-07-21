@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Produtos;
+use App\Produto;
 use App\Categoria;
 use App\Marca;
 use Illuminate\Support\Facades\Validator;
@@ -17,7 +17,7 @@ class ShopController extends Controller
 
     public function __construct()
     {
-        $this->produtos = Produtos::all();
+        $this->produtos = Produto::all();
         $this->categorias = Categoria::all();
         $this->marcas = Marca::all();
     }
@@ -60,7 +60,7 @@ class ShopController extends Controller
         $sizes = array_filter($request->input('sizes', []));
 
         // Construir a query com eager loading
-        $query = Produtos::query()->with(['categoria', 'marca', 'fotos']);
+        $query = Produto::query()->with(['categoria', 'marca', 'fotos']);
 
         // Mapear tamanhos para colunas de estoque
         $sizeColumns = [

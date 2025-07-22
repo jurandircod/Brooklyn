@@ -10,13 +10,24 @@ use App\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
 use App\Http\Controllers\ExistenciaController;
 use Exception;
 
+/**
+ * Class ProdutosController
+ * 
+ * Controlador responsável pela gestão de produtos no sistema administrativo.
+ * Este controlador permite a criação, atualização, exclusão e listagem de produtos,
+ * além de gerenciar suas imagens e estoques.
+ */
 class ProdutosController extends Controller
 {
-    protected $produtos;
-    protected $categorias;
-    protected $marcas;
-    protected $estoques;
+    protected $produtos;    // Lista de produtos
+    protected $categorias;   // Lista de categorias
+    protected $marcas;       // Lista de marcas
+    protected $estoques;     // Lista de estoques
 
+    /**
+     * ProdutosController constructor.
+     * Inicializa as listas de marcas, produtos, categorias e estoques.
+     */
     public function __construct()
     {
         $this->marcas = Marca::all();
@@ -25,6 +36,11 @@ class ProdutosController extends Controller
         $this->estoques = Estoque::all();
     }
 
+    /**
+     * Exibe a lista de produtos.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         return view('administrativo.produto', [
@@ -35,11 +51,23 @@ class ProdutosController extends Controller
         ]);
     }
 
-    public function myProducts(){
+    /**
+     * Obtém os produtos do usuário autenticado.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function myProducts()
+    {
         $itens = Produto::where('user_id', auth()->id())->get();
         return $itens;
     }
 
+    /**
+     * Valida os dados de entrada do produto.
+     *
+     * @param array $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
     public function validarInput($request)
     {
         return Validator::make($request, [
@@ -67,6 +95,12 @@ class ProdutosController extends Controller
         ]);
     }
 
+    /**
+     * Salva um novo produto.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function salvarProduto(Request $request)
     {
         $data = $request->all();
@@ -78,22 +112,24 @@ class ProdutosController extends Controller
                 ->withInput();
         }
 
-        
         try {
             $data = $this->prepareProductData($data);
-            
             $produto = $this->createProductWithStock($data);
-
             $this->handleProductImages($produto, $data['nome']);
 
             Alert::success('Produto', 'Salvo com sucesso');
             return redirect()->route('administrativo.produtos');
         } catch (Exception $e) {
-            
             return $this->redirectWithError($e->getMessage());
         }
     }
 
+    /**
+     * Prepara os dados do produto para armazenamento.
+     *
+     * @param array $data
+     * @return array
+     */
     protected function prepareProductData(array $data): array
     {
         $data['valor'] = str_replace(['R$', ' ', ','], ['', '', '.'], $data['valor']);
@@ -102,9 +138,14 @@ class ProdutosController extends Controller
         return $data;
     }
 
+    /**
+     * Cria um produto e seu estoque associado.
+     *
+     * @param array $data
+     * @return Produto
+     */
     protected function createProductWithStock(array $data)
     {
-        
         $data['user_id'] = auth()->id();
         $produto = Produto::create($data);
         $estoque = $this->createStockObject($data);
@@ -114,6 +155,12 @@ class ProdutosController extends Controller
         return $produto;
     }
 
+    /**
+     * Manipula as imagens do produto.
+     *
+     * @param Produto $produto
+     * @param string $productName
+     */
     protected function handleProductImages(Produto $produto, string $productName)
     {
         $folderName = $productName . uniqid();
@@ -128,6 +175,12 @@ class ProdutosController extends Controller
         ]);
     }
 
+    /**
+     * Cria um objeto de estoque a partir dos dados do produto.
+     *
+     * @param array $data
+     * @return Estoque
+     */
     protected function createStockObject(array $data): Estoque
     {
         return new Estoque([
@@ -142,6 +195,12 @@ class ProdutosController extends Controller
         ]);
     }
 
+    /**
+     * Faz o upload das imagens para o diretório especificado.
+     *
+     * @param string $destinationPath
+     * @return array
+     */
     protected function uploadImages(string $destinationPath): array
     {
         $uploadedPaths = [];
@@ -164,6 +223,12 @@ class ProdutosController extends Controller
         return $uploadedPaths;
     }
 
+    /**
+     * Cria um diretório se ele não existir.
+     *
+     * @param string $path
+     * @return bool
+     */
     protected function createFolder(string $path): bool
     {
         if (!file_exists($path)) {
@@ -172,6 +237,12 @@ class ProdutosController extends Controller
         return true;
     }
 
+    /**
+     * Exclui um produto e suas dependências.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function excluir(Request $request)
     {
         try {
@@ -197,6 +268,11 @@ class ProdutosController extends Controller
         }
     }
 
+    /**
+     * Exclui um produto e suas imagens associadas.
+     *
+     * @param Produto $produto
+     */
     protected function deleteProductWithDependencies(Produto $produto)
     {
         $this->deleteProductImages($produto->pasta);
@@ -205,6 +281,11 @@ class ProdutosController extends Controller
         $produto->delete();
     }
 
+    /**
+     * Exclui as imagens de um produto.
+     *
+     * @param string $directory
+     */
     protected function deleteProductImages(string $directory)
     {
         if (!is_dir($directory)) {
@@ -229,11 +310,23 @@ class ProdutosController extends Controller
         }
     }
 
+    /**
+     * Verifica se um diretório está vazio.
+     *
+     * @param string $path
+     * @return bool
+     */
     protected function isDirectoryEmpty(string $path): bool
     {
         return count(array_diff(scandir($path), ['.', '..'])) === 0;
     }
 
+    /**
+     * Atualiza os dados de um produto.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function atualizar(Request $request)
     {
         try {
@@ -251,6 +344,12 @@ class ProdutosController extends Controller
         }
     }
 
+    /**
+     * Atualiza o estoque de um produto.
+     *
+     * @param Produto $produto
+     * @param array $data
+     */
     protected function updateProductStock(Produto $produto, array $data)
     {
         $estoque = Estoque::firstOrNew(['produto_id' => $produto->id]);
@@ -265,6 +364,12 @@ class ProdutosController extends Controller
         $estoque->save();
     }
 
+    /**
+     * Valida o ID do produto.
+     *
+     * @param mixed $id
+     * @throws Exception
+     */
     protected function validateProductId($id)
     {
         if (empty($id)) {
@@ -272,6 +377,14 @@ class ProdutosController extends Controller
         }
     }
 
+    /**
+     * Redireciona com uma mensagem de erro.
+     *
+     * @param string $message
+     * @param string $title
+     * @param string $type
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function redirectWithError(
         string $message,
         string $title = 'Erro',

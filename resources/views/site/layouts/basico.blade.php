@@ -7,8 +7,8 @@
 
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/images/favicon.ico">
-    <link rel="icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
-    <link rel="icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('images/newletter-icon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('images/newletter-icon.png') }}" type="image/x-icon">
     <meta name="theme-color" content="#e87316">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -34,6 +34,8 @@
     <link id="color-link" rel="stylesheet" type="text/css" href="{{ asset('css/demo4.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 

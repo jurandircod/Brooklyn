@@ -100,7 +100,7 @@
                         <div class="menu-left">
                             <div class="brand-logo">
                                 <a href="{{ route('site.principal') }}">
-                                    <img src="{{asset('images/logo.png')}}" class="h-logo img-fluid blur-up lazyload"
+                                    <img src="{{asset('images/brooklyn_skateshop_logo.svg')}}" class="h-logo img-fluid blur-up lazyload"
                                         alt="logo">
                                 </a>
                             </div>

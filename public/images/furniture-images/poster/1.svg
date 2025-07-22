@@ -1,0 +1,168 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradientes terrosos -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513" />
+      <stop offset="50%" style="stop-color:#A0522D" />
+      <stop offset="100%" style="stop-color:#D2691E" />
+    </linearGradient>
+    
+    <linearGradient id="frameGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#654321" />
+      <stop offset="100%" style="stop-color:#8B4513" />
+    </linearGradient>
+    
+    <linearGradient id="textGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#DEB887" />
+      <stop offset="50%" style="stop-color:#F4A460" />
+      <stop offset="100%" style="stop-color:#CD853F" />
+    </linearGradient>
+    
+    <linearGradient id="textGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2F1B14" />
+      <stop offset="100%" style="stop-color:#654321" />
+    </linearGradient>
+    
+    <linearGradient id="skaterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F4A460" />
+      <stop offset="30%" style="stop-color:#D2691E" />
+      <stop offset="70%" style="stop-color:#A0522D" />
+      <stop offset="100%" style="stop-color:#8B4513" />
+    </linearGradient>
+    
+    <!-- Filtros para efeitos -->
+    <filter id="roughPaper" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence baseFrequency="0.04" numOctaves="5" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3"/>
+    </filter>
+    
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="4" dy="6" stdDeviation="4" flood-color="#2F1B14" flood-opacity="0.4"/>
+    </filter>
+    
+    <!-- Padrão de textura grunge -->
+    <pattern id="grunge" patternUnits="userSpaceOnUse" width="100" height="100">
+      <rect width="100" height="100" fill="#8B4513" opacity="0.1"/>
+      <circle cx="20" cy="30" r="2" fill="#654321" opacity="0.3"/>
+      <circle cx="70" cy="60" r="1.5" fill="#A0522D" opacity="0.2"/>
+      <circle cx="40" cy="80" r="1" fill="#2F1B14" opacity="0.4"/>
+      <rect x="10" y="10" width="3" height="20" fill="#654321" opacity="0.2" transform="rotate(45 10 10)"/>
+      <rect x="80" y="40" width="2" height="15" fill="#A0522D" opacity="0.3" transform="rotate(-30 80 40)"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background principal -->
+  <rect width="1200" height="675" fill="url(#bgGradient)"/>
+  
+  <!-- Textura grunge overlay -->
+  <rect width="1200" height="675" fill="url(#grunge)" opacity="0.3"/>
+  
+  <!-- Frame principal -->
+  <rect x="40" y="40" width="1120" height="595" fill="#F5DEB3" stroke="url(#frameGradient)" stroke-width="8" filter="url(#dropShadow)"/>
+  
+  <!-- Borda decorativa interna -->
+  <rect x="60" y="60" width="1080" height="555" fill="none" stroke="#8B4513" stroke-width="2" stroke-dasharray="10,5" opacity="0.6"/>
+  
+  <!-- Texto lateral esquerdo "SKATEBOARD" -->
+  <g transform="translate(90, 550) rotate(-90)">
+    <text x="0" y="0" font-family="'Impact', sans-serif" font-size="24" font-weight="900" 
+          fill="#2F1B14" letter-spacing="8px" opacity="0.8">SKATEBOARD</text>
+  </g>
+  
+  <!-- Texto lateral direito "SKATEBOARD" -->
+  <g transform="translate(1110, 120) rotate(90)">
+    <text x="0" y="0" font-family="'Impact', sans-serif" font-size="24" font-weight="900" 
+          fill="#2F1B14" letter-spacing="8px" opacity="0.8">SKATEBOARD</text>
+  </g>
+  
+  <!-- Área da imagem do skater (esquerda) -->
+  <rect x="80" y="100" width="480" height="480" fill="#2F1B14" opacity="0.8"/>
+  
+  <!-- Silhueta do skatista estilizada -->
+  <g transform="translate(200, 200)">
+    <!-- Corpo do skatista -->
+    <ellipse cx="120" cy="180" rx="40" ry="80" fill="url(#skaterGradient)" opacity="0.9" transform="rotate(-15 120 180)"/>
+    
+    <!-- Cabeça -->
+    <circle cx="100" cy="100" r="25" fill="#F4A460" opacity="0.8"/>
+    
+    <!-- Braços -->
+    <ellipse cx="80" cy="140" rx="15" ry="40" fill="#D2691E" opacity="0.8" transform="rotate(30 80 140)"/>
+    <ellipse cx="140" cy="160" rx="15" ry="40" fill="#D2691E" opacity="0.8" transform="rotate(-20 140 160)"/>
+    
+    <!-- Pernas -->
+    <ellipse cx="100" cy="240" rx="12" ry="45" fill="#A0522D" opacity="0.8" transform="rotate(-10 100 240)"/>
+    <ellipse cx="130" cy="260" rx="12" ry="45" fill="#A0522D" opacity="0.8" transform="rotate(15 130 260)"/>
+    
+    <!-- Skateboard -->
+    <ellipse cx="140" cy="320" rx="50" ry="8" fill="#8B4513" opacity="0.9" transform="rotate(20 140 320)"/>
+    
+    <!-- Rodas do skateboard -->
+    <circle cx="115" cy="315" r="6" fill="#2F1B14"/>
+    <circle cx="165" cy="325" r="6" fill="#2F1B14"/>
+    
+    <!-- Efeito de movimento -->
+    <path d="M180 300 Q200 310 190 330 Q180 320 185 305" fill="#F4A460" opacity="0.4"/>
+    <path d="M185 280 Q210 290 200 315 Q190 300 195 285" fill="#D2691E" opacity="0.3"/>
+  </g>
+  
+  <!-- Elementos urbanos de fundo -->
+  <g transform="translate(100, 480)" opacity="0.6">
+    <!-- Degraus/obstáculos -->
+    <rect x="0" y="0" width="100" height="20" fill="#654321"/>
+    <rect x="120" y="-15" width="80" height="35" fill="#8B4513"/>
+    <rect x="220" y="5" width="60" height="15" fill="#A0522D"/>
+    <rect x="300" y="-10" width="90" height="30" fill="#654321"/>
+  </g>
+  
+  <!-- Logo da marca no topo direito -->
+  <g transform="translate(650, 120)">
+    <circle cx="50" cy="50" r="40" fill="#2F1B14"/>
+    <text x="50" y="40" font-family="'Impact', sans-serif" font-size="16" font-weight="900" 
+          fill="#F4A460" text-anchor="middle">BROOKLYN</text>
+    <text x="50" y="60" font-family="'Arial', sans-serif" font-size="10" font-weight="600" 
+          fill="#DEB887" text-anchor="middle">SKATESHOP</text>
+  </g>
+  
+  <!-- Data/informação -->
+  <text x="650" y="250" font-family="'Impact', sans-serif" font-size="36" font-weight="900" 
+        fill="url(#textGradient1)" filter="url(#dropShadow)">DESDE 2020</text>
+  
+  <!-- Título principal -->
+  <text x="650" y="320" font-family="'Impact', sans-serif" font-size="72" font-weight="900" 
+        fill="url(#textGradient2)" filter="url(#dropShadow)">BORN TO</text>
+  <text x="650" y="390" font-family="'Impact', sans-serif" font-size="72" font-weight="900" 
+        fill="url(#textGradient2)" filter="url(#dropShadow)">SKATE</text>
+  
+  <!-- Texto descritivo -->
+  <text x="650" y="440" font-family="'Arial', sans-serif" font-size="18" font-weight="400" 
+        fill="#2F1B14" opacity="0.8">Equipamentos de alta qualidade para skatistas</text>
+  <text x="650" y="465" font-family="'Arial', sans-serif" font-size="18" font-weight="400" 
+        fill="#2F1B14" opacity="0.8">que vivem o skate com paixão e autenticidade.</text>
+  
+  <!-- Website -->
+  <text x="650" y="520" font-family="'Arial Black', sans-serif" font-size="20" font-weight="900" 
+        fill="#8B4513">Visite: www.brooklynskate.com.br</text>
+  
+  <!-- Elementos decorativos -->
+  <g transform="translate(580, 300)" opacity="0.3">
+    <rect x="0" y="0" width="40" height="3" fill="#8B4513" transform="rotate(15)"/>
+    <rect x="20" y="20" width="35" height="2" fill="#A0522D" transform="rotate(-10)"/>
+    <rect x="10" y="40" width="45" height="2" fill="#D2691E" transform="rotate(5)"/>
+  </g>
+  
+  <!-- Pontos decorativos -->
+  <g transform="translate(1000, 200)" opacity="0.4">
+    <circle cx="0" cy="0" r="4" fill="#8B4513"/>
+    <circle cx="20" cy="30" r="3" fill="#A0522D"/>
+    <circle cx="-10" cy="50" r="2" fill="#D2691E"/>
+    <circle cx="30" cy="70" r="3" fill="#654321"/>
+  </g>
+  
+  <!-- Riscos/scratches para efeito grunge -->
+  <g opacity="0.2">
+    <path d="M200 150 L250 180 L240 185 L190 155 Z" fill="#2F1B14"/>
+    <path d="M800 400 L900 420 L895 425 L795 405 Z" fill="#654321"/>
+    <path d="M500 500 L520 550 L515 555 L495 505 Z" fill="#8B4513"/>
+  </g>
+</svg>

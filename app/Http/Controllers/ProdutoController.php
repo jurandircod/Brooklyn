@@ -21,10 +21,12 @@ class ProdutoController extends Controller
     {
         $produtos = $this->produtos->where('id', $id)->first();
         $estoque = $this->estoque->where('produto_id', $id)->first();
-        if(!$estoque and !$produtos){
+        if (!$estoque and !$produtos) {
             return redirect()->route('site.principal');
         }
-        $produtosDaMesmaCategoria = $this->produtos->where('categoria_id', $produtos->categoria_id);
+        $produtosDaMesmaCategoria = $this->produtos->where('categoria_id', $produtos->categoria_id)->take(6);
+
+
         $produto = Produto::find($id);
         return view('site.produto', compact('produtos', 'produto', 'estoque', 'produtosDaMesmaCategoria'));
     }

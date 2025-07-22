@@ -25,7 +25,7 @@ class ImagemHelper
             return $posicao === 0 ? asset('images/default-product.png') : '';
         }
 
-        $caminhoRelativo = $foto->url_imagem;
+        $caminhoRelativo = $foto->url_imagem; // Substitui espaços por %20
         $caminhoAbsoluto = public_path($caminhoRelativo);
 
         // Verifica se é um diretório válido

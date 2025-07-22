@@ -39,6 +39,7 @@ class ItemCarrinhoController extends Controller
                 throw new \Exception('Usuário não autenticado.');
                 exit;
             }
+
             $carrinho = Carrinho::firstOrCreate(['user_id' => $user_id]);
             // verifica se o produto existe
             ExistenciaController::produtoExiste($request->produto_id);

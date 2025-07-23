@@ -25,7 +25,7 @@ Route::get('/contato', 'ContatoController@contato')->name('site.contato');
 Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
 Route::get('/cep/{cep}', 'AddressController@getCityByCep');
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
-Route::get('/fazerPedido', 'fazerPedido@index')->name('site.fazerPedido')->middleware('auth');
+Route::get('/fazerPedido', 'fazerPedidoController@index')->name('site.fazerPedido')->middleware('auth');
 
 Route::get('/teste-auth', function () {
     return response()->json([
@@ -60,6 +60,7 @@ Route::group(['prefix' => 'carrinho'], function () {
         Route::post('/carrinho/itensCarrinho/remover-item', [App\Http\Controllers\ItemCarrinhoController::class, 'removerItem'])->name('carrinho.remover-item');
         Route::get('/carrinho/itensCarrinho/quantidade', [App\Http\Controllers\ItemCarrinhoController::class, 'quantidadeItensCarrinho'])->name('site.carrinho.quantidadeItensCarrinho');
     });
+    Route::post('/finalizarCarrinho', [App\Http\Controllers\fazerPedidoController::class, 'finalizarCarrinho'])->name('site.carrinho.finalizarCarrinho');
 });
 
 // rotas produto

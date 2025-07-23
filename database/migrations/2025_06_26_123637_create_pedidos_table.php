@@ -20,6 +20,10 @@ class CreatePedidosTable extends Migration
             $table->enum('status', ['aguardando', 'pago', 'enviado', 'entregue', 'cancelado'])->default('aguardando');
             $table->decimal('total', 10, 2);
             $table->timestamps();
+            $table->string('metodo_pagamento');
+            $table->string('data_pagamento')->nullable();
+            $table->enum('status_pagamento', ['pendente', 'pago', 'entregue', 'cancelado'])->default('pendente');
+            $table->string('codigo_rastreio')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('endereco_id')->references('id')->on('enderecos')->onDelete('set null');
         });

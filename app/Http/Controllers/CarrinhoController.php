@@ -22,13 +22,19 @@ class CarrinhoController extends Controller
     public function index()
     {
         // pego o carrinho do usuario
-        $this->carrinho = Carrinho::where('user_id', Auth::id())->first();
+        $this->carrinho = Carrinho::where('user_id', Auth::id())->where('status', 'ativo')->first();
         // pego os itens do carrinho
-        $this->itens = ItemCarrinho::where('carrinho_id', $this->carrinho->id)->get();
+        $itens = ItemCarrinho::whereHas('carrinho', function ($query) {
+            $query->where('status', 'ativo')->where('user_id', Auth::id());
+        })->get();
+        
+        $preco_total = 0;
+        foreach ($itens as $item) {
+            $preco_total += $item->preco_total;
+        }
         // pego o produto do carrinho
         $produto = $this->produto;
         $carrinho = $this->carrinho;
-        $itens = $this->itens;
-        return view('site.carrinho', compact('carrinho', 'itens', 'produto'));
+        return view('site.carrinho', compact('carrinho', 'itens', 'produto', 'preco_total'));
     }
 }

@@ -20,30 +20,18 @@ class PrincipalController extends Controller
     private $itens;
     private $user_id;
     
-    public function __construct()
+    public static function principal(Request $request)
     {
-        $this->middleware('auth');
-        $this->produtos = Produto::all();
-        $this->fotos = Fotos::all();
-        // Em vez de auth()->id()
-        //dd($user_id);
-        //$this->itens = ItemCarrinho::where('carrinho_id', $this->cart->id)->get();
-        
-    }
-    
-    public function principal(Request $request)
-    {
-        $this->cart = Carrinho::where('user_id', Auth::id())->first();
-        $this->itens = ItemCarrinho::where('carrinho_id', $this->cart->id)->get();
+        $cart = Carrinho::where('user_id', Auth::id())->first();
+        $itens = ItemCarrinho::where('carrinho_id', $cart->id)->get();
 
-        $fotos = $this->fotos;
+        $fotos = Fotos::all();
         // Carrega todos os produtos COM suas fotos (eager loading)
         $produtos = Produto::with('fotos')->take(12)->get();
 
-        $itens = $this->itens;
+        $itens = $itens;
 
         $cart = $request->query('cart') == 1 ? 1 : null;
-
         return view('site.principal', compact('produtos', 'cart', 'itens'));
     }
 }

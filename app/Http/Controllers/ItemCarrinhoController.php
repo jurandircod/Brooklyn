@@ -40,7 +40,13 @@ class ItemCarrinhoController extends Controller
                 exit;
             }
 
-            $carrinho = Carrinho::firstOrCreate(['user_id' => $user_id]);
+            $carrinho = Carrinho::where('user_id', $user_id)->where('status', 'ativo')->first();
+            if (!$carrinho) {
+               $carrinho = Carrinho::create([
+                    'user_id' => $user_id,
+                    'status' => 'ativo'
+                ]);
+            }
             // verifica se o produto existe
             ExistenciaController::produtoExiste($request->produto_id);
             $produto = Produto::findOrFail($request->produto_id);
@@ -64,7 +70,7 @@ class ItemCarrinhoController extends Controller
                 return response()->json(['status'=> 'error', 'message' => 'Estoque Indisponível']);
             }
 
-            // Verifica se item igual já existe no carrinho com mesmo tamanho
+            // Verifica se item igual já existe no carrinho com mesmo tamanho e se o carrinho está ativo
             $itemExistente = $this->itemCarrinho->VerificaItemCarrinho($carrinho->id, $produto->id, $tamanho);
 
             if ($itemExistente) {
@@ -154,7 +160,10 @@ class ItemCarrinhoController extends Controller
         $carrinho = Carrinho::where('user_id', Auth::id())->first();
 
         if ($carrinho) {
-            $quantidade = ItemCarrinho::where('carrinho_id', $carrinho->id)->count();
+            $quantidade = ItemCarrinho::where('carrinho', function ($query) {
+                $query->where('status', 'ativo')->where('user_id', Auth::id())->count();
+
+            });
             return response()->json(['quantidade' => $quantidade]);
         }
 
@@ -239,7 +248,7 @@ class ItemCarrinhoController extends Controller
             // Calcula totais
             $carrinho = $item->carrinho;
             $subtotal = $carrinho->itens->sum('preco_total');
-            $taxa = $subtotal * 0.03;
+            $taxa = $subtotal * 0.00;
 
             return response()->json([
                 'status' => 'success',

@@ -31,9 +31,12 @@ class ItemCarrinho extends Model
 
     public function VerificaItemCarrinho($carrinhoId, $produtoId, $tamanho)
     {
-        return ItemCarrinho::where('carrinho_id', $carrinhoId)
-            ->where('produto_id', $produtoId)
-            ->where('tamanho', $tamanho)
-            ->first();
+          return ItemCarrinho::where('carrinho_id', $carrinhoId)
+        ->whereHas('carrinho', function ($query) {
+            $query->where('status', 'ativo');
+        })
+        ->where('produto_id', $produtoId)
+        ->where('tamanho', $tamanho)
+        ->first();
     }
 }

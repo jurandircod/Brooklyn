@@ -375,9 +375,8 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-8">
-                    <form class="needs-validation" method="POST" action="place-order">
-
-
+                    <form class="needs-validation" method="POST" action="{{ route('site.carrinho.finalizarCarrinho') }}">
+                        @csrf
                         <div class="save-details-box">
                             <h3 class="mb-4 text-center" style="color: #333; font-weight: 600;">
                                 <i class="fas fa-map-marker-alt" style="color: #667eea; margin-right: 10px;"></i>
@@ -414,6 +413,11 @@
                                         </div>
                                     </div>
                                 @endforeach
+                                @error('endereco_id')
+                                    <div class="alert alert-danger">
+                                        <strong>Erro!</strong> {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             <div class="text-center mt-4">
@@ -434,7 +438,7 @@
 
                             <div class="d-block my-3">
                                 <div class="form-check custome-radio-box" data-payment="pix">
-                                    <input class="form-check-input" type="radio" name="payment_method" value="pix"
+                                    <input class="form-check-input" type="radio" name="metodo_pagamento" value="pix"
                                         id="pix">
                                     <label class="form-check-label" for="pix">
                                         <i class="fab fa-pix payment-icon" style="color: #32BCAD;"></i>
@@ -443,7 +447,7 @@
                                 </div>
 
                                 <div class="form-check custome-radio-box" data-payment="credit">
-                                    <input class="form-check-input" type="radio" name="payment_method" value="credit"
+                                    <input class="form-check-input" type="radio" name="metodo_pagamento" value="credit"
                                         id="credit">
                                     <label class="form-check-label" for="credit">
                                         <i class="fas fa-credit-card payment-icon" style="color: #4A90E2;"></i>
@@ -452,7 +456,7 @@
                                 </div>
 
                                 <div class="form-check custome-radio-box" data-payment="debit">
-                                    <input class="form-check-input" type="radio" name="payment_method" value="debit"
+                                    <input class="form-check-input" type="radio" name="metodo_pagamento" value="debit"
                                         id="debit">
                                     <label class="form-check-label" for="debit">
                                         <i class="fas fa-credit-card payment-icon" style="color: #E94B3C;"></i>
@@ -541,11 +545,11 @@
                                 <div class="text-white">
                                     <h6 class="my-0">Preço total</h6>
                                 </div>
-                                <span class="text-black">{{ $preco_total }}</span>
+                                <span class="text-black">{{ number_format($preco_total, 2, ',', '.') }}</span>
                             </li>
                         </ul>
 
-                        <form class="card border-0">
+                        <form class="card border-0 d-none">
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Código promocional">
                                 <button type="submit" class="btn btn-solid-default">Aplicar</button>

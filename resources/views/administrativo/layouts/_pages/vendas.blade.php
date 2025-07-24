@@ -3,7 +3,7 @@
         <h3 class="card-title">Produtos Mais Vendidos</h3>
         
         <div class="card-tools">
-            <form action="{{ route('relatorios.produtos-mais-vendidos') }}" method="GET">
+            <form action="" method="GET">
                 <div class="input-group input-group-sm">
                     <select name="periodo" class="form-control" onchange="this.form.submit()">
                         <option value="all" {{ $periodo === 'all' ? 'selected' : '' }}>Todos</option>

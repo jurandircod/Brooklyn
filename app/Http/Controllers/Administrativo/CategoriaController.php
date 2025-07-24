@@ -38,12 +38,12 @@ class CategoriaController extends Controller
                 Alert::alert('Categoria', 'Preencha os campos obrigatórios', 'error');
                 return redirect()
                     ->route('administrativo.produtos')
-                    ->withInput();
+                    ->withInput()->withErrors($validator);
             } else {
                 Alert::alert('Categoria', 'Salva com sucesso', 'success');
                 try {
                     Categoria::create(($data));
-                    return redirect()->route('administrativo.produtos');
+                    return redirect()->route('administrativo.produtos')->withInput();
                 } catch (\Exception $e) {
                     Alert::alert('Erro', $e->getMessage(), 'error');
                     return redirect()->route('administrativo.produtos');

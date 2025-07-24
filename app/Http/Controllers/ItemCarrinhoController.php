@@ -42,7 +42,7 @@ class ItemCarrinhoController extends Controller
 
             $carrinho = Carrinho::where('user_id', $user_id)->where('status', 'ativo')->first();
             if (!$carrinho) {
-               $carrinho = Carrinho::create([
+                $carrinho = Carrinho::create([
                     'user_id' => $user_id,
                     'status' => 'ativo'
                 ]);
@@ -65,9 +65,9 @@ class ItemCarrinhoController extends Controller
             // Atualiza Estoque
             $verificaResposta = $this->AtualizaEstoque($tamanho, $estoqueProduto, $quantidadeSolicitada);
 
-            
-            if(!$verificaResposta){
-                return response()->json(['status'=> 'error', 'message' => 'Estoque Indisponível']);
+
+            if (!$verificaResposta) {
+                return response()->json(['status' => 'error', 'message' => 'Estoque Indisponível']);
             }
 
             // Verifica se item igual já existe no carrinho com mesmo tamanho e se o carrinho está ativo
@@ -157,13 +157,18 @@ class ItemCarrinhoController extends Controller
 
     public function quantidadeItensCarrinho()
     {
-        $carrinho = Carrinho::where('user_id', Auth::id())->first();
+        $carrinho = Carrinho::where('user_id', Auth::id())->get();
+
+        $quantidade = 0;
 
         if ($carrinho) {
-            $quantidade = ItemCarrinho::where('carrinho', function ($query) {
-                $query->where('status', 'ativo')->where('user_id', Auth::id())->count();
-
-            });
+            foreach ($carrinho as $carrinho) {
+                if($carrinho->status == 'ativo'){
+                   $quantidade = ItemCarrinho::where('carrinho_id', $carrinho->id)->count();
+                }else{
+                    $quantidade = 0;
+                }
+            }
             return response()->json(['quantidade' => $quantidade]);
         }
 

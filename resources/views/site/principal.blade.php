@@ -6,5 +6,6 @@
         @include('site.layouts._components.principal.carousel')
         @include('site.layouts._components.principal.banner')
         @include('site.layouts._components.principal.produtos')
+        @include('sweetalert::alert')
 @endsection
 

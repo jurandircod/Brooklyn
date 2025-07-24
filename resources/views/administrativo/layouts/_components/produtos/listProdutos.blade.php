@@ -31,7 +31,6 @@
                             <th>Nome</th>
                             <th>Valor</th>
                             <th>Material</th>
-                            <th>Estoque</th>
                             <th>Quantidade Total</th>
                             <th>Categoria</th>
                             <th>Marca</th>
@@ -57,30 +56,6 @@
                                 <td>{{ $produto->nome }}</td>
                                 <td>R$: {{ $produto->valor }}</td>
                                 <td>{{ $produto->material }}</td>
-                                @if ($produto->categoria_id == 1)
-                                    <td>
-                                        @if ($estoque != null)
-                                            P: <b>{{ $estoque->quantidadeP }}</b> | M:
-                                            <b>{{ $estoque->quantidadeM }}</b> | G:
-                                            <b>{{ $estoque->quantidadeG }}</b> | GG:
-                                            <b>{{ $estoque->quantidadeGG }}</b>
-                                        @else
-                                            P: <b>0</b> | M: <b>0</b> | G: <b>0</b> | GG: <b>0</b>
-                                        @endif
-                                    </td>
-                                @else
-                                    <td>
-                                        @if ($estoque != null)
-                                            7.5:<b> {{ $estoque->quantidade775 }}</b>|
-                                            8:<b> {{ $estoque->quantidade8 }}</b> |
-                                            8.25:<b> {{ $estoque->quantidade825 }}</b>|
-                                            8:<b> {{ $estoque->quantidade85 }}</b> |
-                                        @else
-                                            P: <b>0</b> | M: <b>0</b> | G: <b>0</b> | GG: <b>0</b> | 775:
-                                            <b>0</b> | 8: <b>0</b> | 825: <b>0</b> | 85: <b>0</b>
-                                        @endif
-                                    </td>
-                                @endif
                                 <td>{{ $estoque['quantidade'] ?? 0 }}</td>
                                 <td>{{ $categoria['nome'] ?? 'Sem Categoria' }}</td>
                                 <td>{{ $marca['nome'] ?? 'Sem Marca' }}</td>
@@ -215,8 +190,8 @@
                             <div class="form-group">
                                 <label for="quantidade">Quantidade</label>
                                 <input type="number" class="form-control" id="quantidadeProduto"
-                                    name="quantidadeProduto" placeholder="Digite a quantidade" min="1"
-                                    value="1" style="width: 100px;">
+                                    name="quantidadeProduto" placeholder="Digite a quantidade"
+                                     style="width: 100px;">
                             </div>
                         </div>
 

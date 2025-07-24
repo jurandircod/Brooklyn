@@ -44,6 +44,11 @@ class fazerPedidoController extends Controller
         foreach ($itens as $item) {
             $contador += 1;
         }
+
+        if($itens->count() == 0){
+            Alert::error('Erro', 'Não há itens para fazer pedido');
+            return back();
+        }
         return view('site.fazerPedido', compact('enderecos', 'itens', 'preco_total', 'contador'));
     }
 
@@ -69,7 +74,6 @@ class fazerPedidoController extends Controller
             if ($validator->fails()) {
                 return back()->withErrors($validator);
             }
-            
             $preco_total = 0;
             $itens = $this->queryBuilderItensCarrinho();
             foreach ($itens as $item) {
@@ -82,11 +86,22 @@ class fazerPedidoController extends Controller
                     $carrinho_id = $item->carrinho_id;
                 }
             }
-
+            // Verifica se o carrinho existe
+            if(!$carrinho_id && $preco_total == 0){
+                Alert::error('Erro', 'Carrinho não encontrado ou inexistente');
+                return back();
+            }
+            
             // Atualiza o status do carrinho
-            $verifica = Carrinho::where('id', $carrinho_id)->update(['status' => 'finalizado']);
             $carrinho = Carrinho::where('id', $carrinho_id)->first();
-            if (!$verifica) {
+            if($carrinho->status == 'finalizado' || !$carrinho){
+                Alert::error('Erro', 'Carrinho já finalizado');
+                return back()->withErrors('Carrinho já finalizado');
+            }else{
+                $finalizaCarrinho = Carrinho::where('id', $carrinho_id)->update(['status' => 'finalizado']);
+            }
+            // Verifica se o carrinho foi finalizado
+            if (!$finalizaCarrinho) {
                 Alert::error('Erro', 'Erro ao finalizar carrinho');
                 return back()->withErrors('Erro ao finalizar carrinho');
             }
@@ -94,7 +109,8 @@ class fazerPedidoController extends Controller
             // verifica se o produto existe
             Pedido::create([
                 'user_id' => $user_id,
-                'total' => $preco_total,
+                'preco_total' => $preco_total,
+                'metodo_pagamento' => $data['metodo_pagamento'],
                 'endereco_id' => $data['endereco_id'],
                 'status' => 'aguardando'
             ]);
@@ -110,7 +126,9 @@ class fazerPedidoController extends Controller
     {
         $validator = Validator::make($request, [
             'endereco_id' => 'required|numeric|exists:enderecos,id',
+            'metodo_pagamento' => 'required',
         ], [
+            'metodo_pagamento.required' => 'Selecione um método de pagamento',
             'endereco_id.required' => 'Selecione pelo menos um endereço',
             'endereco_id.numeric' => 'O campo endereco deve ser numérico',
             'endereco_id.exists' => 'O campo endereco não existe',

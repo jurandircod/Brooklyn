@@ -13,9 +13,6 @@ class user extends Controller
         $user = Auth::user();
         if ($user == null) {
             return redirect()->route('login');
-        } else {
-            $enderecosMostrar = Endereco::where('user_id', Auth::user()->id)->get();
-            return view('site.perfil', compact('enderecosMostrar'));
         }
     }
 

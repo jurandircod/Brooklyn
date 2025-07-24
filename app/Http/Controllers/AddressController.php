@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use App\Endereco;
+use App\Pedido;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 class AddressController extends Controller
 {
-    
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -58,10 +59,10 @@ class AddressController extends Controller
             return response()->json(['error' => 'Erro ao buscar o CEP Informar o Jurandir o erro', $e->getMessage()], 500);
         }
     }
-    
+
     public function validarInput($request)
     {
-        
+
         $validator = Validator::make($request, [
             'bairro' => 'required|min:3|max:255',
             'cidade' => 'required|min:3|max:255',
@@ -103,6 +104,7 @@ class AddressController extends Controller
 
     public function salvar(Request $request)
     {
+
         $activeTab = 3;
         $cepTratado = preg_replace('/[^0-9]/', '', $request->cep);
         $data = $request->all();
@@ -134,7 +136,7 @@ class AddressController extends Controller
     {
         $activeTab = 3;
         $validator = $this->validarInput($request->all());
-
+        $pedidos = $this->enviarPedidos();
         if ($validator->fails()) {
             Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
             return redirect()
@@ -148,21 +150,21 @@ class AddressController extends Controller
             $endereco->update($request->all());
 
             Alert::alert('Endereço', 'Atualizado com sucesso', 'success');
-            return redirect()->route('site.perfil', compact('activeTab'));
+            return redirect()->route('site.perfil', compact('activeTab', 'pedidos'));
         } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
-            return view('site.perfil', compact('activeTab'));
+            return view('site.perfil', compact('activeTab', 'pedidos'));
         }
     }
 
     public function enviaParaformEnderecos(Request $request, $id)
     {
+        $pedidos = $this->enviarPedidos();
         $enderecos = Endereco::where('id', $id)->get();
         $activeTab = 3;
         $enderecosMostrar = Endereco::where('user_id', Auth::user()->id)->get();
         $enderecoEditar = Endereco::where('id', $id)->first();
-        return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos', 'enderecosMostrar'));
-
+        return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos', 'enderecosMostrar', 'pedidos'));
     }
 
     public function exibirEndereco()
@@ -183,5 +185,10 @@ class AddressController extends Controller
         $endereco->delete();
         Alert::alert('Endereço', 'Removido com sucesso', 'success');
         return redirect()->route('site.perfil', compact('activeTab'));
+    }
+
+    public function enviarPedidos()
+    {
+        return $pedidos = Pedido::where('user_id', Auth::user()->id)->get();
     }
 }

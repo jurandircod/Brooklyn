@@ -375,7 +375,8 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-8">
-                    <form class="needs-validation" method="POST" action="{{ route('site.carrinho.finalizarCarrinho') }}">
+                    <form class="needs-validation" method="POST"
+                        action="{{ route('site.carrinho.finalizarCarrinho') }}">
                         @csrf
                         <div class="save-details-box">
                             <h3 class="mb-4 text-center" style="color: #333; font-weight: 600;">
@@ -403,7 +404,7 @@
                                             </div>
                                             <div class="button mt-3">
                                                 <div class="address-checkbox">
-                                                    <input type="radio" id="endereco1" name="endereco_id"
+                                                    <input type="radio" id="endereco_{{ $endereco->id }}" name="endereco_id"
                                                         value="{{ $endereco->id }}">
                                                     <label for="endereco1" class="checkbox-custom">
                                                         Selecionar endereço
@@ -438,8 +439,8 @@
 
                             <div class="d-block my-3">
                                 <div class="form-check custome-radio-box" data-payment="pix">
-                                    <input class="form-check-input" type="radio" name="metodo_pagamento" value="pix"
-                                        id="pix">
+                                    <input class="form-check-input" type="radio" name="metodo_pagamento"
+                                        value="pix" id="pix">
                                     <label class="form-check-label" for="pix">
                                         <i class="fab fa-pix payment-icon" style="color: #32BCAD;"></i>
                                         PIX - Pagamento instantâneo
@@ -447,8 +448,8 @@
                                 </div>
 
                                 <div class="form-check custome-radio-box" data-payment="credit">
-                                    <input class="form-check-input" type="radio" name="metodo_pagamento" value="credit"
-                                        id="credit">
+                                    <input class="form-check-input" type="radio" name="metodo_pagamento"
+                                        value="credit" id="credit">
                                     <label class="form-check-label" for="credit">
                                         <i class="fas fa-credit-card payment-icon" style="color: #4A90E2;"></i>
                                         Cartão de Crédito
@@ -456,8 +457,8 @@
                                 </div>
 
                                 <div class="form-check custome-radio-box" data-payment="debit">
-                                    <input class="form-check-input" type="radio" name="metodo_pagamento" value="debit"
-                                        id="debit">
+                                    <input class="form-check-input" type="radio" name="metodo_pagamento"
+                                        value="debit" id="debit">
                                     <label class="form-check-label" for="debit">
                                         <i class="fas fa-credit-card payment-icon" style="color: #E94B3C;"></i>
                                         Cartão de Débito
@@ -511,6 +512,11 @@
                                 </div>
                             </div>
                         </div>
+                        @error('metodo_pagamento')
+                            <div class="alert alert-danger">
+                                <strong>Erro!</strong> {{ $message }}
+                            </div>
+                        @enderror
 
                         <div class="text-center mt-4">
                             <button class="btn btn-solid-default btn-lg" type="submit" style="padding: 15px 40px;">
@@ -534,7 +540,8 @@
                                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div class="text-dark">
                                         <h6 class="my-0">{{ $item->produto_nome }}</h6>
-                                        <small class="text-muted">Quantidade: {{ $item->quantidade }} | Preço unitário:
+                                        <small class="text-muted">Quantidade: {{ $item->quantidade }} | Preço
+                                            unitário:
                                             R$ {{ number_format($item->preco_unitario, 2, ',', '.') }}</small>
                                     </div>
                                     <span class="text-dark">R$

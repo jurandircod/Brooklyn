@@ -3,4 +3,5 @@
 
 @section('conteudo')
     @include('site.layouts._pages.fazerPedido')
+    @include('sweetalert::alert')
 @endsection

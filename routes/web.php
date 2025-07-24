@@ -42,7 +42,7 @@ Route::group(['prefix' => 'pesquisa'], function () {
 
 // Rotas relacionadas ao perfil
 Route::group(['prefix' => 'perfil'], function () {
-    Route::get('/', 'User@index')->name('site.perfil');
+    Route::get('/', 'perfilController@index')->name('site.perfil');
     Route::get('/{id}', 'AddressController@enviaParaformEnderecos')->name('site.perfil.enviaParaformEnderecos');
     Route::get('/exibirEndereco', 'PerfilController@exibirEndereco')->name('site.perfil.exibirEndereco');
     Route::post('/salvar', 'AddressController@salvar')->name('site.perfil.salvarEndereco');
@@ -72,10 +72,8 @@ Route::group(['prefix' => 'produto'], function () {
 Route::group(['prefix' => 'administrativo'], function () {
     Route::get('/', [App\Http\Controllers\Administrativo\PrincipalController::class, 'index'])->name('administrativo.principal');
 
-    Route::get('/vendas', 'RelatorioController@produtosMaisVendidos')
-    ->name('relatorios.produtos-mais-vendidos')
-    ->middleware('auth');
-
+    // Rotas de vendas
+    Route::get('/vendas', [App\Http\Controllers\Administrativo\VendasController::class, 'index'])->name('administrativo.vendas');
     Route::get('/tabelas', 'TabelasControllers@index')->name('administrativo.tabelas');
     
     //rotas de permissoes
@@ -103,7 +101,7 @@ Route::group(['prefix' => 'administrativo'], function () {
         Route::post('/excluir', [App\Http\Controllers\Administrativo\ProdutosController::class, 'excluir'])->name('administrativo.produto.excluir');
     });
 
-
+    // Rotas de marcas
     Route::group(['prefix' => 'marca'], function () {
         Route::get('/', [App\Http\Controllers\Administrativo\MarcaController::class, 'index'])->name('administrativo.marca');
         Route::post('/alterar', [App\Http\Controllers\Administrativo\MarcaController::class, 'marcaAlterar'])->name('administrativo.marca.alterar');

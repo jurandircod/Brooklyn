@@ -75,12 +75,15 @@ class ProdutosController extends Controller
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
             'valor' => 'required|min:0.01',
-            'url_imagem.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'url_imagem' => 'required|array|min:1'
         ], [
             'valor.integer' => 'O campo valor deve ser um número inteiro',
+            'url_imagem.required' => 'O campo imagem é obrigatório',
+            'url_imagem.array' => 'O campo imagem deve ser mais de um arquivo',
+            'url_imagem.*.mimes' => 'O campo imagem deve ser um arquivo de imagem',
+            'url_imagem.*.max' => 'O campo imagem deve ter no máximo 2048 caracteres',
             'valor.255' => 'O campo valor deve ser menor que 255',
             'valor.min' => 'O campo valor deve ser maior que 1',
-            'url_imagem[].required' => 'O campo imagem é obrigatório',
             'nome.required' => 'O campo nome é obrigatório',
             'nome.string' => 'O campo nome deve ser uma string',
             'nome.max' => 'O campo nome deve ter no máximo 255 caracteres',

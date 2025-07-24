@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class RegisterController extends Controller
 {
@@ -76,8 +77,8 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'role_id' => 2,
         ]);
-        
-        return redirect()->route('site.principal');
+        Alert::success('Usuário cadastrado com sucesso', 'Usuário cadastrado com sucesso');
+        return redirect()->route('login');
     }
     /**
      * Get a validator for an incoming registration request.

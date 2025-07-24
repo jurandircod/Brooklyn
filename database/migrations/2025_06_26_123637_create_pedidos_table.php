@@ -18,7 +18,7 @@ class CreatePedidosTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('endereco_id')->nullable();
             $table->enum('status', ['aguardando', 'pago', 'enviado', 'entregue', 'cancelado'])->default('aguardando');
-            $table->decimal('total', 10, 2);
+            $table->decimal('preco_total', 10, 2);
             $table->timestamps();
             $table->string('metodo_pagamento');
             $table->string('data_pagamento')->nullable();

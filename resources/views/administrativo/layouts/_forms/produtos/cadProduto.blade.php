@@ -142,9 +142,9 @@
                                     <label for="inputGroupFile02" class="form-label">Imagens do Produto <span
                                             style="color: red">*</span></label>
                                     <input type="file" class="form-control" id="inputGroupFile02"
-                                        name="url_imagem[]" multiple accept="image/png, image/jpeg, image/jpg"
+                                        name="url_imagem[]" multiple accept="image/png, image/jpeg, image/jpg" value="{{ old('url_imagem[]') }}"
                                         onchange="verificarLimiteFotos()">
-                                        @error('url_imagem[]')
+                                        @error('url_imagem')
                                             <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
                                         @enderror
                                 </div>

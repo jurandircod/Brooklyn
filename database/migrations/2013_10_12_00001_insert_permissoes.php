@@ -17,8 +17,8 @@ class InsertPermissoes extends Migration
         DB::table('permissoes')->insert([
             [
                 'role_id' => 3,
-                'tipo_acesso' => 'admin',
-                'descricao' => 'Administrador do sistema',
+                'tipo_acesso' => 'Fornecedores',
+                'descricao' => 'Fornecedores de produtos',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
@@ -35,7 +35,14 @@ class InsertPermissoes extends Migration
                 'descricao' => 'Convidado',
                 'created_at' => now(),
                 'updated_at' => now()
-            ]
+            ],
+            [
+                'role_id' => 10,
+                'tipo_acesso' => 'admin',
+                'descricao' => 'Administrador do sistema',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
         ]);
     }
 

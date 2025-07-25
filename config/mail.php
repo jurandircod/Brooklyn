@@ -107,4 +107,16 @@ return [
         ],
     ],
 
+'stream' => [
+    'ssl' => [
+        'allow_self_signed' => true,
+        'verify_peer' => false,
+        'verify_peer_name' => false,
+    ],
+],
+
+    'username' => env('MAIL_USERNAME'),
+    'password' => env('MAIL_PASSWORD'),
+    'auth_mode' => 'auth_cram_md5',
+
 ];

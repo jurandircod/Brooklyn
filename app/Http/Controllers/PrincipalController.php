@@ -23,6 +23,13 @@ class PrincipalController extends Controller
     public static function principal(Request $request)
     {
         $cart = Carrinho::where('user_id', Auth::id())->first();
+       
+        if (!$cart) {
+            $cart = Carrinho::create([
+                'user_id' => Auth::id(),
+                'status' => 'ativo'
+            ]);
+        }
         $itens = ItemCarrinho::where('carrinho_id', $cart->id)->get();
 
         $fotos = Fotos::all();

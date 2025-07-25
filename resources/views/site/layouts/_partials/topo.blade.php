@@ -1,5 +1,3 @@
-
-
 <style>
     header .profile-dropdown ul li {
         display: block;
@@ -100,14 +98,14 @@
                         <div class="menu-left">
                             <div class="brand-logo">
                                 <a href="{{ route('site.principal') }}">
-                                    <img src="{{asset('images/brooklyn_skateshop_logo.svg')}}" class="h-logo img-fluid blur-up lazyload"
-                                        alt="logo">
+                                    <img src="{{ asset('images/brooklyn_skateshop_logo.svg') }}"
+                                        class="h-logo img-fluid blur-up lazyload" alt="logo">
                                 </a>
                             </div>
 
                         </div>
                         <nav>
-                            <div class="main-navbar " >
+                            <div class="main-navbar ">
                                 <div id="mainnav">
                                     <div class="toggle-nav">
                                         <i class="fa fa-bars sidebar-bar"></i>
@@ -120,11 +118,16 @@
                                                 </span>
                                             </div>
                                         </li>
-                                        <li><a href="{{ route('site.principal') }}" class="nav-link menu-title">Inicio</a></li>
-                                        <li><a href="{{ route('site.shop') }}" class="nav-link menu-title">Produtos</a></li>
-                                        <li><a href="{{route('site.carrinho')}}" class="nav-link menu-title">Carrinho</a></li>
-                                        <li><a href="{{route('site.sobre')}}" class="nav-link menu-title">Sobre Nós</a></li>
-                                        <li><a href="{{ route('site.contato') }}" class="nav-link menu-title">Contato</a>
+                                        <li><a href="{{ route('site.principal') }}"
+                                                class="nav-link menu-title">Inicio</a></li>
+                                        <li><a href="{{ route('site.shop') }}" class="nav-link menu-title">Produtos</a>
+                                        </li>
+                                        <li><a href="{{ route('site.carrinho') }}"
+                                                class="nav-link menu-title">Carrinho</a></li>
+                                        <li><a href="{{ route('site.sobre') }}" class="nav-link menu-title">Sobre
+                                                Nós</a></li>
+                                        <li><a href="{{ route('site.contato') }}"
+                                                class="nav-link menu-title">Contato</a>
                                         </li>
                                         <li><a href="blog.html" class="nav-link menu-title">Blog</a></li>
                                     </ul>
@@ -138,66 +141,67 @@
                                         <i data-feather="search"></i>
                                     </div>
                                 </li>
-                                <li class="onhover-dropdown wislist-dropdown">
-                                    <div class="cart-media">
-                                        <a href="wishlist/list.html">
-                                            <i data-feather="heart"></i>
-                                            <span id="wishlist-count" class="label label-theme rounded-pill">
-                                                0
-                                            </span>
-                                        </a>
-                                    </div>
-                                </li>
-                                <li class="onhover-dropdown wislist-dropdown">
-                                    <div class="cart-media">
-                                        <a href="{{route('site.carrinho')}}">
-                                            <i data-feather="shopping-cart"></i>
-                                            <span id="contador" class="label label-theme rounded-pill">
-                                                0
-                                            </span>
-                                        </a>
-                                    </div>
-                                </li>
+                                @auth
+                                    <li class="onhover-dropdown wislist-dropdown">
+                                        <div class="cart-media">
+                                            <a href="{{ route('site.carrinho') }}">
+                                                <i data-feather="shopping-cart"></i>
+                                                <span id="contador" class="label label-theme rounded-pill">
+                                                    0
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </li>
+                                @endauth
                                 <li class="onhover-dropdown">
                                     @auth
-                                    <div class="cart-media ">
-                                        <i>Jurandir Aparecido </i>
-                                    </div>
+                                        <div class="cart-media ">
+                                            <i>Jurandir Aparecido </i>
+                                        </div>
 
-                                    <div class="onhover-div profile-dropdown">
-                                        <ul>
-                                            <li>
-                                                <a href="{{route('site.perfil')}}" class="d-block">Meu Perfil</a>
-                                            </li>
-                                            <li>
-                                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                                    @csrf
-                                                </form> 
-                                                <a class="d-block" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sair</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{ route('register') }}" class="d-block">Registrar</a>
-                                            </li>
+                                        <div class="onhover-div profile-dropdown">
+                                            <ul>
+                                                <li>
+                                                    <a href="{{ route('site.perfil') }}" class="d-block">Meu Perfil</a>
+                                                </li>
 
-                                        </ul>
-                                    </div>
+                                                @can('access-admin', 'access-fornecedor')
+                                                <li>
+                                                    <a href="{{ route('administrativo.principal') }}" class="d-block">Administração</a>
+                                                </li>
+                                                @endcan
+                                                <li>
+                                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                                        style="display: none;">
+                                                        @csrf
+                                                    </form>
+                                                    <a class="d-block" href="#"
+                                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sair</a>
+                                                </li>
+                                                @if (!auth()->id())
+                                                    <li>
+                                                        <a href="{{ route('register') }}" class="d-block">Registrar</a>
+                                                    </li>
+                                                @endif
+                                            </ul>
+                                        </div>
                                     @endauth
-                                    
-                                    @guest
-                                    <div class="cart-media name-usr">
-                                        <i data-feather="user"></i>
-                                    </div>
-                                    <div class="onhover-div profile-dropdown">
-                                        <ul>
-                                            <li>
-                                                <a href="{{route('login')}}" class="d-block">Entrar</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{route('register')}}" class="d-block">Registrar</a>
-                                            </li>
 
-                                        </ul>
-                                    </div>
+                                    @guest
+                                        <div class="cart-media name-usr">
+                                            <i data-feather="user"></i>
+                                        </div>
+                                        <div class="onhover-div profile-dropdown">
+                                            <ul>
+                                                <li>
+                                                    <a href="{{ route('login') }}" class="d-block">Entrar</a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('register') }}" class="d-block">Registrar</a>
+                                                </li>
+
+                                            </ul>
+                                        </div>
                                     @endguest
                                 </li>
                             </ul>
@@ -224,29 +228,28 @@
 </header>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    $(document).ready(function () {
-        function atualizarContadorCarrinho() {
-            $.ajax({
-                url: "{{ route('site.carrinho.quantidadeItensCarrinho') }}",
-                method: 'GET',
-                success: function (response) {
-                    console.log("Quantidade de itens:", response.quantidade);
-                    $('#contador').text(response.quantidade);
-                },
-                error: function (xhr, status, error) {
-                    console.error("Erro no AJAX:", error);
-                    console.log("Resposta completa:", xhr.responseText);
-                }
-            });
-        }
+    document.addEventListener("DOMContentLoaded", function() {
+        $(document).ready(function() {
+            function atualizarContadorCarrinho() {
+                $.ajax({
+                    url: "{{ route('site.carrinho.quantidadeItensCarrinho') }}",
+                    method: 'GET',
+                    success: function(response) {
+                        console.log("Quantidade de itens:", response.quantidade);
+                        $('#contador').text(response.quantidade);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erro no AJAX:", error);
+                        console.log("Resposta completa:", xhr.responseText);
+                    }
+                });
+            }
 
-        // Atualiza imediatamente ao carregar a página
-        atualizarContadorCarrinho();
+            // Atualiza imediatamente ao carregar a página
+            atualizarContadorCarrinho();
 
-        // Atualiza a cada 5 segundos (5000 milissegundos)
-        setInterval(atualizarContadorCarrinho, 1000);
+            // Atualiza a cada 5 segundos (5000 milissegundos)
+            setInterval(atualizarContadorCarrinho, 1000);
+        });
     });
-});
 </script>
-

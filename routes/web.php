@@ -77,7 +77,7 @@ Route::group(['prefix' => 'administrativo'], function () {
     Route::get('/tabelas', 'TabelasControllers@index')->name('administrativo.tabelas');
     
     //rotas de permissoes
-    Route::group(['prefix' => 'permissoes'], function () {
+    Route::group(['prefix' => 'permissoes', 'middleware' => ['auth', 'admin']], function () {
         Route::get('/', [App\Http\Controllers\Administrativo\PermissoesController::class, 'permissoes'])->name('administrativo.permissoes');
         Route::get('/usuario', [App\Http\Controllers\Administrativo\PermissoesController::class, 'permissoesUsuarios'])->name('administrativo.permissoes.usuarios');
         Route::post('/salvarPermissao', [App\Http\Controllers\Administrativo\PermissoesController::class, 'salvarPermissao'])->name('administrativo.salvarPermissao');

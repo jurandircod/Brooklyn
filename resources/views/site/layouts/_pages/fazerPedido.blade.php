@@ -388,7 +388,7 @@
                                 <!-- Simulando endereços do backend -->
                                 @foreach ($enderecos as $endereco)
                                     <div class="col-xl-4 col-md-6">
-                                        <div class="save-details" data-endereco="1">
+                                        <div class="save-details" data-endereco="{{ $endereco->id }}">
                                             <div class="save-name">
                                                 <h5>{{ $endereco->cidade }}</h5>
                                             </div>
@@ -404,9 +404,9 @@
                                             </div>
                                             <div class="button mt-3">
                                                 <div class="address-checkbox">
-                                                    <input type="radio" id="endereco_{{ $endereco->id }}" name="endereco_id"
-                                                        value="{{ $endereco->id }}">
-                                                    <label for="endereco1" class="checkbox-custom">
+                                                    <input type="radio" id="endereco{{ $endereco->id }}"
+                                                        name="endereco_id" value="{{ $endereco->id }}">
+                                                    <label for="endereco{{ $endereco->id }}" class="checkbox-custom">
                                                         Selecionar endereço
                                                     </label>
                                                 </div>
@@ -577,10 +577,10 @@
 
             enderecoRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    // Remove seleção anterior
+                    // Remove seleção anterior de todos os boxes
                     enderecoBoxes.forEach(box => box.classList.remove('selected'));
 
-                    // Adiciona seleção ao endereço atual
+                    // Adiciona seleção ao endereço atual usando o value do radio
                     if (this.checked) {
                         const enderecoId = this.value;
                         const selectedBox = document.querySelector(
@@ -593,7 +593,7 @@
             });
 
             // Lógica para métodos de pagamento
-            const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+            const paymentRadios = document.querySelectorAll('input[name="metodo_pagamento"]');
             const paymentBoxes = document.querySelectorAll('.custome-radio-box');
             const cardFields = document.getElementById('card-fields');
             const parcelasSection = document.getElementById('parcelas-section');
@@ -605,20 +605,26 @@
 
                     // Adiciona classe active ao box selecionado
                     const selectedBox = this.closest('.custome-radio-box');
-                    selectedBox.classList.add('active');
+                    if (selectedBox) {
+                        selectedBox.classList.add('active');
+                    }
 
                     // Controla exibição dos campos de cartão
                     if (this.value === 'pix') {
-                        cardFields.style.display = 'none';
-                        parcelasSection.style.display = 'none';
+                        if (cardFields) cardFields.style.display = 'none';
+                        if (parcelasSection) parcelasSection.style.display = 'none';
                     } else if (this.value === 'credit') {
-                        cardFields.style.display = 'block';
-                        parcelasSection.style.display = 'block';
-                        cardFields.classList.add('fade-in');
+                        if (cardFields) {
+                            cardFields.style.display = 'block';
+                            cardFields.classList.add('fade-in');
+                        }
+                        if (parcelasSection) parcelasSection.style.display = 'block';
                     } else if (this.value === 'debit') {
-                        cardFields.style.display = 'block';
-                        parcelasSection.style.display = 'none';
-                        cardFields.classList.add('fade-in');
+                        if (cardFields) {
+                            cardFields.style.display = 'block';
+                            cardFields.classList.add('fade-in');
+                        }
+                        if (parcelasSection) parcelasSection.style.display = 'none';
                     }
                 });
             });

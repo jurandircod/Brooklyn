@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class RegisterController extends Controller
 {
@@ -32,16 +33,16 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        
+
         $this->middleware('guest');
     }
-    
+
     public function showRegistrationForm()
     {
 
         return view('site.register');
     }
-    
+
     /**
      * Where to redirect users after registration.
      *
@@ -50,14 +51,15 @@ class RegisterController extends Controller
     protected $redirectTo = RouteServiceProvider::HOME;
 
 
-    public function register(Request $request){
-        
+    public function register(Request $request)
+    {
+
         $this->validate($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|string|min:6|same:password',
-        ],[
+        ], [
             'name.required' => 'O nome é obrigatório',
             'email.required' => 'O email é obrigatório',
             'email.email' => 'O email é inválido',
@@ -70,13 +72,21 @@ class RegisterController extends Controller
             'email.unique' => 'O email já está cadastrado',
 
         ]);
-        
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_id' => 2,
         ]);
+
+        if ($user instanceof MustVerifyEmail && !$user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+
+            // Retorne uma resposta adequada para seu front-end
+            Alert::success('Verifique seu email para ativar sua conta', 'Verifique seu email para ativar sua conta');
+            return redirect()->route('login');
+        }
         Alert::success('Usuário cadastrado com sucesso', 'Usuário cadastrado com sucesso');
         return redirect()->route('login');
     }

@@ -27,12 +27,17 @@ Route::get('/cep/{cep}', 'AddressController@getCityByCep');
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
 Route::get('/fazerPedido', 'fazerPedidoController@index')->name('site.fazerPedido')->middleware('auth');
 
-Route::get('/teste-auth', function () {
-    return response()->json([
-        'logado' => auth()->check(),
-        'id' => auth()->id(),
-        'user' => auth()->user(),
-    ]);
+// Rotas de redefinição de senha
+Route::prefix('site')->group(function() {
+    // Verificar email
+    Route::get('/email/verificar', [App\Http\Controllers\User::class, 'verificarEmail'])->name('site.email.verificar');
+    // Mostrar formulário de reset (quando chega pelo email)
+    Route::get('resetar-senha/{token}', 'PasswordResetController@showResetForm')
+         ->name('site.password.reset');
+    
+    // Processar o reset
+    Route::post('resetar-senha', 'PasswordResetController@reset')
+         ->name('site.password.update');
 });
 
 Route::group(['prefix' => 'pesquisa'], function () {
@@ -114,6 +119,7 @@ Route::group(['prefix' => 'administrativo'], function () {
 
 // Autenticação
 Auth::routes(['reset' => true]);
+Auth::routes(['verify' => true]);
 
 // Rota de fallback
 Route::fallback(function () {

@@ -315,27 +315,27 @@
                             </div>
 
                             <div class="col-lg-8">
-                                <p class="d-inline-block me-2">Avaliação</p>
-                                <ul class="rating mb-3 d-inline-block">
-                                    <li data-value="1">
-                                        <i class="fas fa-star"></i>
-                                    </li>
-                                    <li data-value="2">
-                                        <i class="fas fa-star"></i>
-                                    </li>
-                                    <li data-value="3">
-                                        <i class="fas fa-star"></i>
-                                    </li>
-                                    <li data-value="4">
-                                        <i class="fas fa-star"></i>
-                                    </li>
-                                    <li data-value="5">
-                                        <i class="fas fa-star"></i>
-                                    </li>
-                                </ul>
-
+                                
                                 <div class="review-box">
                                     <form class="row g-4">
+                                        <p class="d-inline-block me-2">Avaliação</p>
+                                        <ul class="rating mb-3 d-inline-block">
+                                            <li data-value="1">
+                                                <i class="fas fa-star"></i>
+                                            </li>
+                                            <li data-value="2">
+                                                <i class="fas fa-star"></i>
+                                            </li>
+                                            <li data-value="3">
+                                                <i class="fas fa-star"></i>
+                                            </li>
+                                            <li data-value="4">
+                                                <i class="fas fa-star"></i>
+                                            </li>
+                                            <li data-value="5">
+                                                <i class="fas fa-star"></i>
+                                            </li>
+                                        </ul>
 
                                         <div class="col-12">
                                             <label class="mb-1" for="comments">Comments</label>

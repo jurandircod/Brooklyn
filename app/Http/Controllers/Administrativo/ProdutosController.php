@@ -107,6 +107,7 @@ class ProdutosController extends Controller
     public function salvarProduto(Request $request)
     {
         $data = $request->all();
+        dd($data);
         $validator = $this->validarInput($data);
 
         if ($validator->fails()) {
@@ -191,7 +192,7 @@ class ProdutosController extends Controller
             'quantidadeM' => $data['quantidadeM'] ?? 0,
             'quantidadeG' => $data['quantidadeG'] ?? 0,
             'quantidadeGG' => $data['quantidadeGG'] ?? 0,
-            'quantidade775' => $data['quantidade775'] ?? 0,
+            'quantidade775' => $data['quantidade775'] ?? $data['quanti775'] ?? 0,
             'quantidade8' => $data['quantidade8'] ?? 0,
             'quantidade825' => $data['quantidade825'] ?? 0,
             'quantidade85' => $data['quantidade85'] ?? 0,
@@ -334,12 +335,11 @@ class ProdutosController extends Controller
     {
         try {
             $data = $request->all();
-            $this->validateProductId($data['id'] ?? null);
 
+            $this->validateProductId($data['id'] ?? null);
             $produto = Produto::findOrFail($data['id']);
             $this->updateProductStock($produto, $data);
             $produto->update($data);
-
             Alert::success('Alteração', 'Alteração realizada com sucesso');
             return redirect()->route('administrativo.produtos');
         } catch (Exception $e) {
@@ -357,13 +357,11 @@ class ProdutosController extends Controller
     {
         $estoque = Estoque::firstOrNew(['produto_id' => $produto->id]);
         $estoque->fill($this->createStockObject($data)->toArray());
-
         if (in_array($data['categoria_id'], [1, 2])) {
             $estoque->quantidade = 0; // Observer calculará automaticamente
         } else {
             $estoque->quantidade = $data['quantidadeProduto'] ?? 0;
         }
-
         $estoque->save();
     }
 

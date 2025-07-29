@@ -181,6 +181,12 @@ class AddressController extends Controller
     public function remover($id)
     {
         $activeTab = 6;
+        $pedidos = Pedido::where('endereco_id', $id)->orWhere('status', 'pago')->orWhere('status', 'enviado')->orWhere('status', 'entregue')->orWhere('status', 'aguardando')->get();
+        if ($pedidos->count() > 0) {
+            Alert::alert('Erro', 'Não é possível excluir o endereço pois existem pedidos ativos associados a ele', 'error');
+            return redirect()->route('site.perfil', compact('activeTab'));
+            exit;
+        }
         $endereco = Endereco::findOrFail($id);
         $endereco->delete();
         Alert::alert('Endereço', 'Removido com sucesso', 'success');

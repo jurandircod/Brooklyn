@@ -383,7 +383,6 @@
                                 <i class="fas fa-map-marker-alt" style="color: #667eea; margin-right: 10px;"></i>
                                 Escolha um endereço para receber seu pedido
                             </h3>
-
                             <div class="row g-3" id="enderecos-container">
                                 <!-- Simulando endereços do backend -->
                                 @foreach ($enderecos as $endereco)

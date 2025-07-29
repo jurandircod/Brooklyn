@@ -25,6 +25,11 @@ class Produto extends Model
         return $this->belongsTo(Marca::class);
     }
 
+    public function ItemCarrinho()
+    {
+        return $this->hasMany(ItemCarrinho::class);
+    }
+    
     public function user()
     {
         return $this->belongsTo(User::class);

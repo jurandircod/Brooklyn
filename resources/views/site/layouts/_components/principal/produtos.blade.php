@@ -51,11 +51,17 @@
                                         </div>
                                         <div class="main-price">
                                             <ul class="rating mb-1 mt-0">
-                                                <li><i class="fas fa-star theme-color"></i></li>
-                                                <li><i class="fas fa-star theme-color"></i></li>
-                                                <li><i class="fas fa-star"></i></li>
-                                                <li><i class="fas fa-star"></i></li>
-                                                <li><i class="fas fa-star"></i></li>
+                                                @if($produto->avaliacao->count() > 0)
+                                                    @for ($i = 1; $i <= $produto->avaliacao->first()->estrela; $i++)
+                                                        <li><i class="fas fa-star theme-color"></i></li>
+                                                    @endfor
+                                                @else
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                @endif
                                             </ul>
                                         </div>
                                     </div>
@@ -125,6 +131,10 @@
                 @endif
             @endforeach
         </div>
+        <div class="row mt-5">
+            {{ $produtos->links() }}
+        </div>
+        
     </div>
 </section>
 <!-- Adicione no head ou antes do fechamento do body -->

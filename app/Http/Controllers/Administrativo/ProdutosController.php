@@ -107,7 +107,7 @@ class ProdutosController extends Controller
     public function salvarProduto(Request $request)
     {
         $data = $request->all();
-        dd($data);
+
         $validator = $this->validarInput($data);
 
         if ($validator->fails()) {
@@ -187,7 +187,7 @@ class ProdutosController extends Controller
      */
     protected function createStockObject(array $data): Estoque
     {
-        return new Estoque([
+        $dataEstoque = new Estoque([
             'quantidadeP' => $data['quantidadeP'] ?? 0,
             'quantidadeM' => $data['quantidadeM'] ?? 0,
             'quantidadeG' => $data['quantidadeG'] ?? 0,
@@ -197,6 +197,7 @@ class ProdutosController extends Controller
             'quantidade825' => $data['quantidade825'] ?? 0,
             'quantidade85' => $data['quantidade85'] ?? 0,
         ]);
+        return $dataEstoque;
     }
 
     /**
@@ -335,7 +336,7 @@ class ProdutosController extends Controller
     {
         try {
             $data = $request->all();
-
+            
             $this->validateProductId($data['id'] ?? null);
             $produto = Produto::findOrFail($data['id']);
             $this->updateProductStock($produto, $data);

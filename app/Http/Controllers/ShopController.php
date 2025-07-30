@@ -15,18 +15,34 @@ class ShopController extends Controller
     private $categorias;
     private $marcas;
 
-    public function __construct()
-    {
-        $this->produtos = Produto::all();
-        $this->categorias = Categoria::all();
-        $this->marcas = Marca::all();
-    }
     public function index(Request $request)
     {
-        $produtos = $this->produtos;
+        $this->categorias = Categoria::all();
+        $this->marcas = Marca::all();
+        
+        $query = Produto::query()->with(['categoria', 'marca', 'fotos']);
         $categorias = $this->categorias;
         $marcas = $this->marcas;
-        return view('site.shop', compact('produtos', 'categorias', 'marcas'));
+
+        if ($request->has('filtrar')) {
+            $produtos = $this->filtrar($request);
+            // Retorna os produtos filtrados com paginação
+            $produtosPaginados = $query->whereIn('id', $produtos->pluck('id'))->paginate(100);
+            
+            return response()->json([
+                'status' => 'success',
+                'data' => $produtosPaginados->items(), // Apenas os itens da paginação
+                'pagination' => [
+                    'current_page' => $produtosPaginados->currentPage(),
+                    'last_page' => $produtosPaginados->lastPage(),
+                    'per_page' => $produtosPaginados->perPage(),
+                    'total' => $produtosPaginados->total(),
+                ]
+            ], 200);
+        } else {
+            $produtos = $query->paginate(8);
+            return view('site.shop', compact('produtos', 'categorias', 'marcas'));
+        }
     }
 
     public function filtrar(Request $request)
@@ -77,12 +93,12 @@ class ShopController extends Controller
         // Filtro por tamanhos no estoque com leftJoin
         if (!empty($sizes)) {
             $query->leftJoin('estoques', 'produtos.id', '=', 'estoques.produto_id')
-                ->where(function ($query) use ($sizes, $sizeColumns) {
+                ->where(function ($subQuery) use ($sizes, $sizeColumns) {
                     foreach ($sizes as $size) {
                         if (isset($sizeColumns[$size])) {
-                            $query->orWhere(function ($q) use ($sizeColumns, $size) {
+                            $subQuery->orWhere(function ($q) use ($sizeColumns, $size) {
                                 $q->whereNotNull('estoques.id')
-                                    ->where('estoques.' . $sizeColumns[$size], '>', 0);
+                                  ->where('estoques.' . $sizeColumns[$size], '>', 0);
                             });
                         }
                     }
@@ -110,26 +126,11 @@ class ShopController extends Controller
         // Garantir produtos distintos e selecionar apenas colunas de produtos
         $query->select('produtos.*')->distinct();
 
-        // Executar a query
+        // Executar a query e retornar os produtos
         $products = $query->get();
-
-        // Logar os produtos com detalhes das fotos
-        Log::info('Query executada:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
-        Log::info('Produtos encontrados:', [
-            'count' => $products->count(),
-            'data' => $products->map(function ($product) {
-                return [
-                    'id' => $product->id,
-                    'nome' => $product->nome,
-                    'imagem_url' => $product->imagem_url,
-                    'fotos' => $product->fotos->toArray(),
-                ];
-            })->toArray()
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $products,
-        ], 200);
+        
+        Log::info('Produtos filtrados encontrados:', ['count' => $products->count()]);
+        
+        return $products;
     }
 }

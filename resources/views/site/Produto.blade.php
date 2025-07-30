@@ -3,5 +3,6 @@
 
 
 @section('conteudo')
-        @include('site.layouts._pages.Produto')   
+    @include('site.layouts._pages.Produto')
+    @include('sweetalert::alert')
 @endsection

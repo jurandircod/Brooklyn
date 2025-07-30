@@ -34,7 +34,7 @@ class PrincipalController extends Controller
 
         $fotos = Fotos::all();
         // Carrega todos os produtos COM suas fotos (eager loading)
-        $produtos = Produto::with('fotos')->take(12)->get();
+        $produtos = Produto::with('fotos')->paginate(12);
 
         $itens = $itens;
 

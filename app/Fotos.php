@@ -1,8 +1,8 @@
 <?php
 
 namespace App;
-
 use Illuminate\Database\Eloquent\Model;
+use App\Produto;
 
 class Fotos extends Model
 {
@@ -10,6 +10,6 @@ class Fotos extends Model
     // Define o relacionamento "um produto tem muitas fotos"
     public function produto()
     {
-        return $this->belongsTo(Produtos::class, 'produto_id');
+        return $this->belongsTo(Produto::class, 'produto_id');
     }
 }

@@ -259,19 +259,19 @@
             <div class="cloth-review">
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab"
+                        <button class="nav-link" id="nav-home-tab" data-bs-toggle="tab"
                             data-bs-target="#desc" type="button">Descrição</button>
 
                         <button class="nav-link" id="nav-size-tab" data-bs-toggle="tab" data-bs-target="#nav-guide"
                             type="button">Tamanhos</button>
 
-                        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#review"
+                        <button class="nav-link active" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#review"
                             type="button">Avaliação</button>
                     </div>
                 </nav>
 
                 <div class="tab-content" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="desc">
+                    <div class="tab-pane fade" id="desc">
                         <div class="shipping-chart">
                             <div class="part">
                                 <h4 class="inner-title mb-2">{{ $produto->nome }}</h4>
@@ -301,25 +301,30 @@
 
 
 
-                    <div class="tab-pane fade" id="review">
+                    <div class="tab-pane fade show active" id="review">
                         <div class="row g-4">
                             <div class="col-lg-4">
                                 <div class="customer-rating">
-                                    <h2>Customer reviews</h2>
+                                    <h2>Faça sua avaliação</h2>
 
 
                                     <div class="global-rating">
-                                        <h5 class="font-light">82 Ratings</h5>
+                                        <h5 class="font-light">{{ $produto->avaliacao->count() }} Avaliações</h5>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-lg-8">
-                                
+
                                 <div class="review-box">
-                                    <form class="row g-4">
+                                    <form class="row g-4" action="{{ route('site.produto.avaliacao') }}"
+                                        method="POST">
+                                        @csrf
+
+                                        <input type="hidden" name="produto_id" value="{{ $produto->id }}">
+
                                         <p class="d-inline-block me-2">Avaliação</p>
-                                        <ul class="rating mb-3 d-inline-block">
+                                        <ul class="rating mb-3 d-inline-block" id="rating">
                                             <li data-value="1">
                                                 <i class="fas fa-star"></i>
                                             </li>
@@ -336,169 +341,54 @@
                                                 <i class="fas fa-star"></i>
                                             </li>
                                         </ul>
+                                        <input type="hidden" name="estrela" id="avaliacaoInput" value="0">
 
                                         <div class="col-12">
-                                            <label class="mb-1" for="comments">Comments</label>
-                                            <textarea class="form-control" placeholder="Leave a comment here" id="comments" style="height: 100px"
-                                                required=""></textarea>
+                                            <label class="mb-1" for="comentario">Comentario</label>
+                                            <textarea class="form-control" placeholder="Leave a comment here" id="comments" name="comentario"
+                                                style="height: 100px" required=""></textarea>
                                         </div>
 
                                         <div class="col-12">
                                             <button type="submit"
-                                                class="btn default-light-theme default-theme default-theme-2">Enviar
+                                                class="btn btn-solid-default text-white">Enviar
                                                 Comentario</button>
                                         </div>
                                     </form>
+                                    <style>
+                                        .rating i.active {
+                                            color: gold;
+                                            /* ou qualquer cor que desejar para estrelas selecionadas */
+                                        }
+                                    </style>
                                 </div>
                             </div>
 
                             <div class="col-12 mt-4">
                                 <div class="customer-review-box">
                                     <h4>Comentarios</h4>
+                                    @foreach ($produto->avaliacao as $avaliacao)
+                                        <div class="customer-section">
+                                            <div class="customer-profile">
+                                                <img src="{{ asset('images/inner-page/review-image/1.jpg') }}"
+                                                    class="img-fluid blur-up lazyload" alt="">
+                                            </div>
 
-                                    <div class="customer-section">
-                                        <div class="customer-profile">
-                                            <img src="{{ asset('images/inner-page/review-image/1.jpg') }}"
-                                                class="img-fluid blur-up lazyload" alt="">
+                                            <div class="customer-details">
+                                                <h5>{{ $avaliacao->user->name }}</h5>
+                                                <ul class="rating my-2 d-inline-block">
+                                                    @for ($i = 1; $i <= $avaliacao->estrela; $i++)
+                                                        <li>
+                                                            <i class="fas fa-star theme-color"></i>
+                                                        </li>
+                                                    @endfor
+                                                </ul>
+                                                <p class="font-light">{{ $avaliacao->comentario }}</p>
+
+                                                <p class="date-custo font-light">{{$avaliacao->created_at->format('d/m/Y')}}</p>
+                                            </div>
                                         </div>
-
-                                        <div class="customer-details">
-                                            <h5>Mike K</h5>
-                                            <ul class="rating my-2 d-inline-block">
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star"></i>
-                                                </li>
-                                            </ul>
-                                            <p class="font-light">I purchased my Tab S2 at Best Buy but I wanted
-                                                to
-                                                share my thoughts on Amazon. I'm not going to go over specs and
-                                                such
-                                                since you can read those in a hundred other places. Though I
-                                                will
-                                                say that the "new" version is preloaded with Marshmallow and now
-                                                uses a Qualcomm octacore processor in place of the Exynos that
-                                                shipped with the first gen.</p>
-
-                                            <p class="date-custo font-light">- Sep 08, 2021</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="customer-section">
-                                        <div class="customer-profile">
-                                            <img src="../assets/images/inner-page/review-image/2.jpg"
-                                                class="img-fluid blur-up lazyload" alt="">
-                                        </div>
-
-                                        <div class="customer-details">
-                                            <h5>Norwalker</h5>
-                                            <ul class="rating my-2 d-inline-block">
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star"></i>
-                                                </li>
-                                            </ul>
-                                            <p class="font-light">Pros: Nice large(9.7") screen. Bright colors.
-                                                Easy
-                                                to setup and get started. Arrived on time. Cons: a bit slow on
-                                                response, but expected as tablet is 2 generations old. But works
-                                                fine and good value for the money.</p>
-
-                                            <p class="date-custo font-light">- Sep 08, 2021</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="customer-section">
-                                        <div class="customer-profile">
-                                            <img src="../assets/images/inner-page/review-image/3.jpg"
-                                                class="img-fluid blur-up lazyload" alt="">
-                                        </div>
-
-                                        <div class="customer-details">
-                                            <h5>B. Perdue</h5>
-                                            <ul class="rating my-2 d-inline-block">
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star"></i>
-                                                </li>
-                                            </ul>
-                                            <p class="font-light">Love the processor speed and the sensitivity
-                                                of
-                                                the touch screen.</p>
-
-                                            <p class="date-custo font-light">- Sep 08, 2021</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="customer-section">
-                                        <div class="customer-profile">
-                                            <img src="../assets/images/inner-page/review-image/4.jpg"
-                                                class="img-fluid blur-up lazyload" alt="">
-                                        </div>
-
-                                        <div class="customer-details">
-                                            <h5>MSL</h5>
-                                            <ul class="rating my-2 d-inline-block">
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star theme-color"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star"></i>
-                                                </li>
-                                                <li>
-                                                    <i class="fas fa-star"></i>
-                                                </li>
-                                            </ul>
-                                            <p class="font-light">I purchased the Tablet May 2017 and now April
-                                                2019
-                                                I have to charge it everyday. I don't watch movies on it..just
-                                                play
-                                                a game or two while on lunch. I guess now I need to power it
-                                                down
-                                                for future use.</p>
-
-                                            <p class="date-custo font-light">- Sep 08, 2021</p>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -512,7 +402,7 @@
 <!-- Shop Section end -->
 
 <!-- product section start -->
-<section class="ratio_asos section-b-space ">
+<section class="ratio_asos section-b-space">
     <div class="container">
         <h2 class="mb-lg-4 mb-3 text-center color-white">Novos Produtos</h2>
         <div class="row">
@@ -554,17 +444,24 @@
                                         <div class="theme-color">R${{ number_format($produto->valor, 2, ',', '.') }}
                                         </div>
                                         <div class="main-price">
-                                            <ul class="rating mb-1 mt-0">
-                                                <li><i class="fas fa-star theme-color"></i></li>
-                                                <li><i class="fas fa-star theme-color"></i></li>
-                                                <li><i class="fas fa-star"></i></li>
-                                                <li><i class="fas fa-star"></i></li>
-                                                <li><i class="fas fa-star"></i></li>
+                                            <ul class="rating mb-1 mt-0 ms-0">
+                                                @if($produto->avaliacao->count() > 0)
+                                                    @for ($i = 1; $i <= $produto->avaliacao->first()->estrela; $i++)
+                                                        <li><i class="fas fa-star theme-color"></i></li>
+                                                    @endfor
+                                                @else
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                    <li><i class="fas fa-star theme-color"></i></li>
+                                                @endif
                                             </ul>
                                         </div>
                                     </div>
                                     <p class="font-light mb-sm-2 mb-0">{{ $produto->material }}</p>
-                                    <a href="{{ route('site.produto', ['id' => $produto->id]) }}" class="font-default">
+                                    <a href="{{ route('site.produto', ['id' => $produto->id]) }}"
+                                        class="font-default">
                                         <h5>{{ $produto->nome }}</h5>
                                     </a>
                                 </div>
@@ -587,7 +484,8 @@
                                 <div class="cart-wrap">
                                     <ul>
                                         <li>
-                                            <a href="javascript:void(0)" class="disabled" title="Produto sem estoque">
+                                            <a href="javascript:void(0)" class="disabled"
+                                                title="Produto sem estoque">
                                                 <i data-feather="shopping-cart" class="text-muted"></i>
                                             </a>
                                         </li>
@@ -615,7 +513,8 @@
                                         </div>
                                     </div>
                                     <p class="font-light mb-sm-2 mb-0">{{ $produto->material }}</p>
-                                    <a href="{{ route('site.produto', ['id' => $produto->id]) }}" class="font-default">
+                                    <a href="{{ route('site.produto', ['id' => $produto->id]) }}"
+                                        class="font-default">
                                         <h5>{{ $produto->nome }}</h5>
                                     </a>
                                     <div class="alert alert-warning mt-2 d-flex align-items-center" role="alert">
@@ -807,23 +706,28 @@
             });
         });
     });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('#rating li');
+        const avaliacaoInput = document.getElementById('avaliacaoInput');
 
-    document.querySelectorAll('.rating li').forEach(function(star) {
-        star.addEventListener('click', function() {
-            const ratingValue = this.getAttribute('data-value');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                avaliacaoInput.value = value;
 
-            // Remove a classe 'theme-color' de todas as estrelas
-            document.querySelectorAll('.rating li i').forEach(function(star) {
-                star.classList.remove('theme-color');
+                // Atualiza a aparência visual das estrelas
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.querySelector('i').classList.add(
+                        'theme-color'); // Adicione uma classe 'active' para estrelas selecionadas
+                    } else {
+                        s.querySelector('i').classList.remove(
+                        'theme-color'); // Remove a classe 'active' das estrelas não selecionadas
+                    }
+                });
             });
-
-            // Adiciona a classe 'theme-color' às estrelas selecionadas
-            for (let i = 0; i < ratingValue; i++) {
-                document.querySelectorAll('.rating li i')[i].classList.add('theme-color');
-            }
-
-            // Aqui você pode adicionar lógica para salvar a avaliação, se necessário
-            console.log('Avaliação: ' + ratingValue);
         });
     });
 </script>

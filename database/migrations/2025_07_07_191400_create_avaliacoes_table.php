@@ -14,10 +14,9 @@ class CreateAvaliacoesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('produto_id');
             $table->unsignedBigInteger('user_id');
-            $table->tinyInteger('estrelas')->unsigned(); // de 1 a 5
+            $table->tinyInteger('estrela')->unsigned(); // de 1 a 5
             $table->text('comentario')->nullable();
-            $table->timestamp('data_avaliacao')->useCurrent();
-
+            $table->timestamps();
             // Relacionamentos (assumindo que as tabelas produtos e usuarios existem)
             $table->foreign('produto_id')->references('id')->on('produtos')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

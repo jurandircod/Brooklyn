@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Fotos;
+use App\User;
+use App\Pedido;
 
 class DatabaseSeeder extends Seeder
 {
@@ -11,6 +14,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UserSeeder::class);
+            // Cria 50 produtos com fotos e estoque relacionados
+        for ($i = 0; $i < 50; $i++) {
+            // Isso automaticamente criará o produto, estoque e fotos
+            factory(Fotos::class)->create();
+            factory(User::class)->create();
+            factory(Pedido::class)->create();
+        }
+
+        
     }
 }

@@ -40,6 +40,7 @@
                     </div>
                     <form id="filterForm" action="/filter" method="POST">
                         <div class="accordion category-name" id="accordionExample">
+                            <input type="hidden" name="filtrar" value="1">
                             <div class="accordion-item category-price">
                                 <h2 class="accordion-header" id="headingFour">
                                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -325,35 +326,12 @@
                         </div>
                     @endforeach
                 </div>
-                <nav class="page-section">
-                    <ul class="pagination">
-                        <li class="page-item">
-                            <a class="page-link" href="javascript:void(0)" aria-label="Previous"
-                                style="color:#6c757d;">
-                                <span aria-hidden="true">
-                                    <i class="fas fa-chevron-left"></i>
-                                </span>
-                            </a>
-                        </li>
 
-
-                        <li class="page-item active">
-                            <a class="page-link" href="javascript:void(0)">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="shop-1.html?page=2">2</a>
-                        </li>
-
-                        <li class="page-item">
-                            <a href="shop-1.html?page=2" class="page-link" aria-label="Next">
-                                <span aria-hidden="true">
-                                    <i class="fas fa-chevron-right"></i>
-                                </span>
-                            </a>
-                        </li>
-
-                    </ul>
-                </nav>
+                <div class="row mt-5">
+                    <div class="col-12">
+                        {{ $produtos->links() }}
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -398,224 +376,253 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('filterForm');
-        const productGrid = document.querySelector('.product-list-section');
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('filterForm');
+    const productGrid = document.querySelector('.product-list-section');
 
-        // Inicializar ionRangeSlider
-        $("#js-range-price").ionRangeSlider({
-            type: "double",
-            min: 0,
-            max: 1000,
-            from: 0,
-            to: 500,
-            grid: true,
-            onChange: function(data) {
-                document.getElementById('min_price').value = data.from;
-                document.getElementById('max_price').value = data.to;
-            }
-        });
+    // Inicializar ionRangeSlider
+    $("#js-range-price").ionRangeSlider({
+        type: "double",
+        min: 0,
+        max: 1000,
+        from: 0,
+        to: 500,
+        grid: true,
+        onChange: function(data) {
+            document.getElementById('min_price').value = data.from;
+            document.getElementById('max_price').value = data.to;
+        }
+    });
 
-        // Função para lidar com o clique em "Adicionar ao Carrinho"
-        function handleAddToCart(event) {
-            const botao = event.target.closest('.addtocart-btn');
-            if (!botao) return;
+    // Função para lidar com o clique em "Adicionar ao Carrinho"
+    function handleAddToCart(event) {
+        const botao = event.target.closest('.addtocart-btn');
+        if (!botao) return;
 
-            const produtoId = botao.getAttribute('data-id');
-            const produtoElement = botao.closest('.product-box');
-            const produtoNome = produtoElement.querySelector('h5').textContent;
-            const produtoPreco = produtoElement.querySelector('.theme-color').textContent;
-            const produtoImagem = produtoElement.querySelector('img').src;
-            const tamanho = "quantidade";
+        const produtoId = botao.getAttribute('data-id');
+        const produtoElement = botao.closest('.product-box');
+        const produtoNome = produtoElement.querySelector('h5').textContent;
+        const produtoPreco = produtoElement.querySelector('.theme-color').textContent;
+        const produtoImagem = produtoElement.querySelector('img').src;
+        const tamanho = "quantidade";
 
-            // Mostrar toast de carregamento
-            const loadingToast = Toastify({
-                text: "Adicionando ao carrinho...",
-                duration: -1,
-                gravity: "bottom",
-                position: "right",
-                backgroundColor: "#4CAF50",
-                stopOnFocus: true
-            }).showToast();
+        // Mostrar toast de carregamento
+        const loadingToast = Toastify({
+            text: "Adicionando ao carrinho...",
+            duration: -1,
+            gravity: "bottom",
+            position: "right",
+            backgroundColor: "#4CAF50",
+            stopOnFocus: true
+        }).showToast();
 
-            fetch("{{ route('site.carrinho.itemCarrinho.adicionar') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": '{{ csrf_token() }}',
-                        "Accept": "application/json"
-                    },
-                    body: JSON.stringify({
-                        produto_id: produtoId,
-                        quantidade: 1,
-                        tamanho: tamanho
-                    })
+        fetch("/carrinho/adicionar", { // Corrigir a rota aqui
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    produto_id: produtoId,
+                    quantidade: 1,
+                    tamanho: tamanho
                 })
-                .then(async (res) => {
-                    const contentType = res.headers.get("content-type");
-                    if (contentType && contentType.includes("application/json")) {
-                        return res.json();
-                    } else {
-                        const text = await res.text();
-                        throw new Error(text);
-                    }
-                })
-                .then(data => {
-                    loadingToast.hideToast();
+            })
+            .then(async (res) => {
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    return res.json();
+                } else {
+                    const text = await res.text();
+                    throw new Error(text);
+                }
+            })
+            .then(data => {
+                loadingToast.hideToast();
 
-                    if (data.status === "error") {
-                        Toastify({
-                            text: data.message,
-                            duration: 4000,
-                            gravity: "bottom",
-                            position: "right",
-                            backgroundColor: "#f44336",
-                            stopOnFocus: true
-                        }).showToast();
-                        return;
-                    }
-
-                    Swal.fire({
-                        title: 'Adicionado ao carrinho!',
-                        html: `
-                    <div style="display: flex; align-items: center; gap: 15px; margin: 10px 0;">
-                        <img src="${produtoImagem}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
-                        <div>
-                            <h6 style="margin: 0 0 5px 0;">${produtoNome}</h6>
-                            <p style="margin: 0; color: #4CAF50; font-weight: bold;">${produtoPreco}</p>
-                        </div>
-                    </div>
-                `,
-                        icon: 'success',
-                        showConfirmButton: true,
-                        confirmButtonText: 'OK',
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-
+                if (data.status === "error") {
                     Toastify({
-                        text: `${produtoNome} adicionado ao carrinho!`,
-                        duration: 3000,
-                        gravity: "bottom",
-                        position: "right",
-                        backgroundColor: "#4CAF50",
-                        stopOnFocus: true
-                    }).showToast();
-                })
-                .catch(err => {
-                    loadingToast.hideToast();
-                    Toastify({
-                        text: "Erro inesperado. Tente novamente.",
+                        text: data.message,
                         duration: 4000,
                         gravity: "bottom",
                         position: "right",
                         backgroundColor: "#f44336",
                         stopOnFocus: true
                     }).showToast();
-                    console.error("Erro na requisição:", err);
-                });
-        }
+                    return;
+                }
 
-        // Delegação de eventos para .addtocart-btn
-        productGrid.addEventListener('click', handleAddToCart);
-
-        // Manipulação do formulário de filtro
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(form);
-            const data = {
-                sizes: formData.getAll('sizes[]'),
-                categorias: formData.getAll('categorias[]').map(Number),
-                marcas: formData.getAll('marcas[]').map(Number),
-                min_price: formData.get('min_price') || null,
-                max_price: formData.get('max_price') || null
-            };
-
-            console.log('Dados enviados:', data);
-
-            fetch("{{ route('site.pesquisa.filtrar') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => {
-                            throw err;
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Resposta recebida:', data);
-                    productGrid.innerHTML = data.data.length ? '' :
-                        '<p>Nenhum produto encontrado.</p>';
-                    data.data.forEach(product => {
-                        const productHtml = `
-                    <div>
-                        <div class="product-box">
-                            <div class="img-wrapper">
-                                <div class="front">
-                                    <a href="/product/${product.id}">
-                                        <img src="${product.imagem_url}" class="w-100 blur-up lazyload" alt="${product.nome}">
-                                    </a>
-                                </div>
-                                <div class="cart-wrap">
-                                    <ul>
-                                        <li>
-                                            ${product.categoria_id != 2 && product.categoria_id != 1 ? `
-                                                <a href="javascript:void(0)" class="addtocart-btn" data-id="${product.id}">
-                                                    <i data-feather="shopping-cart"></i>
-                                                </a>` : ''}
-                                        </li>
-                                        <li>
-                                            <a href="/product/${product.id}">
-                                                <i data-feather="eye"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                Swal.fire({
+                    title: 'Adicionado ao carrinho!',
+                    html: `
+                        <div style="display: flex; align-items: center; gap: 15px; margin: 10px 0;">
+                            <img src="${produtoImagem}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                            <div>
+                                <h6 style="margin: 0 0 5px 0;">${produtoNome}</h6>
+                                <p style="margin: 0; color: #4CAF50; font-weight: bold;">${produtoPreco}</p>
                             </div>
-                            <div class="product-details">
-                                <div class="rating-details">
-                                    <span class="font-light grid-content">${product.categoria?.nome || 'N/A'}</span>
-                                    <ul class="rating mt-0">
-                                        <li><i class="fas fa-star theme-color"></i></li>
-                                        <li><i class="fas fa-star theme-color"></i></li>
-                                        <li><i class="fas fa-star theme-color"></i></li>
-                                        <li><i class="fas fa-star theme-color"></i></li>
-                                        <li><i class="fas fa-star theme-color"></i></li>
-                                    </ul>
-                                </div>
-                                <div class="main-price">
-                                    <a href="/product/${product.id}" class="font-default">
-                                        <h5 class="ms-0">${product.nome}</h5>
-                                    </a>
-                                    <div class="listing-content">
-                                        <span class="font-light">${product.marca?.nome || 'N/A'}</span>
-                                        <p class="font-light">${product.descricao || ''}</p>
+                        </div>
+                    `,
+                    icon: 'success',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            })
+            .catch(err => {
+                loadingToast.hideToast();
+                Toastify({
+                    text: "Erro inesperado. Tente novamente.",
+                    duration: 4000,
+                    gravity: "bottom",
+                    position: "right",
+                    backgroundColor: "#f44336",
+                    stopOnFocus: true
+                }).showToast();
+                console.error("Erro na requisição:", err);
+            });
+    }
+
+    // Delegação de eventos para .addtocart-btn
+    productGrid.addEventListener('click', handleAddToCart);
+
+    // Manipulação do formulário de filtro
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        
+        // Certificar que os dados estão sendo coletados corretamente
+        const data = {
+            filtrar: 1, // Adicionar este campo
+            sizes: formData.getAll('sizes[]'),
+            categorias: formData.getAll('categorias[]').map(id => parseInt(id)).filter(id => !isNaN(id)),
+            marcas: formData.getAll('marcas[]').map(id => parseInt(id)).filter(id => !isNaN(id)),
+            min_price: formData.get('min_price') || null,
+            max_price: formData.get('max_price') || null
+        };
+
+        console.log('Dados enviados:', data);
+
+        // Mostrar loading
+        productGrid.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Carregando...</span></div></div>';
+
+        fetch(window.location.href, { // Usar a URL atual da página
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                console.log('Status da resposta:', response.status);
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        console.error('Erro da API:', err);
+                        throw err;
+                    });
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                console.log('Resposta recebida:', responseData);
+                
+                if (responseData.status === 'error') {
+                    throw new Error(responseData.message || 'Erro no filtro');
+                }
+                
+                // Limpar grid de produtos
+                productGrid.innerHTML = '';
+                
+                if (!responseData.data || responseData.data.length === 0) {
+                    productGrid.innerHTML = '<div class="col-12"><p class="text-center">Nenhum produto encontrado com os filtros selecionados.</p></div>';
+                    return;
+                }
+
+                // Adicionar produtos filtrados
+                responseData.data.forEach(product => {
+                    const showAddToCart = product.categoria_id != 2 && product.categoria_id != 1;
+                    
+                    const productHtml = `
+                        <div>
+                            <div class="product-box">
+                                <div class="img-wrapper">
+                                    <div class="front">
+                                        <a href="/produto/${product.id}">
+                                            <img src="${product.imagem_url || '/images/placeholder.jpg'}" class="w-100 blur-up lazyload" alt="${product.nome}">
+                                        </a>
                                     </div>
-                                    <h3 class="theme-color">$${product.valor}</h3>
-                                    <button class="btn listing-content">Add To Cart</button>
+                                    <div class="cart-wrap">
+                                        <ul>
+                                            ${showAddToCart ? `
+                                                <li>
+                                                    <a href="javascript:void(0)" class="addtocart-btn" data-id="${product.id}">
+                                                        <i data-feather="shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            ` : ''}
+                                            <li>
+                                                <a href="/produto/${product.id}">
+                                                    <i data-feather="eye"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="product-details">
+                                    <div class="rating-details">
+                                        <span class="font-light grid-content">${product.categoria?.nome || 'N/A'}</span>
+                                        <ul class="rating mt-0">
+                                            <li><i class="fas fa-star theme-color"></i></li>
+                                            <li><i class="fas fa-star theme-color"></i></li>
+                                            <li><i class="fas fa-star theme-color"></i></li>
+                                            <li><i class="fas fa-star theme-color"></i></li>
+                                            <li><i class="fas fa-star theme-color"></i></li>
+                                        </ul>
+                                    </div>
+                                    <div class="main-price">
+                                        <a href="/produto/${product.id}" class="font-default">
+                                            <h5 class="ms-0">${product.nome}</h5>
+                                        </a>
+                                        <div class="listing-content">
+                                            <span class="font-light">${product.marca?.nome || 'N/A'}</span>
+                                            <p class="font-light">${product.descricao || ''}</p>
+                                        </div>
+                                        <h3 class="theme-color">$${product.valor}</h3>
+                                        <button class="btn listing-content">Add To Cart</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-                        productGrid.insertAdjacentHTML('beforeend', productHtml);
-                    });
-                    feather.replace();
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    if (error.errors) {
-                        alert('Erro de validação: ' + JSON.stringify(error.errors));
-                    }
+                    `;
+                    productGrid.insertAdjacentHTML('beforeend', productHtml);
                 });
-        });
+                
+                // Reativar os ícones do Feather
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            })
+            .catch(error => {
+                console.error('Erro completo:', error);
+                productGrid.innerHTML = '<div class="col-12"><p class="text-center text-danger">Erro ao carregar produtos. Tente novamente.</p></div>';
+                
+                // Mostrar toast de erro
+                if (typeof Toastify !== 'undefined') {
+                    Toastify({
+                        text: "Erro ao filtrar produtos. Tente novamente.",
+                        duration: 4000,
+                        gravity: "bottom",
+                        position: "right",
+                        backgroundColor: "#f44336",
+                        stopOnFocus: true
+                    }).showToast();
+                }
+            });
     });
+});
 </script>

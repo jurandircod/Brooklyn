@@ -28,21 +28,22 @@ Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar')
 Route::get('/fazerPedido', 'fazerPedidoController@index')->name('site.fazerPedido')->middleware('auth');
 
 // Rotas de redefinição de senha
-Route::prefix('site')->group(function() {
+Route::prefix('site')->group(function () {
     // Verificar email
     Route::get('/email/verificar', [App\Http\Controllers\User::class, 'verificarEmail'])->name('site.email.verificar');
     // Mostrar formulário de reset (quando chega pelo email)
     Route::get('resetar-senha/{token}', 'PasswordResetController@showResetForm')
-         ->name('site.password.reset');
-    
+        ->name('site.password.reset');
+
     // Processar o reset
     Route::post('resetar-senha', 'PasswordResetController@reset')
-         ->name('site.password.update');
+        ->name('site.password.update');
 });
 
 Route::group(['prefix' => 'pesquisa'], function () {
     Route::get('/pesquisa', 'ShopController@index')->name('site.shop');
-    Route::post('/pesquisa/filtrar', 'ShopController@filtrar')->name('site.pesquisa.filtrar');
+    Route::post('/filter', 'ShopController@filtrar')->name('site.pesquisa.filtrar');
+    Route::post('/pesquisa', 'ShopController@index')->name('site.shop');
 });
 
 // Rotas relacionadas ao perfil
@@ -71,6 +72,7 @@ Route::group(['prefix' => 'carrinho'], function () {
 // rotas produto
 Route::group(['prefix' => 'produto'], function () {
     Route::get('/{id}', 'ProdutoController@index')->name('site.produto');
+    Route::post('/avaliacao', 'AvaliacaoController@CreateAvaliacao')->name('site.produto.avaliacao');
 });
 
 // Rotas do administrador
@@ -80,7 +82,7 @@ Route::group(['prefix' => 'administrativo'], function () {
     // Rotas de vendas
     Route::get('/vendas', [App\Http\Controllers\Administrativo\VendasController::class, 'index'])->name('administrativo.vendas');
     Route::get('/tabelas', 'TabelasControllers@index')->name('administrativo.tabelas');
-    
+
     //rotas de permissoes
     Route::group(['prefix' => 'permissoes', 'middleware' => ['auth', 'admin']], function () {
         Route::get('/', [App\Http\Controllers\Administrativo\PermissoesController::class, 'permissoes'])->name('administrativo.permissoes');
@@ -114,7 +116,6 @@ Route::group(['prefix' => 'administrativo'], function () {
         Route::post('/salvar', [App\Http\Controllers\Administrativo\MarcaController::class, 'marcaSalvar'])->name('administrativo.marca.salvar');
         Route::post('/excluir', [App\Http\Controllers\Administrativo\MarcaController::class, 'marcaExcluir'])->name('administrativo.marca.excluir');
     });
-
 });
 
 // Autenticação

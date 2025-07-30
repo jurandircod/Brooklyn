@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Produto;
 use App\Estoque;
+use App\Avaliacao;
 
 class ProdutoController extends Controller
 {
@@ -26,8 +27,9 @@ class ProdutoController extends Controller
         }
         $produtosDaMesmaCategoria = $this->produtos->where('categoria_id', $produtos->categoria_id)->take(6);
 
-
         $produto = Produto::find($id);
         return view('site.produto', compact('produtos', 'produto', 'estoque', 'produtosDaMesmaCategoria'));
     }
+
+
 }

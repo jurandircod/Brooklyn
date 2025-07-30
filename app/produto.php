@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+
 class Produto extends Model
 {
     protected $table = 'produtos';
@@ -20,6 +21,11 @@ class Produto extends Model
         //                     Modelo filho ↑   ↑ Coluna real no banco
     }
 
+    public function avaliacao()
+    {
+        return $this->hasMany(Avaliacao::class, 'produto_id');
+    }
+
     public function marca()
     {
         return $this->belongsTo(Marca::class);
@@ -29,13 +35,22 @@ class Produto extends Model
     {
         return $this->hasMany(ItemCarrinho::class);
     }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
+    public function calcularMediaEstrelas($produtoId)
+    {
+        $media = Avaliacao::where('produto_id', $produtoId)
+            ->avg('estrela');
+
+        return round($media); // Arredonda para inteiro (1-5)
+    }
     // metodo acessor de helper
-    public function getPastaAttribute(){
+    public function getPastaAttribute()
+    {
         return \App\Helpers\ImagemHelper::pastaImagensProduto($this->id);
     }
 
@@ -44,22 +59,22 @@ class Produto extends Model
         return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 0);
     }
 
-     public function getImagemUrl2Attribute()
+    public function getImagemUrl2Attribute()
     {
         return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 1);
     }
 
-     public function getImagemUrl3Attribute()
+    public function getImagemUrl3Attribute()
     {
         return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 2);
     }
 
-     public function getImagemUrl4Attribute()
+    public function getImagemUrl4Attribute()
     {
         return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 3);
     }
 
-     public function getImagemUrl5Attribute()
+    public function getImagemUrl5Attribute()
     {
         return \App\Helpers\ImagemHelper::imagemDoProduto($this->id, 4);
     }

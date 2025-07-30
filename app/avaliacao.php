@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class avaliacao extends Model
 {
-    protected $table = 'avaliacao';
-    protected $fillable = ['user_id', 'produto_id', 'nota'];
+    protected $table = 'avaliacoes';
+    protected $fillable = ['user_id', 'produto_id', 'estrela', 'comentario'];
 
     public function user()
     {

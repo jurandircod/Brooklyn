@@ -18,18 +18,37 @@ class ProdutoController extends Controller
         $this->produtos = Produto::all();
         $this->estoque = Estoque::all();
     }
-    public function index($id)
+
+
+    public function index(Request $request, $id)  // Adicione Request $request como parâmetro
     {
-        $produtos = $this->produtos->where('id', $id)->first();
-        $estoque = $this->estoque->where('produto_id', $id)->first();
-        if (!$estoque and !$produtos) {
+        $produto = Produto::find($id);
+
+        if (!$produto) {
             return redirect()->route('site.principal');
         }
-        $produtosDaMesmaCategoria = $this->produtos->where('categoria_id', $produtos->categoria_id)->take(6);
 
-        $produto = Produto::find($id);
-        return view('site.produto', compact('produtos', 'produto', 'estoque', 'produtosDaMesmaCategoria'));
+        $estoque = Estoque::where('produto_id', $id)->first();
+
+        $produtosDaMesmaCategoria = Produto::where('categoria_id', $produto->categoria_id)
+            ->where('id', '!=', $id)
+            ->paginate(6);
+
+        // Verifica se é uma requisição AJAX
+        if ($request->ajax()) {
+            $avaliacoes = $produto->avaliacao()
+                ->orderBy('created_at', 'desc')
+                ->paginate(4);
+
+            return view('site.layouts._pages.produtos.avaliacoes', compact('avaliacoes'))->render();
+        }
+
+        // Carrega normalmente se não for AJAX
+        $avaliacoes = $produto->avaliacao()
+            ->orderBy('created_at', 'desc')
+            ->paginate(4);
+
+        return view('site.produto', compact('produto', 'estoque', 'produtosDaMesmaCategoria', 'avaliacoes'));
     }
-
 
 }

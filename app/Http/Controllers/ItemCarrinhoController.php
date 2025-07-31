@@ -49,6 +49,7 @@ class ItemCarrinhoController extends Controller
                 ]);
             }
 
+
             $produtoId = $request->produto_id;
             // verifica se o produto existe
             ExistenciaController::produtoExiste($request->produto_id);
@@ -203,9 +204,12 @@ class ItemCarrinhoController extends Controller
                 exit;
             }
 
+
             if ($diferenca < 0) {
                 // transforma o numero e positvo para restirar o item
                 $item->quantidade = $quantidadeAtual - abs($diferenca);
+            } else {
+                $item->quantidade = $nova_quantidade;
             }
             // Atualiza o item no carrinho
             $item->preco_total = $item->preco_unitario * $nova_quantidade;

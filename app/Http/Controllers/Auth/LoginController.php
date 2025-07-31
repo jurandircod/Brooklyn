@@ -50,7 +50,7 @@ class LoginController extends Controller
         } else {
             // Usuário ou senha incorretos
             Alert::error('Usuário ou senha incorretos');
-            return redirect()->back(); // Retorna à página de login
+            return redirect()->back()->withInput();
         }
     }
 

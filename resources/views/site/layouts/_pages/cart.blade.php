@@ -19,19 +19,11 @@
 
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
         min-height: 100vh;
         color: var(--text-primary);
     }
 
-    /* Breadcrumb moderna */
-    .breadcrumb-section {
-        background: white;
-        box-shadow: var(--shadow-sm);
-        border-bottom: 1px solid var(--border-color);
-        position: relative;
-        overflow: hidden;
-    }
 
     .circles {
         position: absolute;
@@ -680,7 +672,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h3>Carrinho</h3>
+                <h3 class="text-white">Carrinho</h3>
                 <nav>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
@@ -688,7 +680,7 @@
                                 <i class="fas fa-home"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Carrinho</li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">Carrinho</li>
                     </ol>
                 </nav>
             </div>

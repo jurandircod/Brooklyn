@@ -99,7 +99,7 @@
                                                     {{ $categoria->nome }}</option>
                                             @endforeach
                                         </select>
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#modalNovaCategoria">+</button>
                                     </div>
                                     @error('categoria_id')
@@ -123,7 +123,7 @@
                                                     {{ $marca->nome }}</option>
                                             @endforeach
                                         </select>
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#modalNovaMarca">+</button>
                                     </div>
                                     @error('marca_id')
@@ -240,7 +240,7 @@
                                     class="btn btn-primary">Enviar</button>
                             </div>
                             <!-- Modal nova categoria -->
-                            <div class="modal fade" id="modalNovaCategoria" tabindex="-1"
+                            <div class="modal fade" id="modalNovaCategoria" tabindex="-999"
                                 aria-labelledby="modalNovaCategoriaLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">

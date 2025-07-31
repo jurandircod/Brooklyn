@@ -46,6 +46,9 @@ Route::group(['prefix' => 'pesquisa'], function () {
     Route::post('/pesquisa', 'ShopController@index')->name('site.shop');
 });
 
+// Rotas relacionadas ao produto
+Route::post('/produto/avaliacao', [\App\Http\Controllers\ProdutoController::class, 'avaliar'])->name('site.produto.avaliacao');
+
 // Rotas relacionadas ao perfil
 Route::group(['prefix' => 'perfil'], function () {
     Route::get('/', 'perfilController@index')->name('site.perfil');
@@ -117,6 +120,8 @@ Route::group(['prefix' => 'administrativo'], function () {
         Route::post('/excluir', [App\Http\Controllers\Administrativo\MarcaController::class, 'marcaExcluir'])->name('administrativo.marca.excluir');
     });
 });
+
+
 
 // Autenticação
 Auth::routes(['reset' => true]);

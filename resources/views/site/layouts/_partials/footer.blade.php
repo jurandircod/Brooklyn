@@ -147,6 +147,7 @@
         </div>
     </div>
 </footer>
+
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('js/jquery-3.5.1.min.js') }}"></script>

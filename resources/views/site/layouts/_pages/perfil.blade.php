@@ -1,6 +1,4 @@
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 
 <style>
     :root {
@@ -44,105 +42,6 @@
         }
     }
 
-    /* Animated background */
-    .circles {
-        background-color: #F4F7FA;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: -1;
-    }
-
-    .circles li {
-        position: absolute;
-        display: block;
-        list-style: none;
-        width: 20px;
-        height: 20px;
-        background: white;
-        animation: animate 25s linear infinite;
-        bottom: -150px;
-        border-radius: 50%;
-    }
-
-    .circles li:nth-child(1) {
-        left: 25%;
-        width: 80px;
-        height: 80px;
-        animation-delay: 0s;
-    }
-
-    .circles li:nth-child(2) {
-        left: 10%;
-        width: 20px;
-        height: 20px;
-        animation-delay: 2s;
-        animation-duration: 12s;
-    }
-
-    .circles li:nth-child(3) {
-        left: 70%;
-        width: 20px;
-        height: 20px;
-        animation-delay: 4s;
-    }
-
-    .circles li:nth-child(4) {
-        left: 40%;
-        width: 60px;
-        height: 60px;
-        animation-delay: 0s;
-        animation-duration: 18s;
-    }
-
-    .circles li:nth-child(5) {
-        left: 65%;
-        width: 20px;
-        height: 20px;
-        animation-delay: 0s;
-    }
-
-    .circles li:nth-child(6) {
-        left: 75%;
-        width: 110px;
-        height: 110px;
-        animation-delay: 3s;
-    }
-
-    .circles li:nth-child(7) {
-        left: 35%;
-        width: 150px;
-        height: 150px;
-        animation-delay: 7s;
-    }
-
-    .circles li:nth-child(8) {
-        left: 50%;
-        width: 25px;
-        height: 25px;
-        animation-delay: 15s;
-        animation-duration: 45s;
-    }
-
-    .circles li:nth-child(9) {
-        left: 20%;
-        width: 15px;
-        height: 15px;
-        animation-delay: 2s;
-        animation-duration: 35s;
-    }
-
-    .circles li:nth-child(10) {
-        left: 85%;
-        width: 150px;
-        height: 150px;
-        animation-delay: 0s;
-        animation-duration: 11s;
-    }
-
     @keyframes animate {
         0% {
             transform: translateY(0) rotate(0deg);
@@ -158,38 +57,7 @@
     }
 
     /* Breadcrumb */
-    .breadcrumb-section {
-        position: relative;
-        padding: 3rem 0 1rem;
-        background: transparent;
-        overflow: hidden;
-    }
 
-    .breadcrumb-section h3 {
-        color: rgb(80, 72, 72);
-        font-weight: 700;
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .breadcrumb {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 0.75rem 1.25rem;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .breadcrumb-item a {
-        color: rgb(102, 50, 50);
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    .breadcrumb-item.active {
-        color: rgba(155, 136, 136, 0.8);
-    }
 
     /* Main container */
     .section-b-space {
@@ -719,7 +587,7 @@
                                 <i class="fas fa-home"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Painel do Usuário</li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">Painel do Usuário</li>
                     </ol>
                 </nav>
             </div>

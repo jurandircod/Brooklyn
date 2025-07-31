@@ -3,6 +3,9 @@
 
 
 @section('conteudo')
+    @include('site.layouts._pages.produtos.descricao')
+    @include('site.layouts._pages.produtos.breadcrumb')
+    @include('site.layouts._pages.produtos.produtosRelacionados')
     @include('site.layouts._pages.Produto')
     @include('sweetalert::alert')
 @endsection

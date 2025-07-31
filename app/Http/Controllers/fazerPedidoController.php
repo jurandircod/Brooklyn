@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 
 class FazerPedidoController extends Controller
 {
-    private $preco_total = 0;
+
     private $tamanhoMap = [
         'P' => 'quantidadeP',
         'M' => 'quantidadeM',

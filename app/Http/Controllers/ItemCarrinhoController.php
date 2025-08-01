@@ -227,8 +227,12 @@ class ItemCarrinhoController extends Controller
             $subtotal = $carrinho->itens->sum('preco_total');
             $frete = new CalculaFreteController();
             $endereco = Endereco::where('user_id', $user_id)->first();
-            $freteValor = $frete->calcularFrete($endereco->cep);
-            $taxaFrete = intVal($freteValor['valor']);
+            if (!$endereco) {
+                $taxaFrete = 0;
+            }else{
+                $freteValor = $frete->calcularFrete($endereco->cep);
+                $taxaFrete = intVal($freteValor['valor']);
+            }
 
             return response()->json([
                 'status' => 'success',

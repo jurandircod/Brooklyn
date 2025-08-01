@@ -10,7 +10,7 @@ use App\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
 use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 /**
  * Class ProdutosController
@@ -177,6 +177,9 @@ class ProdutosController extends Controller
     {
         $folderName = $produto->id;
         $imagePath = public_path("/uploads/produtos/{$folderName}/");
+        if(is_dir($imagePath)){
+            File::deleteDirectory($imagePath);
+        }
 
         $this->createFolder($imagePath);
         $this->uploadImages($imagePath);
@@ -239,12 +242,16 @@ class ProdutosController extends Controller
     {
         $uploadedPaths = [];
 
+        $i = 1;
         foreach ($_FILES['url_imagem']['tmp_name'] ?? [] as $index => $tmpName) {
             if ($_FILES['url_imagem']['error'][$index] !== UPLOAD_ERR_OK) {
                 continue;
             }
 
-            $fileName = basename($_FILES['url_imagem']['name'][$index]);
+            $url = basename($_FILES['url_imagem']['name'][$index]);
+            $extension = pathinfo($url, PATHINFO_EXTENSION);
+            
+            $fileName =  $i++ . '.' . $extension;
             $fullPath = $destinationPath . $fileName;
 
             if (move_uploaded_file($tmpName, $fullPath)) {
@@ -253,7 +260,6 @@ class ProdutosController extends Controller
                 $this->redirectWithError("Erro ao enviar o arquivo.");
             }
         }
-
         return $uploadedPaths;
     }
 
@@ -365,13 +371,14 @@ class ProdutosController extends Controller
     {
         try {
             $data = $request->all();
-            dd($request);
+            
             $validator = $this->validarImagem($data);
             if ($validator->fails()) {
                 return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
+                ->withErrors($validator)
+                ->withInput();
             }
+            $this->atualizarImagem($request);
             DB::transaction(function () use ($data) {
                 $this->validateProductId($data['id'] ?? null);
                 $produto = Produto::findOrFail($data['id']);
@@ -390,37 +397,18 @@ class ProdutosController extends Controller
         $produto = Produto::findOrFail($request->id);
 
         $imagem = $produto->imagem_url;
-        $imagem2 = $produto->imagem_url2;
-        $imagem3 = $produto->imagem_url3;
-        $imagem4 = $produto->imagem_url4;
-        $imagem5 = $produto->imagem_url5;
-
-        if ($request->hasFile('imagem_1')) {
-            if (Storage::exists($imagem)) {
-                Storage::delete($imagem);
+        for ($i = 1; $i <= 5; $i++) {
+            $imagem = 'imagem_' . $i;
+            if ($request->hasFile($imagem)) {
+                $arquivo = $request->file($imagem);
+                $extension = pathinfo($arquivo->getClientOriginalName(), PATHINFO_EXTENSION);
+                $nomeArquivo = $i . '.'. $extension;
+                $caminho = public_path('uploads/produtos/' . $request->id . '/');
+                $arquivo->move($caminho, $nomeArquivo);
             }
-        } else if ($request->hasFile('imagem_2')) {
-            if (Storage::exists($imagem2)) {
-                Storage::delete($imagem2);
-            }
-        } else if ($request->hasFile('imagem_3')) {
-            if (Storage::exists($imagem3)) {
-                Storage::delete($imagem3);
-            }
-        } else if ($request->hasFile('imagem_4')) {
-            if (Storage::exists($imagem4)) {
-                Storage::delete($imagem4);
-            }
-        } else if ($request->hasFile('imagem_5')) {
-            if (Storage::exists($imagem5)) {
-                Storage::delete($imagem5);
-            }
+        
         }
-
-        // Salvar a imagem_3 (se existir)
-        if ($request->hasFile('imagem_3')) {
-            $pathImagem3 = $request->file('imagem_3')->store('public/imagens');
-        }
+        return $arquivo;
     }
 
 
@@ -429,13 +417,13 @@ class ProdutosController extends Controller
         return Validator::make(
             $data,
             [
-                'imagem_2' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imagem_2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'imagem_3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'imagem_4' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'imagem_5' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ],
             [
-                'imagem_2.required' => 'Por favor, selecione a imagem do produto',
+                'imagem_2.nullable' => 'Por favor, selecione a imagem do produto',
                 'imagem_2.image' => 'Por favor, selecione um arquivo de imagem',
                 'imagem_2.mimes' => 'Por favor, selecione um arquivo de imagem',
                 'imagem_2.max' => 'O arquivo selecionado é muito grande',

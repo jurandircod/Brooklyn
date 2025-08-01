@@ -22,7 +22,7 @@ class ImagemHelper
 
         if (!$foto) {
             // Retorna imagem padrão apenas para a primeira posição
-            return $posicao === 0 ? asset('images/default-product.png') : '';
+            return $posicao === 0 ? asset('uploads/produtos/padrao/1.gif') : '';
         }
 
         $caminhoRelativo = $foto->url_imagem;
@@ -30,7 +30,7 @@ class ImagemHelper
 
         // Verifica se é um diretório válido
         if (!is_dir($caminhoAbsoluto)) {
-            return $posicao === 0 ? asset('images/default-product.png') : '';
+            return $posicao === 0 ? asset('uploads/produtos/padrao/1.gif') : '';
         }
 
         // Lê os arquivos do diretório

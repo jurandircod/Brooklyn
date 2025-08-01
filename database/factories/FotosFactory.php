@@ -7,7 +7,7 @@ use Faker\Generator as Faker;
 // Factory de Fotos modificada
 $factory->define(Fotos::class, function (Faker $faker) {
     return [
-        'url_imagem' => '/uploads/produtos/jurandira688916cdb88cc/',
+        'url_imagem' => '/uploads/produtos/51/',
         'produto_id' => function () {
             // Cria o produto e retorna o ID
             $produto = factory(Produto::class)->create();

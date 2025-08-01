@@ -230,17 +230,25 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         $(document).ready(function() {
+            let ultimaModificacaoConhecida = null;
+
             function atualizarContadorCarrinho() {
                 $.ajax({
                     url: "{{ route('site.carrinho.quantidadeItensCarrinho') }}",
                     method: 'GET',
+                    data: {
+                        ultima_modificacao_conhecida: ultimaModificacaoConhecida
+                    },
                     success: function(response) {
-                        console.log("Quantidade de itens:", response.quantidade);
-                        $('#contador').text(response.quantidade);
+                        // Verifica se houve mudança na última modificação ou se é a primeira carga
+                        if (!ultimaModificacaoConhecida || ultimaModificacaoConhecida !== response.ultima_modificacao) {
+                            console.log("Quantidade de itens atualizada:", response.quantidade);
+                            $('#contador').text(response.quantidade);
+                            ultimaModificacaoConhecida = response.ultima_modificacao;
+                        }
                     },
                     error: function(xhr, status, error) {
                         console.error("Erro no AJAX:", error);
-                        console.log("Resposta completa:", xhr.responseText);
                     }
                 });
             }
@@ -248,8 +256,13 @@
             // Atualiza imediatamente ao carregar a página
             atualizarContadorCarrinho();
 
-            // Atualiza a cada 5 segundos (5000 milissegundos)
-            setInterval(atualizarContadorCarrinho, 1000);
+            // Verifica a cada 5 segundos (mais eficiente que 1 segundo)
+            setInterval(atualizarContadorCarrinho, 5000);
+
+            // Opcional: Atualizar quando ocorrem eventos relevantes
+            $(document).on('click', '.adicionar-ao-carrinho, .remover-do-carrinho', function() {
+                setTimeout(atualizarContadorCarrinho, 1000); // Espera 1s para dar tempo do backend processar
+            });
         });
     });
 </script>

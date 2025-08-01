@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
 use App\Http\Controllers\ExistenciaController;
+use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class ProdutosController
@@ -31,7 +33,6 @@ class ProdutosController extends Controller
     public function __construct()
     {
         $this->marcas = Marca::all();
-        $this->produtos = Produto::all();
         $this->categorias = Categoria::all();
         $this->estoques = Estoque::all();
     }
@@ -117,10 +118,11 @@ class ProdutosController extends Controller
         }
 
         try {
-            $data = $this->prepareProductData($data);
-            $produto = $this->createProductWithStock($data);
-            $this->handleProductImages($produto, $data['nome']);
-
+            DB::transaction(function () use ($data) {
+                $data = $this->prepareProductData($data);
+                $produto = $this->createProductWithStock($data);
+                $this->handleProductImages($produto, $data['nome']);
+            });
             Alert::success('Produto', 'Salvo com sucesso');
             return redirect()->route('administrativo.produtos');
         } catch (Exception $e) {
@@ -152,7 +154,13 @@ class ProdutosController extends Controller
     {
         $data['user_id'] = auth()->id();
         $produto = Produto::create($data);
-        $estoque = $this->createStockObject($data);
+        if ($data['categoria_id'] == 1) {
+            $estoque = $this->createStockObjectCamisa($data);
+        } else if ($data['categoria_id'] == 2) {
+            $estoque = $this->createStockObjectSkate($data);
+        } else {
+            $estoque = $this->createStockObject($data);
+        }
         $estoque->produto_id = $produto->id;
         $estoque->save();
 
@@ -167,7 +175,7 @@ class ProdutosController extends Controller
      */
     protected function handleProductImages(Produto $produto, string $productName)
     {
-        $folderName = $productName . uniqid();
+        $folderName = $produto->id;
         $imagePath = public_path("/uploads/produtos/{$folderName}/");
 
         $this->createFolder($imagePath);
@@ -180,22 +188,43 @@ class ProdutosController extends Controller
     }
 
     /**
-     * Cria um objeto de estoque a partir dos dados do produto.
+     * Cria um objeto camisa de estoque a partir dos dados do produto.
      *
      * @param array $data
      * @return Estoque
      */
-    protected function createStockObject(array $data): Estoque
+    protected function createStockObjectCamisa(array $data): Estoque
     {
         $dataEstoque = new Estoque([
             'quantidadeP' => $data['quantidadeP'] ?? 0,
             'quantidadeM' => $data['quantidadeM'] ?? 0,
             'quantidadeG' => $data['quantidadeG'] ?? 0,
             'quantidadeGG' => $data['quantidadeGG'] ?? 0,
+        ]);
+        return $dataEstoque;
+    }
+
+    /**
+     * Cria um objeto skate de estoque a partir dos dados do produto.
+     *
+     * @param array $data
+     * @return Estoque
+     */
+    public function createStockObjectSkate(array $data): Estoque
+    {
+        $dataEstoque = new Estoque([
             'quantidade775' => $data['quantidade775'] ?? $data['quanti775'] ?? 0,
             'quantidade8' => $data['quantidade8'] ?? 0,
             'quantidade825' => $data['quantidade825'] ?? 0,
             'quantidade85' => $data['quantidade85'] ?? 0,
+        ]);
+        return $dataEstoque;
+    }
+
+    public function createStockObject(array $data): Estoque
+    {
+        $dataEstoque = new Estoque([
+            'quantidade' => $data['quantidade'] ?? 0,
         ]);
         return $dataEstoque;
     }
@@ -336,11 +365,19 @@ class ProdutosController extends Controller
     {
         try {
             $data = $request->all();
-            
-            $this->validateProductId($data['id'] ?? null);
-            $produto = Produto::findOrFail($data['id']);
-            $this->updateProductStock($produto, $data);
-            $produto->update($data);
+            dd($request);
+            $validator = $this->validarImagem($data);
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+            DB::transaction(function () use ($data) {
+                $this->validateProductId($data['id'] ?? null);
+                $produto = Produto::findOrFail($data['id']);
+                $this->updateProductStock($produto, $data);
+                $produto->update($data);
+            });
             Alert::success('Alteração', 'Alteração realizada com sucesso');
             return redirect()->route('administrativo.produtos');
         } catch (Exception $e) {
@@ -348,6 +385,69 @@ class ProdutosController extends Controller
         }
     }
 
+    public function atualizarImagem(Request $request)
+    {
+        $produto = Produto::findOrFail($request->id);
+
+        $imagem = $produto->imagem_url;
+        $imagem2 = $produto->imagem_url2;
+        $imagem3 = $produto->imagem_url3;
+        $imagem4 = $produto->imagem_url4;
+        $imagem5 = $produto->imagem_url5;
+
+        if ($request->hasFile('imagem_1')) {
+            if (Storage::exists($imagem)) {
+                Storage::delete($imagem);
+            }
+        } else if ($request->hasFile('imagem_2')) {
+            if (Storage::exists($imagem2)) {
+                Storage::delete($imagem2);
+            }
+        } else if ($request->hasFile('imagem_3')) {
+            if (Storage::exists($imagem3)) {
+                Storage::delete($imagem3);
+            }
+        } else if ($request->hasFile('imagem_4')) {
+            if (Storage::exists($imagem4)) {
+                Storage::delete($imagem4);
+            }
+        } else if ($request->hasFile('imagem_5')) {
+            if (Storage::exists($imagem5)) {
+                Storage::delete($imagem5);
+            }
+        }
+
+        // Salvar a imagem_3 (se existir)
+        if ($request->hasFile('imagem_3')) {
+            $pathImagem3 = $request->file('imagem_3')->store('public/imagens');
+        }
+    }
+
+
+    public function validarImagem($data)
+    {
+        return Validator::make(
+            $data,
+            [
+                'imagem_2' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imagem_3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imagem_4' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'imagem_5' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ],
+            [
+                'imagem_2.required' => 'Por favor, selecione a imagem do produto',
+                'imagem_2.image' => 'Por favor, selecione um arquivo de imagem',
+                'imagem_2.mimes' => 'Por favor, selecione um arquivo de imagem',
+                'imagem_2.max' => 'O arquivo selecionado é muito grande',
+                'imagem_3.mimes' => 'Por favor, selecione um arquivo de imagem',
+                'imagem_3.max' => 'O arquivo selecionado é muito grande',
+                'imagem_4.mimes' => 'Por favor, selecione um arquivo de imagem',
+                'imagem_4.max' => 'O arquivo selecionado é muito grande',
+                'imagem_5.mimes' => 'Por favor, selecione um arquivo de imagem',
+                'imagem_5.max' => 'O arquivo selecionado é muito grande',
+            ]
+        );
+    }
     /**
      * Atualiza o estoque de um produto.
      *

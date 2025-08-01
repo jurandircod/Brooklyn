@@ -20,7 +20,7 @@
         <!-- /.card -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Listar Produtos</h3>
+                <h3 class="card-title text-white">Listar Produtos</h3>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
@@ -80,7 +80,12 @@
         @json($estoque->quantidade775 ?? 0),
         @json($estoque->quantidade8 ?? 0),
         @json($estoque->quantidade825 ?? 0),
-        @json($estoque->quantidade85 ?? 0)
+        @json($estoque->quantidade85 ?? 0),
+        @json($produto->imagem_url ?? ""),
+        @json($produto->imagem_url1 ?? ""),
+        @json($produto->imagem_url2 ?? ""),
+        @json($produto->imagem_url3 ?? ""),
+        @json($produto->imagem_url4 ?? "")
     )'>
                                         Alterar
                                     </button>
@@ -123,15 +128,15 @@
 <!-- Modal para Editar Produto -->
 <div class="modal fade" id="produtoModal" tabindex="-1" role="dialog" aria-labelledby="produtoModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document" style="background-color: #f8f9fa;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="produtoModalLabel">Editar Produto</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formEditarProduto" action="{{ route('administrativo.produto.atualizar') }}" method="POST">
+            <form id="formEditarProduto" action="{{ route('administrativo.produto.atualizar') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <input type="hidden" name="id" id="produtoId">
@@ -194,19 +199,67 @@
                                      style="width: 100px;">
                             </div>
                         </div>
-
-
-
-
                     </div>
 
                     <div class="form-group">
                         <label for="descricaoProduto">Descrição</label>
                         <textarea class="form-control" id="descricaoProduto" name="descricao" rows="3"></textarea>
                     </div>
+
+                    <!-- Seção de Imagens -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title text-white">Imagens do Produto</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="imagensProduto">
+                                <div class="col-md-2">
+                                    <div class="imagem-container">
+                                        <label class="imagem-label">Imagem 1</label>
+                                        <img id="preview-1" src="" alt="Imagem 1" class="imagem-preview" onclick="document.getElementById('file-input-1').click()">
+                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-1').click()">Alterar</button>
+                                        <input type="file" id="file-input-1" name="imagem_1" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 1)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="imagem-container">
+                                        <label class="imagem-label">Imagem 2</label>
+                                        <img id="preview-2" src="" alt="Imagem 2" class="imagem-preview" onclick="document.getElementById('file-input-2').click()">
+                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-2').click()">Alterar</button>
+                                        <input type="file" id="file-input-2" name="imagem_2" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 2)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="imagem-container">
+                                        <label class="imagem-label">Imagem 3</label>
+                                        <img id="preview-3" src="" alt="Imagem 3" class="imagem-preview" onclick="document.getElementById('file-input-3').click()">
+                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-3').click()">Alterar</button>
+                                        <input type="file" id="file-input-3" name="imagem_3" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 3)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="imagem-container">
+                                        <label class="imagem-label">Imagem 4</label>
+                                        <img id="preview-4" src="" alt="Imagem 4" class="imagem-preview" onclick="document.getElementById('file-input-4').click()">
+                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-4').click()">Alterar</button>
+                                        <input type="file" id="file-input-4" name="imagem_4" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 4)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="imagem-container">
+                                        <label class="imagem-label">Imagem 5</label>
+                                        <img id="preview-5" src="" alt="Imagem 5" class="imagem-preview" onclick="document.getElementById('file-input-5').click()">
+                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-5').click()">Alterar</button>
+                                        <input type="file" id="file-input-5" name="imagem_5" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 5)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card" id="estoqueCardSkt">
                         <div class="card-header">
-                            <h3 class="card-title">Estoque</h3>
+                            <h3 class="card-title text-white">Estoque</h3>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -245,7 +298,7 @@
 
                     <div class="card" id="estoqueCard">
                         <div class="card-header">
-                            <h3 class="card-title">Estoque</h3>
+                            <h3 class="card-title text-white">Estoque</h3>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -294,32 +347,62 @@
     </div>
 </div>
 
+<style>
+.imagem-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.imagem-preview {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #f8f9fa;
+}
+
+.imagem-preview:hover {
+    border-color: #007bff;
+    opacity: 0.8;
+}
+
+.input-file-hidden {
+    display: none;
+}
+
+.btn-trocar-imagem {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.btn-trocar-imagem:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.imagem-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    font-size: 12px;
+}
+</style>
+
 <!-- JavaScript para Preencher Modal -->
 <script>
     function preencherModal(id, nome, valor, material, quantidadeTotal, categoriaId, marcaId, descricao,
-        estoqueP, estoqueM, estoqueG, estoqueGG, quantidade775, quantidade8, quantidade825, quantidade85) {
-
-        console.log('Valores recebidos na função:', {
-            id: id,
-            nome: nome,
-            valor: valor,
-            material: material,
-
-            quantidadeTotal: quantidadeTotal,
-            categoriaId: categoriaId,
-            marcaId: marcaId,
-            descricao: descricao,
-            estoqueP: estoqueP,
-            estoqueM: estoqueM,
-            estoqueG: estoqueG,
-            estoqueGG: estoqueGG,
-            categoriaId: categoriaId,
-            quantidade775: quantidade775,
-            quantidade8: quantidade8,
-            quantidade825: quantidade825,
-            quantidade85: quantidade85
-
-        });
+        estoqueP, estoqueM, estoqueG, estoqueGG, quantidade775, quantidade8, quantidade825, quantidade85,
+        imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5) {
+        
         document.getElementById('quantidadeProduto').value = quantidadeTotal ?? 0;
         document.getElementById('quanti775').value = quantidade775 ?? 0;
         document.getElementById('quanti8').value = quantidade8 ?? 0;
@@ -337,6 +420,11 @@
         document.getElementById('quantidadeGC').value = estoqueG ?? 0;
         document.getElementById('quantidadeGGC').value = estoqueGG ?? 0;
 
+
+        // Carregar imagens existentes
+
+        carregarImagensExistentes(imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5);
+
         if (categoriaId == 2) {
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'block';
@@ -345,11 +433,41 @@
             document.getElementById('estoqueCard').style.display = 'block';
             document.getElementById('estoqueCardSkt').style.display = 'none';
             document.getElementById('estoqueProd').style.display = 'none';
-        } else {
+        } else if (categoriaId >= 3) {
             document.getElementById('estoqueProd').style.display = 'block';
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'none';
         }
-        // espera 100ms para garantir que o modal foi carregado
+    }
+
+    function carregarImagensExistentes(img1, img2, img3, img4, img5) {
+        const imagens = [img1, img2, img3, img4, img5];
+        const defaultImage = "{{ asset('uploads/produtos/padrao/1.gif')}}"; // Substitua pelo caminho da sua imagem padrão
+        
+        for (let i = 1; i <= 5; i++) {
+            const preview = document.getElementById(`preview-${i}`);
+            const imagemUrl = imagens[i-1];
+            
+            if (imagemUrl && imagemUrl.trim() !== '') {
+                preview.src = imagemUrl;
+            } else {
+                preview.src = defaultImage;
+            }
+            
+            // Limpar o input file para evitar conflitos
+            document.getElementById(`file-input-${i}`).value = '';
+        }
+    }
+
+    function previewImagem(input, numeroImagem) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                document.getElementById(`preview-${numeroImagem}`).src = e.target.result;
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 </script>

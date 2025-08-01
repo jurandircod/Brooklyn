@@ -9,6 +9,8 @@ use App\Produto;
 use App\Estoque;
 use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\Auth;
+use App\User;
+use App\Endereco;
 use PHPUnit\Util\Json;
 
 class ItemCarrinhoController extends Controller
@@ -129,22 +131,27 @@ class ItemCarrinhoController extends Controller
 
     public function quantidadeItensCarrinho()
     {
-        $carrinho = Carrinho::where('user_id', Auth::id())->get();
+        $carrinho = Carrinho::where('user_id', Auth::id())->where('status', 'ativo')->first(); 
 
         $quantidade = 0;
+        $ultimaModificacao = null;
 
-        if ($carrinho) {
-            foreach ($carrinho as $carrinho) {
-                if ($carrinho->status == 'ativo') {
-                    $quantidade = ItemCarrinho::where('carrinho_id', $carrinho->id)->count();
-                } else {
-                    $quantidade = 0;
-                }
-            }
-            return response()->json(['quantidade' => $quantidade]);
+        if ($carrinho && $carrinho->status == 'ativo') {
+            $quantidade = ItemCarrinho::where('carrinho_id', $carrinho->id)->count();
+            
+            
+            // Obtém a última modificação (usa updated_at do carrinho ou do último item)
+            $ultimaModificacaoItem = ItemCarrinho::where('carrinho_id', $carrinho->id)
+            ->latest('updated_at')
+            ->value('updated_at');
+            
+            $ultimaModificacao = $ultimaModificacaoItem ?: $carrinho->updated_at;
         }
-
-        return response()->json(['quantidade' => 0]);
+        
+        return response()->json([
+            'quantidade' => $quantidade,
+            'ultima_modificacao' => $ultimaModificacao ? $ultimaModificacao->toDateTimeString() : null
+        ]);
     }
 
     public function atualizarQuantidade(Request $request)
@@ -218,14 +225,17 @@ class ItemCarrinhoController extends Controller
             // Calcula totais
             $carrinho = $item->carrinho;
             $subtotal = $carrinho->itens->sum('preco_total');
-            $taxa = $subtotal * 0.00;
+            $frete = new CalculaFreteController();
+            $endereco = Endereco::where('user_id', $user_id)->first();
+            $freteValor = $frete->calcularFrete($endereco->cep);
+            $taxaFrete = intVal($freteValor['valor']);
 
             return response()->json([
                 'status' => 'success',
                 'item_total' => number_format($item->preco_total, 2, ',', '.'),
                 'subtotal' => number_format($subtotal, 2, ',', '.'),
-                'taxa' => number_format($taxa, 2, ',', '.'),
-                'total' => number_format($subtotal + $taxa, 2, ',', '.')
+                'taxa' => number_format($taxaFrete, 2, ',', '.'),
+                'total' => number_format($subtotal + $taxaFrete, 2, ',', '.')
             ]);
         } catch (\Exception $e) {
             return response()->json([

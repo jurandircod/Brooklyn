@@ -363,6 +363,7 @@
             quantidadeSection.style.display = 'none';
         } else {
             // Outras categorias
+            skateSection.style.display = 'none';
             sizeSection.style.display = 'none';
             quantidadeSection.style.display = 'block';
         }

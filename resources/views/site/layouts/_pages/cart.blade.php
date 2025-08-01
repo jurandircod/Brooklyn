@@ -839,7 +839,7 @@
                                             Resumo do Pedido
                                         </h3>
                                         <h6>Subtotal <span id="subtotal">R$ {{ number_format($preco_total, 2, ',', '.') }}</span></h6>
-                                        <h6>Taxa de Entrega <span>R$ 0,00</span></h6>
+                                        <h6>Taxa de Entrega <span id="taxaFrete">R$ 0,00</span></h6>
                                         <h6>Total <span id="preco_total">R$ {{ number_format($preco_total, 2, ',', '.') }}</span></h6>
                                         <div class="bottom-details">
                                             <a href="{{ route('site.fazerPedido') }}">
@@ -1093,6 +1093,8 @@
             subTotal.textContent = formatCurrency(data.subtotal);
             const preco_total = document.querySelector('#preco_total');
             preco_total.textContent = formatCurrency(data.total);
+            const taxaFrete = document.querySelector('#taxaFrete');
+            taxaFrete.textContent = formatCurrency(data.taxa);
         }
     });
 </script>

@@ -47,8 +47,7 @@ Route::group(['prefix' => 'pesquisa'], function () {
 });
 
 // Rotas relacionadas ao produto
-Route::post('/produto/avaliacao', [\App\Http\Controllers\ProdutoController::class, 'avaliar'])->name('site.produto.avaliacao');
-
+Route::post('/produto/avaliacao', [App\Http\Controllers\AvaliacaoController::class, 'avaliar'])->name('site.produto.avaliacao');
 // Rotas relacionadas ao perfil
 Route::group(['prefix' => 'perfil'], function () {
     Route::get('/', 'perfilController@index')->name('site.perfil');
@@ -65,9 +64,9 @@ Route::group(['prefix' => 'carrinho'], function () {
     Route::group(['prefix' => 'itemCarrinho'], function () {
         Route::post('/adicionar', [App\Http\Controllers\ItemCarrinhoController::class, 'adicionar'])->name('site.carrinho.itemCarrinho.adicionar');
         Route::post('/remover/{id}', 'CarrinhoController@remover')->name('site.carrinho.remover');
-        Route::post('/carrinho/itensCarrinho/atualizar-quantidade', [App\Http\Controllers\ItemCarrinhoController::class, 'atualizarQuantidade'])->name('carrinho.atualizar-quantidade');
-        Route::post('/carrinho/itensCarrinho/remover-item', [App\Http\Controllers\ItemCarrinhoController::class, 'removerItem'])->name('carrinho.remover-item');
-        Route::get('/carrinho/itensCarrinho/quantidade', [App\Http\Controllers\ItemCarrinhoController::class, 'quantidadeItensCarrinho'])->name('site.carrinho.quantidadeItensCarrinho');
+        Route::post('/atualizar-quantidade', [App\Http\Controllers\ItemCarrinhoController::class, 'atualizarQuantidade'])->name('carrinho.atualizar-quantidade');
+        Route::post('/remover-item', [App\Http\Controllers\ItemCarrinhoController::class, 'removerItem'])->name('carrinho.remover-item');
+        Route::get('/quantidade', [App\Http\Controllers\ItemCarrinhoController::class, 'quantidadeItensCarrinho'])->name('site.carrinho.quantidadeItensCarrinho');
     });
     Route::post('/finalizarCarrinho', [App\Http\Controllers\fazerPedidoController::class, 'finalizarCarrinho'])->name('site.carrinho.finalizarCarrinho');
 });

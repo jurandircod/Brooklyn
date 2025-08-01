@@ -281,6 +281,9 @@
         border: 2px dashed #d1d5db;
         cursor: pointer;
     }
+    .form-control{
+        height: auto !important;
+    }
 
     .form-control[type="file"]:hover {
         border-color: var(--primary-color);
@@ -303,7 +306,7 @@
 
     .modal-dialog {
         margin: 1.75rem auto;
-        max-width: 500px;
+        
     }
 
     .modal-dialog-centered {
@@ -351,6 +354,7 @@
     .modal-body {
         padding: 2rem !important;
         background: white;
+        
     }
 
     .modal-footer {

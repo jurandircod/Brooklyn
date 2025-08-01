@@ -114,7 +114,6 @@ class FazerPedidoController extends Controller
                 $tamanho = $item->tamanho;
                 $campoTamanho = $this->tamanhoMap[$tamanho];
                 $estoque = Estoque::where('produto_id', $item->produto_id)->first();
-                
                 $estoque->$campoTamanho -= $item->quantidade;
                 $estoque->quantidade -= $item->quantidade;
                 $estoque->save();

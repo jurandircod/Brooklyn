@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Fotos;
 use App\User;
 use App\Pedido;
+use App\Contato;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
             factory(Fotos::class)->create();
             factory(User::class)->create();
             factory(Pedido::class)->create();
+            factory(Contato::class)->create();
         }
 
         

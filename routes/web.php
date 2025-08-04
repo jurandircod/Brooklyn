@@ -3,6 +3,8 @@
 use App\Http\Controllers\AddressController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Administrativo\SuporteContato;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -78,7 +80,7 @@ Route::group(['prefix' => 'produto'], function () {
 });
 
 // Rotas do administrador
-Route::group(['prefix' => 'administrativo'], function () {
+Route::group(['prefix' => 'administrativo', 'middleware' => ['auth', 'admin']], function () {
     Route::get('/', [App\Http\Controllers\Administrativo\PrincipalController::class, 'index'])->name('administrativo.principal');
 
     // Rotas de vendas
@@ -118,6 +120,18 @@ Route::group(['prefix' => 'administrativo'], function () {
         Route::post('/salvar', [App\Http\Controllers\Administrativo\MarcaController::class, 'marcaSalvar'])->name('administrativo.marca.salvar');
         Route::post('/excluir', [App\Http\Controllers\Administrativo\MarcaController::class, 'marcaExcluir'])->name('administrativo.marca.excluir');
     });
+
+    // Rotas de suporte
+    Route::prefix('admin/suporte')->group(function () {
+        Route::get('/contatos', [App\Http\Controllers\Administrativo\SuporteContato::class, 'viewContato'])->name('admin.suporte.contatos');
+
+        // Rotas AJAX
+        Route::get('/api/contatos', [App\Http\Controllers\Administrativo\SuporteContato::class, 'getContatos'])->name('admin.suporte.api.contatos');
+        Route::post('/api/resposta', [App\Http\Controllers\Administrativo\SuporteContato::class, 'enviarResposta'])->name('admin.suporte.api.resposta');
+        Route::post('/api/status', [App\Http\Controllers\Administrativo\SuporteContato::class, 'atualizarStatus'])->name('admin.suporte.api.status');
+        Route::get('/api/buscar', [App\Http\Controllers\Administrativo\SuporteContato::class, 'buscarContatos'])->name('admin.suporte.api.buscar');
+        Route::get('/api/estatisticas', [App\Http\Controllers\Administrativo\SuporteContato::class, 'getEstatisticas'])->name('admin.suporte.api.estatisticas');
+    });
 });
 
 
@@ -128,5 +142,5 @@ Auth::routes(['verify' => true]);
 
 // Rota de fallback
 Route::fallback(function () {
-    echo "A rota acessada não existe. Clique <a href='/'>aqui</a> para retornar para a página inicial.";
+    return view('errors.404');
 });

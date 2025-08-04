@@ -20,6 +20,7 @@ class CreateContatos extends Migration
             $table->string('email');
             $table->string('telefone');
             $table->string('mensagem');
+            $table->enum('status', ['pendente', 'resolvido', 'urgente']);
             $table->timestamps();
         });
     }

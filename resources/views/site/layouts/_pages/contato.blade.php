@@ -101,6 +101,7 @@
                                             </span> 
                                         @endif
                                 </div>
+                                <input type="hidden" name="status" value="pendente">
 
                                 <div class="col-auto">
                                     <button class="btn btn-solid-default" type="submit">Enviar</button>

@@ -133,6 +133,28 @@
                         @endcan
                     </ul>
                 </li>
+
+                @can('access-admin')
+                    <li class="nav-header text-uppercase text-xs text-gray mt-3">SUPORTE CONTATOS</li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link bg-gradient-dark">
+                            <i class="nav-icon fas fa-wrench"></i>
+                            <p>
+                                Suporte
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.suporte.contatos') }}" class="nav-link">
+                                    <i class="far fa-dot-circle nav-icon text-xs"></i>
+                                    <p>Gerenciar Contatos</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endcan
             </ul>
         </nav>
     </div>

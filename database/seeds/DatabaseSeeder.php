@@ -1,10 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Fotos;
-use App\User;
-use App\Pedido;
-use App\Contato;
+use App\Model\{Fotos, User, Pedido, Contato};
 
 class DatabaseSeeder extends Seeder
 {

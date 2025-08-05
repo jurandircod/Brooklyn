@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
-use App\Categoria;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\Produto;
+use App\model\{Produto, Categoria};
 
 class CategoriaController extends Controller
 {

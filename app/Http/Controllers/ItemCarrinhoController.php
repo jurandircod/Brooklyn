@@ -3,14 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Carrinho;
-use App\ItemCarrinho;
-use App\Produto;
-use App\Estoque;
+use App\model\{Produto, User, Endereco, Carrinho, Estoque, ItemCarrinho};
 use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\Auth;
-use App\User;
-use App\Endereco;
 use PHPUnit\Util\Json;
 
 class ItemCarrinhoController extends Controller

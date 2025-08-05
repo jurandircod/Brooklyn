@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Produto;
-use App\Fotos;
-use App\Carrinho;
-use App\ItemCarrinho;
+use App\model\{Produto, Fotos, Carrinho, ItemCarrinho};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

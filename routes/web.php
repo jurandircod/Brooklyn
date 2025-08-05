@@ -122,15 +122,50 @@ Route::group(['prefix' => 'administrativo', 'middleware' => ['auth', 'admin']], 
     });
 
     // Rotas de suporte
-    Route::prefix('admin/suporte')->group(function () {
-        Route::get('/contatos', [App\Http\Controllers\Administrativo\SuporteContato::class, 'viewContato'])->name('admin.suporte.contatos');
+    // Grupo de rotas administrativas com middleware de autenticação
+    Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
 
-        // Rotas AJAX
-        Route::get('/api/contatos', [App\Http\Controllers\Administrativo\SuporteContato::class, 'getContatos'])->name('admin.suporte.api.contatos');
-        Route::post('/api/resposta', [App\Http\Controllers\Administrativo\SuporteContato::class, 'enviarResposta'])->name('admin.suporte.api.resposta');
-        Route::post('/api/status', [App\Http\Controllers\Administrativo\SuporteContato::class, 'atualizarStatus'])->name('admin.suporte.api.status');
-        Route::get('/api/buscar', [App\Http\Controllers\Administrativo\SuporteContato::class, 'buscarContatos'])->name('admin.suporte.api.buscar');
-        Route::get('/api/estatisticas', [App\Http\Controllers\Administrativo\SuporteContato::class, 'getEstatisticas'])->name('admin.suporte.api.estatisticas');
+        // Rota para exibir a view do dashboard de suporte
+        Route::get('/suporte/contatos', [App\Http\Controllers\Administrativo\SuporteContato::class, 'viewContato'])
+            ->name('admin.suporte.contatos');
+
+        // API Routes para AJAX (mantendo os nomes originais para compatibilidade)
+        Route::group(['prefix' => 'suporte/api'], function () {
+
+            // Rota principal para buscar contatos (agora com paginação)
+            Route::get('/contatos', [App\Http\Controllers\Administrativo\SuporteContato::class, 'getContatos'])
+                ->name('admin.suporte.api.contatos');
+
+            // Rota para buscar contatos (mantida para compatibilidade - redireciona para getContatos)
+            Route::get('/buscar', [App\Http\Controllers\Administrativo\SuporteContato::class, 'buscarContatos'])
+                ->name('admin.suporte.api.buscar');
+
+            // Rota para enviar resposta
+            Route::post('/resposta', [App\Http\Controllers\Administrativo\SuporteContato::class, 'enviarResposta'])
+                ->name('admin.suporte.api.resposta');
+
+            // Rota para atualizar status
+            Route::post('/status', [App\Http\Controllers\Administrativo\SuporteContato::class, 'atualizarStatus'])
+                ->name('admin.suporte.api.status');
+
+            // Rota para estatísticas
+            Route::get('/estatisticas', [App\Http\Controllers\Administrativo\SuporteContato::class, 'getEstatisticas'])
+                ->name('admin.suporte.api.estatisticas');
+
+            // NOVAS ROTAS OPCIONAIS (podem ser implementadas conforme necessidade)
+
+            // Rota para exportar contatos
+            Route::get('/exportar', [App\Http\Controllers\Administrativo\SuporteContato::class, 'exportarContatos'])
+                ->name('admin.suporte.api.exportar');
+
+            // Rota para atualizar múltiplos contatos
+            Route::post('/status-multiplos', [App\Http\Controllers\Administrativo\SuporteContato::class, 'marcarMultiplosStatus'])
+                ->name('admin.suporte.api.status-multiplos');
+
+            // Rota para obter detalhes de um contato específico
+            Route::get('/contato/{id}', [App\Http\Controllers\Administrativo\SuporteContato::class, 'getContato'])
+                ->name('admin.suporte.api.contato');
+        });
     });
 });
 

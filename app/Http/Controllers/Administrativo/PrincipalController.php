@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers\Administrativo;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
-use App\Pedido;
-use App\Produto;
-use App\User;
 use Carbon\Carbon;
-use App\Categoria;
+use App\Model\{Pedido, Produto, User, Categoria};
 
 class PrincipalController extends Controller
 {

@@ -1,385 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Dashboard de Suporte</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 1.1rem;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card i {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-
-        .stat-card.total i { color: #3498db; }
-        .stat-card.pending i { color: #f39c12; }
-        .stat-card.resolved i { color: #27ae60; }
-        .stat-card.urgent i { color: #e74c3c; }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 30px;
-        }
-
-        .contacts-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #eee;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .filters {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            background: #f8f9fa;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .filter-btn.active {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #eee;
-            border-radius: 15px;
-            font-size: 1rem;
-            margin-bottom: 25px;
-            transition: border-color 0.3s ease;
-        }
-
-        .search-box:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .contact-card {
-            background: #fff;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            border-left: 4px solid #ddd;
-        }
-
-        .contact-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .contact-card.pending { border-left-color: #f39c12; }
-        .contact-card.resolved { border-left-color: #27ae60; }
-        .contact-card.urgent { border-left-color: #e74c3c; }
-
-        .contact-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .contact-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .contact-status {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-resolved {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-urgent {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .contact-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .contact-detail {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #666;
-        }
-
-        .contact-detail i {
-            width: 16px;
-            color: #667eea;
-        }
-
-        .contact-message {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            font-style: italic;
-            color: #555;
-        }
-
-        .contact-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-success {
-            background: #27ae60;
-            color: white;
-        }
-
-        .btn-warning {
-            background: #f39c12;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .response-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .response-form {
-            display: none;
-        }
-
-        .response-form.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        .response-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: #ddd;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .contact-info {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters {
-                justify-content: center;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/administrativo/suporte/suporte.css') }}">
 </head>
-<body>
+
     <div class="container">
         <div class="header fade-in">
             <h1><i class="fas fa-headset"></i> Dashboard de Suporte</h1>
@@ -413,15 +37,24 @@
             <div class="contacts-section">
                 <div class="section-header">
                     <h2 class="section-title">Contatos Recebidos</h2>
+                    <div class="pagination-info" id="paginationInfo">
+                        Página 1 de 1 (0 contatos)
+                    </div>
                 </div>
 
-                <input type="text" class="search-box" placeholder="🔍 Pesquisar por nome, email ou telefone..." id="searchInput">
+                <input type="text" class="search-box" placeholder="🔍 Pesquisar por nome, email ou telefone..."
+                    id="searchInput">
 
                 <div class="filters">
                     <button class="filter-btn active" data-filter="all">Todos</button>
                     <button class="filter-btn" data-filter="pending">Pendentes</button>
                     <button class="filter-btn" data-filter="resolved">Respondidos</button>
                     <button class="filter-btn" data-filter="urgent">Urgentes</button>
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner">
+                    <i class="fas fa-spinner"></i>
+                    <p>Carregando contatos...</p>
                 </div>
 
                 <div id="contactsList">
@@ -431,11 +64,32 @@
                         <p>Os contatos aparecerão aqui quando forem recebidos</p>
                     </div>
                 </div>
+
+                <div class="pagination-container" id="paginationContainer" style="display: none;">
+                    <div class="pagination-info-container">
+                        <div class="page-size-selector">
+                            <label>Mostrar:</label>
+                            <select class="page-size-select" id="pageSizeSelect">
+                                <option value="10">10 por página</option>
+                                <option value="20" selected>20 por página</option>
+                                <option value="50">50 por página</option>
+                                <option value="100">100 por página</option>
+                            </select>
+                        </div>
+                        <div class="pagination-info" id="paginationSummary">
+                            Mostrando 1-20 de 100 contatos
+                        </div>
+                    </div>
+
+                    <div class="pagination" id="pagination">
+                        <!-- Paginação será gerada aqui -->
+                    </div>
+                </div>
             </div>
 
             <div class="response-panel">
                 <h2 class="section-title">Responder Contato</h2>
-                
+
                 <div id="noSelection" class="empty-state">
                     <i class="fas fa-comment-dots"></i>
                     <h3>Selecione um contato</h3>
@@ -447,22 +101,23 @@
                         <label class="form-label">Para:</label>
                         <input type="text" class="form-input" id="recipientName" readonly>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label">Email:</label>
                         <input type="email" class="form-input" id="recipientEmail" readonly>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label">Assunto:</label>
-                        <input type="text" class="form-input" id="responseSubject" placeholder="Re: Sua mensagem de contato">
+                        <input type="text" class="form-input" id="responseSubject"
+                            placeholder="Re: Sua mensagem de contato">
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label">Mensagem:</label>
                         <textarea class="form-input form-textarea" id="responseMessage" placeholder="Digite sua resposta aqui..."></textarea>
                     </div>
-                    
+
                     <div class="response-actions">
                         <button class="btn btn-primary" onclick="sendResponse()">
                             <i class="fas fa-paper-plane"></i> Enviar Resposta
@@ -482,56 +137,111 @@
     <script>
         // Configuração CSRF para Laravel
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        
+
         // Variáveis globais
         let contacts = [];
+        let currentContact = null;
+        let currentFilter = 'all';
+        let currentPage = 1;
+        let pageSize = 20;
+        let totalPages = 1;
+        let totalContacts = 0;
+        let isLoading = false;
 
-        // Adicionar função updateStats para compatibilidade
-        function updateStats() {
-            loadStats();
-        }
+        // Função para mostrar/esconder loading
+        function showLoading(show = true) {
+            const spinner = document.getElementById('loadingSpinner');
+            const contactsList = document.getElementById('contactsList');
 
-        // Função para carregar contatos do servidor
-        async function loadContacts() {
-            try {
-                const response = await fetch("{{route('admin.suporte.api.contatos')}}", {
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) throw new Error('Erro ao carregar contatos');
-                
-                const result = await response.json();
-                if (result.success) {
-                    contacts = result.data.map(contact => ({
-                        ...contact,
-                        status: contact.status === 'pendente' ? 'pending' : 
-                                contact.status === 'resolvido' ? 'resolved' : 'urgent'
-                    }));
-                    updateStats();
-                    filterContacts(currentFilter);
-                } else {
-                    console.error('Erro:', result.message);
-                }
-            } catch (error) {
-                console.error('Erro ao carregar contatos:', error);
+            if (show) {
+                spinner.classList.add('active');
+                contactsList.style.display = 'none';
+            } else {
+                spinner.classList.remove('active');
+                contactsList.style.display = 'block';
             }
         }
 
-        // Função para carregar estatísticas
-        async function loadStats() {
+        // Função para carregar contatos do servidor com paginação
+        async function loadContacts(page = 1, size = pageSize, searchTerm = '', filter = 'all') {
+            if (isLoading) return;
+
+            isLoading = true;
+            showLoading(true);
+
             try {
-                const response = await fetch("{{route('admin.suporte.api.estatisticas')}}", {
+                const url = new URL("{{ route('admin.suporte.api.contatos') }}", window.location.origin);
+                url.searchParams.append('page', page);
+                url.searchParams.append('per_page', size);
+
+                if (searchTerm) {
+                    url.searchParams.append('search', searchTerm);
+                }
+
+                if (filter !== 'all') {
+                    const statusMap = {
+                        'pending': 'pendente',
+                        'resolved': 'resolvido',
+                        'urgent': 'urgente'
+                    };
+                    url.searchParams.append('status', statusMap[filter] || filter);
+                }
+
+                const response = await fetch(url, {
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
                         'Accept': 'application/json'
                     }
                 });
-                
+
+                if (!response.ok) throw new Error('Erro ao carregar contatos');
+
+                const result = await response.json();
+                if (result.success) {
+                    // Assumindo que o backend retorna paginação no formato:
+                    // { success: true, data: { data: [...], current_page: 1, last_page: 5, total: 100, per_page: 20 } }
+                    const paginationData = result.data;
+
+                    contacts = paginationData.data.map(contact => ({
+                        ...contact,
+                        status: contact.status === 'pendente' ? 'pending' : contact.status === 'resolvido' ?
+                            'resolved' : 'urgent'
+                    }));
+
+                    currentPage = paginationData.current_page || page;
+                    totalPages = paginationData.last_page || 1;
+                    totalContacts = paginationData.total || 0;
+                    pageSize = paginationData.per_page || size;
+
+                    renderContacts(contacts);
+                    updatePaginationInfo();
+                    renderPagination();
+
+                } else {
+                    console.error('Erro:', result.message);
+                    renderContacts([]);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar contatos:', error);
+                renderContacts([]);
+            } finally {
+                isLoading = false;
+                showLoading(false);
+            }
+        }
+
+        // Função para carregar estatísticas (mantida igual)
+        async function loadStats() {
+            try {
+                const response = await fetch("{{ route('admin.suporte.api.estatisticas') }}", {
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    }
+                });
+
                 if (!response.ok) throw new Error('Erro ao carregar estatísticas');
-                
+
                 const result = await response.json();
                 if (result.success) {
                     const stats = result.data;
@@ -545,6 +255,116 @@
             }
         }
 
+        // Função para atualizar informações da paginação
+        function updatePaginationInfo() {
+            const paginationInfo = document.getElementById('paginationInfo');
+            const paginationSummary = document.getElementById('paginationSummary');
+            const paginationContainer = document.getElementById('paginationContainer');
+
+            paginationInfo.textContent = `Página ${currentPage} de ${totalPages} (${totalContacts} contatos)`;
+
+            const startItem = ((currentPage - 1) * pageSize) + 1;
+            const endItem = Math.min(currentPage * pageSize, totalContacts);
+
+            if (totalContacts > 0) {
+                paginationSummary.textContent = `Mostrando ${startItem}-${endItem} de ${totalContacts} contatos`;
+                paginationContainer.style.display = totalPages > 1 ? 'flex' : 'none';
+            } else {
+                paginationSummary.textContent = 'Nenhum contato encontrado';
+                paginationContainer.style.display = 'none';
+            }
+        }
+
+        // Função para renderizar a paginação
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+
+            // Botão Anterior
+            paginationHTML += `
+                <button class="pagination-btn ${currentPage <= 1 ? 'disabled' : ''}" 
+                        onclick="changePage(${currentPage - 1})" 
+                        ${currentPage <= 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+
+            // Lógica para mostrar páginas
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            // Ajustar para sempre mostrar 5 páginas quando possível
+            if (endPage - startPage < 4) {
+                if (startPage === 1) {
+                    endPage = Math.min(totalPages, startPage + 4);
+                } else {
+                    startPage = Math.max(1, endPage - 4);
+                }
+            }
+
+            // Primeira página se não estiver no range
+            if (startPage > 1) {
+                paginationHTML += `
+                    <button class="pagination-btn" onclick="changePage(1)">1</button>
+                `;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+                }
+            }
+
+            // Páginas no range
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                            onclick="changePage(${i})">${i}</button>
+                `;
+            }
+
+            // Última página se não estiver no range
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+                }
+                paginationHTML += `
+                    <button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>
+                `;
+            }
+
+            // Botão Próximo
+            paginationHTML += `
+                <button class="pagination-btn ${currentPage >= totalPages ? 'disabled' : ''}" 
+                        onclick="changePage(${currentPage + 1})" 
+                        ${currentPage >= totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        // Função para mudar de página
+        function changePage(page) {
+            if (page < 1 || page > totalPages || page === currentPage || isLoading) return;
+
+            const searchTerm = document.getElementById('searchInput').value;
+            loadContacts(page, pageSize, searchTerm, currentFilter);
+        }
+
+        // Função para mudar tamanho da página
+        function changePageSize(newSize) {
+            pageSize = parseInt(newSize);
+            currentPage = 1; // Resetar para primeira página
+
+            const searchTerm = document.getElementById('searchInput').value;
+            loadContacts(currentPage, pageSize, searchTerm, currentFilter);
+        }
+
         function getStatusLabel(status) {
             const labels = {
                 'pending': 'Pendente',
@@ -554,9 +374,9 @@
             return labels[status] || status;
         }
 
-        function renderContacts(contactsToRender = contacts) {
+        function renderContacts(contactsToRender = []) {
             const contactsList = document.getElementById('contactsList');
-            
+
             if (contactsToRender.length === 0) {
                 contactsList.innerHTML = `
                     <div class="empty-state">
@@ -605,15 +425,15 @@
                             <i class="fas fa-reply"></i> Responder
                         </button>
                         ${contact.status !== 'resolved' ? `
-                            <button class="btn btn-success" onclick="quickResolve(${contact.id})">
-                                <i class="fas fa-check"></i> Resolver
-                            </button>
-                        ` : ''}
+                                <button class="btn btn-success" onclick="quickResolve(${contact.id})">
+                                    <i class="fas fa-check"></i> Resolver
+                                </button>
+                            ` : ''}
                         ${contact.status !== 'urgent' ? `
-                            <button class="btn btn-danger" onclick="markAsUrgent(${contact.id})">
-                                <i class="fas fa-exclamation"></i> Urgente
-                            </button>
-                        ` : ''}
+                                <button class="btn btn-danger" onclick="markAsUrgent(${contact.id})">
+                                    <i class="fas fa-exclamation"></i> Urgente
+                                </button>
+                            ` : ''}
                     </div>
                 </div>
             `).join('');
@@ -621,73 +441,73 @@
 
         function selectContact(contactId) {
             currentContact = contacts.find(c => c.id === contactId);
-            
+
             if (currentContact) {
                 document.getElementById('noSelection').style.display = 'none';
                 document.getElementById('responseForm').classList.add('active');
-                
+
                 document.getElementById('recipientName').value = currentContact.name;
                 document.getElementById('recipientEmail').value = currentContact.email;
                 document.getElementById('responseSubject').value = `Re: Sua mensagem de contato`;
-                document.getElementById('responseMessage').value = `Olá ${currentContact.name},\n\nObrigado por entrar em contato conosco.\n\n`;
+                document.getElementById('responseMessage').value =
+                    `Olá ${currentContact.name},\n\nObrigado por entrar em contato conosco.\n\n`;
             }
         }
 
         function sendResponse() {
             if (!currentContact) return;
-            
+
             const subject = document.getElementById('responseSubject').value;
             const message = document.getElementById('responseMessage').value;
-            
+
             if (!subject || !message) {
                 alert('Por favor, preencha todos os campos da resposta.');
                 return;
             }
-            
+
             // Desabilitar botão durante o envio
             const sendBtn = document.querySelector('.btn-primary');
             const originalText = sendBtn.innerHTML;
             sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
             sendBtn.disabled = true;
-            
+
             // Enviar via AJAX
-            fetch("{{route('admin.suporte.api.resposta')}}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    contato_id: currentContact.id,
-                    assunto: subject,
-                    mensagem: message
+            fetch("{{ route('admin.suporte.api.resposta') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contato_id: currentContact.id,
+                        assunto: subject,
+                        mensagem: message
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    alert('Resposta enviada com sucesso!');
-                    loadContacts();
-                    loadStats();
-                    clearForm();
-                } else {
-                    alert('Erro ao enviar resposta: ' + result.message);
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao enviar resposta. Tente novamente.');
-            })
-            .finally(() => {
-                sendBtn.innerHTML = originalText;
-                sendBtn.disabled = false;
-            });
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Resposta enviada com sucesso!');
+                        refreshCurrentPage();
+                        clearForm();
+                    } else {
+                        alert('Erro ao enviar resposta: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao enviar resposta. Tente novamente.');
+                })
+                .finally(() => {
+                    sendBtn.innerHTML = originalText;
+                    sendBtn.disabled = false;
+                });
         }
 
         function markAsResolved() {
             if (!currentContact) return;
-            
+
             updateContactStatus(currentContact.id, 'resolvido');
         }
 
@@ -702,7 +522,7 @@
         // Função para atualizar status via AJAX
         async function updateContactStatus(contactId, status) {
             try {
-                const response = await fetch("{{route('admin.suporte.api.status')}}", {
+                const response = await fetch("{{ route('admin.suporte.api.status') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -714,11 +534,10 @@
                         status: status
                     })
                 });
-                
+
                 const result = await response.json();
                 if (result.success) {
-                    loadContacts();
-                    loadStats();
+                    refreshCurrentPage();
                     if (currentContact && currentContact.id === contactId) {
                         clearForm();
                     }
@@ -739,61 +558,39 @@
             document.getElementById('responseMessage').value = '';
         }
 
+        // Função para atualizar página atual mantendo filtros e busca
+        function refreshCurrentPage() {
+            const searchTerm = document.getElementById('searchInput').value;
+            loadContacts(currentPage, pageSize, searchTerm, currentFilter);
+            loadStats();
+        }
+
         function filterContacts(status) {
             currentFilter = status;
-            
+            currentPage = 1; // Resetar para primeira página quando mudar filtro
+
             // Atualizar botões ativos
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             document.querySelector(`[data-filter="${status}"]`).classList.add('active');
-            
-            // Realizar busca no servidor com filtro
+
+            // Carregar contatos com novo filtro
             const searchTerm = document.getElementById('searchInput').value;
-            performServerSearch(searchTerm, status);
+            loadContacts(currentPage, pageSize, searchTerm, currentFilter);
         }
 
         function searchContacts() {
             const searchTerm = document.getElementById('searchInput').value;
-            
-            // Fazer busca no servidor se houver termo de pesquisa
-            if (searchTerm.length > 2 || searchTerm.length === 0) {
-                performServerSearch(searchTerm, currentFilter);
-            }
+            currentPage = 1; // Resetar para primeira página quando pesquisar
+
+            // Carregar contatos com termo de busca
+            loadContacts(currentPage, pageSize, searchTerm, currentFilter);
         }
 
-        // Função para realizar busca no servidor
-        async function performServerSearch(termo, status) {
-            try {
-                const url = new URL("{{route('admin.suporte.api.buscar')}}", window.location.origin);
-                url.searchParams.append('termo', termo);
-                url.searchParams.append('status', status === 'all' ? 'all' : 
-                                       status === 'pending' ? 'pendente' : 
-                                       status === 'resolved' ? 'resolvido' : 'urgente');
-                
-                const response = await fetch(url, {
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) throw new Error('Erro na busca');
-                
-                const result = await response.json();
-                if (result.success) {
-                    const searchResults = result.data.map(contact => ({
-                        ...contact,
-                        status: contact.status === 'pendente' ? 'pending' : 
-                                contact.status === 'resolvido' ? 'resolved' : 'urgent'
-                    }));
-                    renderContacts(searchResults);
-                } else {
-                    console.error('Erro na busca:', result.message);
-                }
-            } catch (error) {
-                console.error('Erro na busca:', error);
-            }
+        // Função para compatibilidade (mantida para não quebrar código existente)
+        function updateStats() {
+            loadStats();
         }
 
         // Event listeners
@@ -801,7 +598,7 @@
             // Carregar dados iniciais
             loadContacts();
             loadStats();
-            
+
             // Filtros
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -809,20 +606,74 @@
                     filterContacts(filter);
                 });
             });
-            
+
             // Pesquisa com debounce
             let searchTimeout;
             document.getElementById('searchInput').addEventListener('input', function() {
                 clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(searchContacts, 300);
+                searchTimeout = setTimeout(searchContacts,
+                500); // Aumentei para 500ms para reduzir chamadas
+            });
+
+            // Seletor de tamanho de página
+            document.getElementById('pageSizeSelect').addEventListener('change', function() {
+                changePageSize(this.value);
+            });
+
+            // Atalhos de teclado para navegação
+            document.addEventListener('keydown', function(e) {
+                // Apenas se não estiver digitando em um input
+                if (e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() ===
+                    'textarea') {
+                    return;
+                }
+
+                if (e.key === 'ArrowLeft' && currentPage > 1) {
+                    e.preventDefault();
+                    changePage(currentPage - 1);
+                } else if (e.key === 'ArrowRight' && currentPage < totalPages) {
+                    e.preventDefault();
+                    changePage(currentPage + 1);
+                }
             });
         });
 
-        // Atualizar dados a cada 30 segundos
+        // Atualizar dados a cada 30 segundos (só se não estiver carregando)
         setInterval(() => {
-            loadContacts();
-            loadStats();
+            if (!isLoading) {
+                refreshCurrentPage();
+            }
         }, 30000);
+
+        // Função para ir para uma página específica (útil para implementação futura)
+        function goToPage() {
+            const pageInput = prompt(`Digite o número da página (1-${totalPages}):`);
+            const page = parseInt(pageInput);
+
+            if (page && page >= 1 && page <= totalPages) {
+                changePage(page);
+            } else if (pageInput !== null) {
+                alert('Número de página inválido!');
+            }
+        }
+
+        // Adicionar event listener para scroll infinito (opcional - descomente se desejar)
+        /*
+        let isScrollLoading = false;
+        window.addEventListener('scroll', function() {
+            if (isScrollLoading || isLoading) return;
+            
+            const scrollHeight = document.documentElement.scrollHeight;
+            const scrollTop = document.documentElement.scrollTop;
+            const clientHeight = document.documentElement.clientHeight;
+            
+            if (scrollTop + clientHeight >= scrollHeight - 100) {
+                if (currentPage < totalPages) {
+                    isScrollLoading = true;
+                    changePage(currentPage + 1);
+                    setTimeout(() => { isScrollLoading = false; }, 1000);
+                }
+            }
+        });
+        */
     </script>
-</body>
-</html>

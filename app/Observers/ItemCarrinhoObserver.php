@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\ItemCarrinho;
-use App\Estoque;
+use App\Model\ItemCarrinho;
+use App\Model\Estoque;
 
 class ItemCarrinhoObserver
 {

@@ -1,10 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
-use App\ItemCarrinho;
-
 class Carrinho extends Model
 {
     protected $fillable = ['user_id', 'status'];

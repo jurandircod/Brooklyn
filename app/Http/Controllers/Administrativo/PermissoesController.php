@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
-use App\Permissao;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\User;
+use App\Model\{Permissao, User};
 use Illuminate\Support\Facades\Auth;
 
 class PermissoesController extends Controller

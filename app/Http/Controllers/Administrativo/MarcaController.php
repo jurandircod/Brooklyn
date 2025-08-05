@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Administrativo;
 use App\Http\Controllers\Controller;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\marca;
+use App\model\{Marca};
 use Illuminate\Http\Request;
 
 class marcaController extends Controller

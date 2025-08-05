@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Contato;
+use App\model\{Contato};
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -17,18 +17,18 @@ class ContatoController extends Controller
     public function salvar(Request $request)
     {   
         $request->validate([
-            'nome' => 'required|min:3|max:255',
-            'sobrenome' => 'required|min:3|max:255',
+            'nome' => 'required|min:3|max:50',
+            'sobrenome' => 'required|min:3|max:50',
             'email' => 'required|email|max:255',
             'telefone' => 'required|numeric',
             'mensagem' => 'required|min:3|max:500',
         ],[
             'nome.required' => 'O nome é obrigatório',
             'nome.min' => 'O nome deve ter pelo menos 3 caracteres',
-            'nome.max' => 'O nome deve ter no máximo 255 caracteres',
+            'nome.max' => 'O nome deve ter no máximo 50 caracteres',
             'sobrenome.required' => 'O sobrenome é obrigatório',
             'sobrenome.min' => 'O sobrenome deve ter pelo menos 3 caracteres',
-            'sobrenome.max' => 'O sobrenome deve ter no máximo 255 caracteres',
+            'sobrenome.max' => 'O sobrenome deve ter no máximo 50 caracteres',
             'email.required' => 'O email é obrigatório',
             'email.email' => 'O email é inválido, por favor, informe um email válido',
             'email.max' => 'O email deve ter no máximo 255 caracteres',

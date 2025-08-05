@@ -1,6 +1,6 @@
 <?php
 
-use App\Produto;
+use App\Model\Produto;
 use Faker\Generator as Faker;
 
 // Factory de Produto (mantida como está)

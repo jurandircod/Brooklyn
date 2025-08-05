@@ -3,9 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\User;
-use App\Estoque;
-use App\ItemCarrinho;
+use App\Model\{User, Estoque, ItemCarrinho};
 use App\Observers\ItemCarrinhoObserver;
 use App\Observers\EstoqueObserver;
 use App\Observers\UserObserver;

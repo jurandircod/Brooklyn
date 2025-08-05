@@ -1,9 +1,6 @@
 <?php
 
-namespace App;
-
-use App\Carrinho;
-
+namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 
 class ItemCarrinho extends Model

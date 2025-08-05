@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User;
-use App\produto;
-use App\avaliacao;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\model\{Produto, Avaliacao, User};
 use App\ItemCarrinho;
 
 class AvaliacaoController extends Controller

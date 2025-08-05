@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-use App\Fotos;
+use App\Model\Fotos;
 use Illuminate\Support\Facades\File;
 
 class ImagemHelper

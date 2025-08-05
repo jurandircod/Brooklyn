@@ -3,14 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Produto;
-use App\Categoria;
-use App\Marca;
-use App\Endereco;
-use App\ItemCarrinho;
-use App\Pedido;
-use App\Carrinho;
-use App\Estoque;
+
+use App\model\{Estoque, ItemCarrinho, Pedido, Endereco};
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;

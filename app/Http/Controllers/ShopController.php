@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Produto;
-use App\Categoria;
-use App\Marca;
+use App\model\{Produto, Categoria, Marca};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
 class ShopController extends Controller
 {
-    private $produtos;
     private $categorias;
     private $marcas;
 
@@ -20,35 +17,54 @@ class ShopController extends Controller
         $this->categorias = Categoria::all();
         $this->marcas = Marca::all();
         
-        $query = Produto::query()->with(['categoria', 'marca', 'fotos']);
         $categorias = $this->categorias;
         $marcas = $this->marcas;
 
-        if ($request->has('filtrar')) {
-            $produtos = $this->filtrar($request);
-            // Retorna os produtos filtrados com paginação
-            $produtosPaginados = $query->whereIn('id', $produtos->pluck('id'))->paginate(100);
+        // Construir query base
+        $query = $this->buildQuery($request);
+        
+        // Se for requisição AJAX (filtro ou paginação)
+        if ($request->ajax()) {
+            // Para filtros com paginação, pegar a página da URL se existir
+            $page = $request->input('page', $request->query('page', 1));
+            $produtos = $query->paginate(8, ['*'], 'page', $page);
             
+            // Se for uma requisição de filtro (POST)
+            if ($request->isMethod('POST')) {
+                return response()->json([
+                    'status' => 'success',
+                    'data' => $produtos->items(),
+                    'pagination_html' => view('site.layouts._pages.pesquisaProduto.partials.produtos-pagination', compact('produtos'))->render(),
+                    'pagination_info' => [
+                        'current_page' => $produtos->currentPage(),
+                        'last_page' => $produtos->lastPage(),
+                        'total' => $produtos->total(),
+                        'per_page' => $produtos->perPage(),
+                        'has_pages' => $produtos->hasPages()
+                    ]
+                ], 200);
+            }
+            
+            // Se for paginação (GET)
             return response()->json([
-                'status' => 'success',
-                'data' => $produtosPaginados->items(), // Apenas os itens da paginação
-                'pagination' => [
-                    'current_page' => $produtosPaginados->currentPage(),
-                    'last_page' => $produtosPaginados->lastPage(),
-                    'per_page' => $produtosPaginados->perPage(),
-                    'total' => $produtosPaginados->total(),
-                ]
+                'table' => view('site.layouts._pages.pesquisaProduto.partials.produtos-table', compact('produtos'))->render(),
+                'pagination' => view('site.layouts._pages.pesquisaProduto.partials.produtos-pagination', compact('produtos'))->render()
             ], 200);
-        } else {
-            $produtos = $query->paginate(8);
-            return view('site.shop', compact('produtos', 'categorias', 'marcas'));
         }
+        
+        // Requisição normal (não AJAX)
+        $produtos = $query->paginate(8);
+        return view('site.shop', compact('produtos', 'categorias', 'marcas'));
     }
 
-    public function filtrar(Request $request)
+    private function buildQuery(Request $request)
     {
-        // Log dos dados recebidos
-        Log::info('Dados recebidos no filtro:', $request->all());
+        $query = Produto::query()->with(['categoria', 'marca', 'fotos']);
+
+        // Se não há filtros, retorna query básica
+        if (!$request->hasAny(['sizes', 'categorias', 'marcas', 'min_price', 'max_price'])) {
+            return $query;
+        }
 
         // Validação
         $validator = Validator::make($request->all(), [
@@ -64,19 +80,21 @@ class ShopController extends Controller
 
         if ($validator->fails()) {
             Log::error('Erros de validação:', $validator->errors()->toArray());
-            return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors(),
-            ], 422);
+            return $query; // Retorna query sem filtros em caso de erro
         }
 
-        // Converter strings para inteiros e filtrar valores falsy
+        // Aplicar filtros
+        $this->applyFilters($query, $request);
+        
+        return $query;
+    }
+
+    private function applyFilters($query, Request $request)
+    {
+        // Converter e filtrar dados
         $categorias = array_filter(array_map('intval', $request->input('categorias', [])));
         $marcas = array_filter(array_map('intval', $request->input('marcas', [])));
         $sizes = array_filter($request->input('sizes', []));
-
-        // Construir a query com eager loading
-        $query = Produto::query()->with(['categoria', 'marca', 'fotos']);
 
         // Mapear tamanhos para colunas de estoque
         $sizeColumns = [
@@ -90,7 +108,7 @@ class ShopController extends Controller
             '8.5' => 'quantidade85',
         ];
 
-        // Filtro por tamanhos no estoque com leftJoin
+        // Filtro por tamanhos no estoque
         if (!empty($sizes)) {
             $query->leftJoin('estoques', 'produtos.id', '=', 'estoques.produto_id')
                 ->where(function ($subQuery) use ($sizes, $sizeColumns) {
@@ -102,7 +120,9 @@ class ShopController extends Controller
                             });
                         }
                     }
-                });
+                })
+                ->select('produtos.*')
+                ->distinct();
         }
 
         // Filtro por categorias
@@ -122,15 +142,5 @@ class ShopController extends Controller
         if ($request->filled('max_price')) {
             $query->where('produtos.valor', '<=', $request->input('max_price'));
         }
-
-        // Garantir produtos distintos e selecionar apenas colunas de produtos
-        $query->select('produtos.*')->distinct();
-
-        // Executar a query e retornar os produtos
-        $products = $query->get();
-        
-        Log::info('Produtos filtrados encontrados:', ['count' => $products->count()]);
-        
-        return $products;
     }
 }

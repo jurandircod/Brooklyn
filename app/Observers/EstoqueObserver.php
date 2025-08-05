@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Estoque;
+use App\Model\Estoque;
 
 class EstoqueObserver
 {

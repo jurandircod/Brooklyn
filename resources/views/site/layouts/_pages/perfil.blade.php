@@ -1,5 +1,3 @@
-
-
 <style>
     :root {
         --primary-color: #000000;
@@ -96,7 +94,7 @@
         border: none;
         color: var(--text-secondary);
         padding: 1rem 1.5rem;
-        
+
         margin: 0 0.5rem;
         font-weight: 500;
         transition: all 0.3s ease;
@@ -138,7 +136,7 @@
 
     .nav-link i {
         font-size: 1.1rem;
-        margin-left: 0.5rem; 
+        margin-left: 0.5rem;
         transition: transform 0.3s ease;
     }
 
@@ -743,46 +741,16 @@
                             </div>
 
                             <div class="tab-pane fade" id="order">
-                                <div class="box-head mb-3">
-                                    <h3>Meus Pedidos</h3>
+                                <div id="pedidos-table-container">
+                                    @include('site.layouts._pages.perfil.partials.pedidos-table', [
+                                        'pedidos' => $pedidos,
+                                    ])
                                 </div>
-                                <div class="table-container">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                
-                                                <th scope="col">ID do Pedido</th>
-                                                <th scope="col">Metodo de Pagamento</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Preço</th>
-                                                <th scope="col">Ver</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                @foreach ($pedidos as $pedido)
-                                                <tr>
-                                                    <td>
-                                                        <p class="mt-0 fw-bold">{{ $pedido->id }}</p>
-                                                    </td>
-                                                    <td>
-                                                        <p class="fs-6 m-0">{{$pedido->metodo_pagamento}}</p>
-                                                    </td>
-                                                    <td><span
-                                                            class="status-btn">{{ $pedido->status }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p class="theme-color fs-6 fw-bold">R${{ number_format($pedido->preco_total, 2, ',', '.') }}</p>
-                                                    </td>
-                                                    <td>
-                                                        <a href="javascript:void(0)"
-                                                            class="btn btn-sm btn-outline-primary">
-                                                            <i class="far fa-eye"></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+
+                                <div id="pedidos-pagination-container">
+                                    @include('site.layouts._pages.perfil.partials.pedidos-pagination', [
+                                        'pedidos' => $pedidos,
+                                    ])
                                 </div>
                             </div>
 
@@ -1294,5 +1262,41 @@
                 }, 500);
             }
         });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paginationContainer = document.getElementById('pedidos-pagination-container');
+
+        // Delegation for pagination clicks
+        paginationContainer.addEventListener('click', function(e) {
+            const link = e.target.closest('a.page-link');
+            if (!link) return;
+
+            e.preventDefault();
+            loadPage(link.href);
+        });
+
+        // Function to load pages via AJAX
+        function loadPage(url) {
+            fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('pedidos-table-container').innerHTML = data.table;
+                    document.getElementById('pedidos-pagination-container').innerHTML = data.pagination;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
     });
 </script>

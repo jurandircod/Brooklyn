@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\User;
-use App\Carrinho;
+use App\Model\User;
+use App\Model\Carrinho;
 
 
 class UserObserver

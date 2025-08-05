@@ -1,10 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Produto;
-
 class Estoque extends Model
 {
     protected $fillable = ['quantidade', 'produto_id', 'quantidadeP', 'quantidadeM', 'quantidadeG', 'quantidadeGG', 'quantidade775', 'quantidade8', 'quantidade825', 'quantidade85'];

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
+use App\model\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
 use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -251,6 +251,10 @@ class ProdutosController extends Controller
             $url = basename($_FILES['url_imagem']['name'][$index]);
             $extension = pathinfo($url, PATHINFO_EXTENSION);
             
+            $extension  = strtolower($extension);
+           
+
+
             $fileName =  $i++ . '.' . $extension;
             $fullPath = $destinationPath . $fileName;
 

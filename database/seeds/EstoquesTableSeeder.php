@@ -1,6 +1,5 @@
 <?php
 
-use App\Estoque;
 use Illuminate\Database\Seeder;
 
 class EstoquesTableSeeder extends Seeder

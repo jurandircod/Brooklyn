@@ -1,7 +1,5 @@
 <?php
-use App\Fotos;
-use App\Produto;
-use App\Estoque;
+use App\Model\{Fotos, Produto, Estoque};
 use Faker\Generator as Faker;
 
 // Factory de Fotos modificada

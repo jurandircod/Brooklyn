@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Carrinho;
-use App\ItemCarrinho;
-use App\Produto;
+use App\model\{Produto, ItemCarrinho, Carrinho};
 
 class CarrinhoController extends Controller
 {
 
     private $carrinho;
-    private $itens;
     private $produto;
     public function __construct()
     {

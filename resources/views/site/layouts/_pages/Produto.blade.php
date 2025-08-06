@@ -144,7 +144,7 @@
 
                                             <input type="number" id="quantidade" name="quantidade"
                                                 class="form-control" min="1" value="1"
-                                                style="width: 100px;" />
+                                                style="width: 100px;" /> <a href=""></a>
                                             <small id="quantidade-error" style="color: red; display: none;">Quantidade
                                                 indisponível para o estoque selecionado</small>
                                         </ul>

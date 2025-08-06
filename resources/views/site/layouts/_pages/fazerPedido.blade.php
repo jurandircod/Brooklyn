@@ -81,7 +81,7 @@
                             </div>
 
                             <div class="text-center mt-4">
-                                <a href="{{ route('site.perfil.exibirEndereco') }}" class="btn btn-solid-default">
+                                <a href="{{ route('site.perfil.exibirEndereco') }}" target="_blank" class="btn btn-solid-default">
                                     <i class="fas fa-plus me-2"></i>
                                     Adicionar novo endereço
                                 </a>

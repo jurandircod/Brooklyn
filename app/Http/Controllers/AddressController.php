@@ -166,17 +166,6 @@ class AddressController extends Controller
         return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos', 'enderecosMostrar', 'pedidos'));
     }
 
-    public function exibirEndereco()
-    {
-        $user = Auth::user();
-        if ($user == null) {
-            return redirect()->route('login');
-        } else {
-            $enderecos = Endereco::where('user_id', Auth::user()->id)->get();
-            return view('site.perfil', compact('enderecosMostrar'));
-        }
-    }
-
     public function remover($id)
     {
         $activeTab = 6;

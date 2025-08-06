@@ -51,10 +51,10 @@ Route::group(['prefix' => 'pesquisa'], function () {
 // Rotas relacionadas ao produto
 Route::post('/produto/avaliacao', [App\Http\Controllers\AvaliacaoController::class, 'avaliar'])->name('site.produto.avaliacao');
 // Rotas relacionadas ao perfil
+Route::get('/exibirEndereco', [App\Http\Controllers\PerfilController::class, 'exibirEndereco'])->name('site.perfil.exibirEndereco');
 Route::group(['prefix' => 'perfil'], function () {
     Route::get('/', 'perfilController@index')->name('site.perfil');
     Route::get('/{id}', 'AddressController@enviaParaformEnderecos')->name('site.perfil.enviaParaformEnderecos');
-    Route::get('/exibirEndereco', 'PerfilController@exibirEndereco')->name('site.perfil.exibirEndereco');
     Route::post('/salvar', 'AddressController@salvar')->name('site.perfil.salvarEndereco');
     Route::get('/remover/{id}', 'AddressController@remover')->name('site.perfil.removerEndereco');
     Route::post('/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');

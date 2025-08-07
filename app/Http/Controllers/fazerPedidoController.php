@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PaymentController;
+use App\Services\MercadoPagoService;
 
 class FazerPedidoController extends Controller
 {
@@ -30,7 +32,7 @@ class FazerPedidoController extends Controller
     {
         $enderecos = Endereco::where('user_id', auth()->id())->get();
         $itens = $this->queryBuilderItensCarrinho();
-        
+
         $preco_total = $itens->sum('preco_total');
         $contador = $itens->count();
 
@@ -45,9 +47,9 @@ class FazerPedidoController extends Controller
     public function queryBuilderItensCarrinho()
     {
         return ItemCarrinho::with(['produto.fotos', 'carrinho'])
-            ->whereHas('carrinho', function($query) {
+            ->whereHas('carrinho', function ($query) {
                 $query->where('user_id', auth()->id())
-                      ->where('status', 'ativo');
+                    ->where('status', 'ativo');
             })
             ->select('item_carrinhos.*')
             ->get()
@@ -68,14 +70,33 @@ class FazerPedidoController extends Controller
             return back();
         }
 
+
+        $request->merge([
+            'cpf' => '11117634965',
+            'descricao' => 'teste'
+        ]);
+
         $validator = $this->validateInput($request->all());
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
 
+        if ($request->metodo_pagamento == 'pix') {
+            $payment = new PaymentController(new MercadoPagoService());
+            $qrcode = $payment->createPixPayment($request);
+            $data = $qrcode->getData();
+            $status = $data->status;
+            $qr_code = $data->qr_code;
+            $qr_code_base64 = $data->qr_code_base64;
+            $expiration = $data->expiration;
+            $valor = $request->valor;
+            return view('site.pix', compact('status', 'qr_code', 'qr_code_base64', 'expiration', 'valor'));
+            exit;
+        }
+
         return DB::transaction(function () use ($request, $user) {
             $itens = $this->queryBuilderItensCarrinho();
-            
+
             if ($itens->isEmpty()) {
                 Alert::error('Erro', 'Carrinho vazio');
                 return back();
@@ -91,13 +112,13 @@ class FazerPedidoController extends Controller
             foreach ($itens as $item) {
                 $tamanho = $item->tamanho;
                 $campoTamanho = $this->tamanhoMap[$tamanho] ?? null;
-                
+
                 if (!$campoTamanho) {
                     throw new \Exception("Tamanho '{$tamanho}' não é válido.");
                 }
 
                 $estoque = Estoque::where('produto_id', $item->produto_id)->first();
-                
+
                 if (!$estoque || $estoque->$campoTamanho < $item->quantidade) {
                     throw new \Exception("Estoque insuficiente para o produto {$item->produto_nome} (tamanho {$tamanho}).");
                 }
@@ -114,7 +135,7 @@ class FazerPedidoController extends Controller
             }
 
             $preco_total = $itens->sum('preco_total');
-            
+
             // Finaliza carrinho
             $carrinho->status = 'finalizado';
             $carrinho->save();
@@ -133,13 +154,14 @@ class FazerPedidoController extends Controller
         });
     }
 
+
     private function validateInput($request)
     {
         return Validator::make($request, [
             'endereco_id' => [
                 'required',
                 'numeric',
-                'exists:enderecos,id,user_id,'.auth()->id() // Garante que o endereço pertence ao usuário
+                'exists:enderecos,id,user_id,' . auth()->id() // Garante que o endereço pertence ao usuário
             ],
             'metodo_pagamento' => 'required|in:dinheiro,credito,debito,pix', // Adicione todos os métodos válidos
         ], [

@@ -800,7 +800,7 @@
     }
 </style>
 
-<body class="theme-color4 light ltr">
+<body class="theme-color2 light ltr">
     <style>
         header .profile-dropdown ul li {
             display: block;

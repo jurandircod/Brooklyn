@@ -4,6 +4,7 @@ use App\Http\Controllers\AddressController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Administrativo\SuporteContato;
+use App\Http\Controllers\PaymentController;
 
 
 /*
@@ -60,6 +61,7 @@ Route::group(['prefix' => 'perfil'], function () {
     Route::post('/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');
 });
 
+Route::post('/payments/pix', [PaymentController::class, 'createPixPayment']);
 //rotas carrinho
 Route::group(['prefix' => 'carrinho'], function () {
     Route::get('/principal', 'CarrinhoController@index')->name('site.carrinho');

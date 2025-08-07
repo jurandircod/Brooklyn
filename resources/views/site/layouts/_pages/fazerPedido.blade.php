@@ -177,6 +177,7 @@
                             </div>
                         @enderror
 
+                        <input type="hidden" name="valor" value="{{ $preco_total }}">
                         <div class="text-center mt-4">
                             <button class="btn btn-solid-default btn-lg" type="submit" style="padding: 15px 40px;">
                                 <i class="fas fa-lock me-2"></i>

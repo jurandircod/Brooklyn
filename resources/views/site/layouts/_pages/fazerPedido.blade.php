@@ -1,35 +1,5 @@
 
-< <section class="breadcrumb-section section-b-space" style="padding-top:20px;padding-bottom:20px; position: relative;">
-    <ul class="circles">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
-    <div class="container" style="position: relative; z-index: 2;">
-        <div class="row">
-            <div class="col-12">
-                <h3>Checkout</h3>
-                <nav>
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="/" style="color: white;">
-                                <i class="fas fa-home"></i>
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page" style="color: white;">Checkout</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-    </section>
+
 
     <section class="section-b-space">
         <div class="container">

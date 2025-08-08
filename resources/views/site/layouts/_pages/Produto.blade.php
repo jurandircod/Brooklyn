@@ -1,4 +1,3 @@
-@yield('breadcrumb')
 
 <section>
     <div class="container">

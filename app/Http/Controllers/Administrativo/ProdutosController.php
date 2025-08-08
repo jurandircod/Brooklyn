@@ -177,7 +177,7 @@ class ProdutosController extends Controller
     {
         $folderName = $produto->id;
         $imagePath = public_path("/uploads/produtos/{$folderName}/");
-        if(is_dir($imagePath)){
+        if (is_dir($imagePath)) {
             File::deleteDirectory($imagePath);
         }
 
@@ -250,10 +250,9 @@ class ProdutosController extends Controller
 
             $url = basename($_FILES['url_imagem']['name'][$index]);
             $extension = pathinfo($url, PATHINFO_EXTENSION);
-            
-            $extension  = strtolower($extension);
-           
 
+            $fileName = pathinfo($url, PATHINFO_FILENAME);
+            $extension  = strtolower($extension);
 
             $fileName =  $i++ . '.' . $extension;
             $fullPath = $destinationPath . $fileName;
@@ -336,7 +335,7 @@ class ProdutosController extends Controller
             return;
         }
 
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'com'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
         $images = array_filter(scandir($directory), function ($file) use ($allowedExtensions) {
             $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
             return in_array($extension, $allowedExtensions);
@@ -375,12 +374,17 @@ class ProdutosController extends Controller
     {
         try {
             $data = $request->all();
-            
+
             $validator = $this->validarImagem($data);
             if ($validator->fails()) {
                 return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            dd($data);
+            if (isset($data['deleteImage'])) {
+                $this->deleteImagem($data);
             }
             $this->atualizarImagem($request);
             DB::transaction(function () use ($data) {
@@ -396,23 +400,74 @@ class ProdutosController extends Controller
         }
     }
 
+    protected function deleteImagem(array $data)
+    {
+        $produto = Produto::findOrFail($data['id']);
+        $caminhoBase = public_path('uploads/produtos/' . $data['id'] . '/');
+
+        // Excluir imagens
+        $glob = glob($caminhoBase . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
+
+        foreach ($data['deleteImage'] as $key => $value) {
+            foreach ($glob as $file) {
+                $fileName = pathinfo($file, PATHINFO_FILENAME);
+                if ($fileName == $value) {
+                    unlink($file); // Exclui a imagem
+                }
+            }
+        }
+        return true;
+    }
+
     public function atualizarImagem(Request $request)
     {
         $produto = Produto::findOrFail($request->id);
+        $caminhoBase = public_path('uploads/produtos/' . $request->id . '/');
 
-        $imagem = $produto->imagem_url;
-        for ($i = 1; $i <= 5; $i++) {
-            $imagem = 'imagem_' . $i;
-            if ($request->hasFile($imagem)) {
-                $arquivo = $request->file($imagem);
-                $extension = pathinfo($arquivo->getClientOriginalName(), PATHINFO_EXTENSION);
-                $nomeArquivo = $i . '.'. $extension;
-                $caminho = public_path('uploads/produtos/' . $request->id . '/');
-                $arquivo->move($caminho, $nomeArquivo);
-            }
-        
+        // Criar diretório se não existir
+        if (!file_exists($caminhoBase)) {
+            mkdir($caminhoBase, 0755, true);
         }
-        return $arquivo;
+
+        for ($i = 1; $i <= 5; $i++) {
+            $campoImagem = 'imagem_' . $i;
+
+            if (!$request->hasFile($campoImagem)) {
+                continue;
+            }
+
+            $arquivo = $request->file($campoImagem);
+
+            // Validação do arquivo
+            $extensao = strtolower($arquivo->getClientOriginalExtension());
+            if (!in_array($extensao, ['png', 'jpg', 'jpeg', 'gif'])) {
+                continue; // Ou retornar erro
+            }
+
+            // Nome seguro para o arquivo
+            $nomeArquivo = $i . '.' . $extensao;
+
+            $caminhoCompleto = $caminhoBase . $nomeArquivo;
+
+            $glob = glob($caminhoBase . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
+
+            foreach ($glob as $file) {
+                $fileName = pathinfo($file, PATHINFO_FILENAME);
+                if ($fileName == $i) {
+                    unlink($file);
+                }
+            }
+
+            // Remove arquivo existente com o mesmo número
+            if (file_exists($caminhoCompleto)) {
+                unlink($caminhoCompleto);
+            }
+
+            // Move o novo arquivo
+            $arquivo->move($caminhoBase, $nomeArquivo);
+        }
+
+        return redirect()->back()->with('success', 'Imagens atualizadas!');
     }
 
 

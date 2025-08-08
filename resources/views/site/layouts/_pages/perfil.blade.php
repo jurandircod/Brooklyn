@@ -1,12 +1,12 @@
 <style>
     :root {
-        --primary-color: #000000;
+        --primary-color: #6A70D6;
         --primary-hover: #ffffff;
         --secondary-color: #9bb0c5;
         --success-color: #10b981;
         --warning-color: #f59e0b;
         --danger-color: #ef4444;
-        --dark-color: #1f2937;
+        --dark-color: #E22454;
         --light-gray: #f1f5f9;
         --border-color: #e2e8f0;
         --text-primary: #334155;
@@ -18,13 +18,6 @@
     }
 
 
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: white;
-        min-height: 100vh;
-        color: var(--text-primary);
-        line-height: 1.6;
-    }
 
     .h-logo {
         max-width: 185px !important;
@@ -558,40 +551,7 @@
     }
 </style>
 
-@include('site.layouts._components.perfil.mobileMenu')
-
 <!-- Breadcrumb section start -->
-<section class="breadcrumb-section section-b-space">
-    <ul class="circles">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h3>Painel do Usuário</h3>
-                <nav>
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="index.php">
-                                <i class="fas fa-home"></i>
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active text-white" aria-current="page">Painel do Usuário</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
 <!-- Breadcrumb section end -->
 
 <!-- user dashboard section start -->

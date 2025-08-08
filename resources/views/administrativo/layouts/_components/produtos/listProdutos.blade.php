@@ -81,11 +81,11 @@
         @json($estoque->quantidade8 ?? 0),
         @json($estoque->quantidade825 ?? 0),
         @json($estoque->quantidade85 ?? 0),
-        @json($produto->imagem_url ?? ""),
-        @json($produto->imagem_url1 ?? ""),
-        @json($produto->imagem_url2 ?? ""),
-        @json($produto->imagem_url3 ?? ""),
-        @json($produto->imagem_url4 ?? "")
+        @json($produto->imagem_url ?? ''),
+        @json($produto->imagem_url2 ?? ''),
+        @json($produto->imagem_url3 ?? ''),
+        @json($produto->imagem_url4 ?? ''),
+        @json($produto->imagem_url5 ?? '')
     )'>
                                         Alterar
                                     </button>
@@ -136,7 +136,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="formEditarProduto" action="{{ route('administrativo.produto.atualizar') }}" method="POST" enctype="multipart/form-data">
+            <form id="formEditarProduto" action="{{ route('administrativo.produto.atualizar') }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf
 
                 <input type="hidden" name="id" id="produtoId">
@@ -195,8 +196,7 @@
                             <div class="form-group">
                                 <label for="quantidade">Quantidade</label>
                                 <input type="number" class="form-control" id="quantidadeProduto"
-                                    name="quantidadeProduto" placeholder="Digite a quantidade"
-                                     style="width: 100px;">
+                                    name="quantidadeProduto" placeholder="Digite a quantidade" style="width: 100px;">
                             </div>
                         </div>
                     </div>
@@ -216,41 +216,84 @@
                                 <div class="col-md-2">
                                     <div class="imagem-container">
                                         <label class="imagem-label">Imagem 1</label>
-                                        <img id="preview-1" src="" alt="Imagem 1" class="imagem-preview" onclick="document.getElementById('file-input-1').click()">
-                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-1').click()">Alterar</button>
-                                        <input type="file" id="file-input-1" name="imagem_1" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 1)">
+                                        <img id="preview-1" src="" alt="Imagem 1" class="imagem-preview"
+                                            onclick="document.getElementById('file-input-1').click()">
+                                        <button type="button" class="btn-trocar-imagem"
+                                            onclick="document.getElementById('file-input-1').click()">Alterar</button>
+                                        <input type="file" id="file-input-1" name="imagem_1"
+                                            class="input-file-hidden" accept="image/*"
+                                            onchange="previewImagem(this, 1)">
+                                    </div>
+
+                                    <div>
+                                        <input type="checkbox" id="deleteImage-1" name="deleteImage[1]">
+                                        <label for="imagem1">Excluir</label>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="imagem-container">
                                         <label class="imagem-label">Imagem 2</label>
-                                        <img id="preview-2" src="" alt="Imagem 2" class="imagem-preview" onclick="document.getElementById('file-input-2').click()">
-                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-2').click()">Alterar</button>
-                                        <input type="file" id="file-input-2" name="imagem_2" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 2)">
+                                        <img id="preview-2" src="" alt="Imagem 2" class="imagem-preview"
+                                            onclick="document.getElementById('file-input-2').click()">
+                                        <button type="button" class="btn-trocar-imagem"
+                                            onclick="document.getElementById('file-input-2').click()">Alterar</button>
+                                        <input type="file" id="file-input-2" name="imagem_2"
+                                            class="input-file-hidden" accept="image/*"
+                                            onchange="previewImagem(this, 2)">
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="deleteImage-2" name="deleteImage[2]">
+                                        <label for="imagem1">Excluir</label>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="imagem-container">
                                         <label class="imagem-label">Imagem 3</label>
-                                        <img id="preview-3" src="" alt="Imagem 3" class="imagem-preview" onclick="document.getElementById('file-input-3').click()">
-                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-3').click()">Alterar</button>
-                                        <input type="file" id="file-input-3" name="imagem_3" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 3)">
+                                        <img id="preview-3" src="" alt="Imagem 3" class="imagem-preview"
+                                            onclick="document.getElementById('file-input-3').click()">
+                                        <button type="button" class="btn-trocar-imagem"
+                                            onclick="document.getElementById('file-input-3').click()">Alterar</button>
+                                        <input type="file" id="file-input-3" name="imagem_3"
+                                            class="input-file-hidden" accept="image/*"
+                                            onchange="previewImagem(this, 3)">
+                                    </div>
+
+                                    <div>
+                                        <input type="checkbox" id="deleteImage-3" name="deleteImage[3]">
+                                        <label for="imagem1">Excluir</label>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="imagem-container">
                                         <label class="imagem-label">Imagem 4</label>
-                                        <img id="preview-4" src="" alt="Imagem 4" class="imagem-preview" onclick="document.getElementById('file-input-4').click()">
-                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-4').click()">Alterar</button>
-                                        <input type="file" id="file-input-4" name="imagem_4" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 4)">
+                                        <img id="preview-4" src="" alt="Imagem 4" class="imagem-preview"
+                                            onclick="document.getElementById('file-input-4').click()">
+                                        <button type="button" class="btn-trocar-imagem"
+                                            onclick="document.getElementById('file-input-4').click()">Alterar</button>
+                                        <input type="file" id="file-input-4" name="imagem_4"
+                                            class="input-file-hidden" accept="image/*"
+                                            onchange="previewImagem(this, 4)">
                                     </div>
+                                    <div>
+                                        <input type="checkbox" id="deleteImage-4" name="deleteImage[4]">
+                                        <label for="imagem1">Excluir</label>
+                                    </div>
+
                                 </div>
                                 <div class="col-md-2">
                                     <div class="imagem-container">
                                         <label class="imagem-label">Imagem 5</label>
-                                        <img id="preview-5" src="" alt="Imagem 5" class="imagem-preview" onclick="document.getElementById('file-input-5').click()">
-                                        <button type="button" class="btn-trocar-imagem" onclick="document.getElementById('file-input-5').click()">Alterar</button>
-                                        <input type="file" id="file-input-5" name="imagem_5" class="input-file-hidden" accept="image/*" onchange="previewImagem(this, 5)">
+                                        <img id="preview-5" src="" alt="Imagem 5" class="imagem-preview"
+                                            onclick="document.getElementById('file-input-5').click()">
+                                        <button type="button" class="btn-trocar-imagem"
+                                            onclick="document.getElementById('file-input-5').click()">Alterar</button>
+                                        <input type="file" id="file-input-5" name="imagem_5"
+                                            class="input-file-hidden" accept="image/*"
+                                            onchange="previewImagem(this, 5)">
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="deleteImage-5" name="deleteImage[5]">
+                                        <label for="imagem1">Excluir</label>
                                     </div>
                                 </div>
                             </div>
@@ -333,10 +376,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -348,53 +387,53 @@
 </div>
 
 <style>
-.imagem-container {
-    position: relative;
-    margin-bottom: 15px;
-}
+    .imagem-container {
+        position: relative;
+        margin-bottom: 15px;
+    }
 
-.imagem-preview {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #f8f9fa;
-}
+    .imagem-preview {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #f8f9fa;
+    }
 
-.imagem-preview:hover {
-    border-color: #007bff;
-    opacity: 0.8;
-}
+    .imagem-preview:hover {
+        border-color: #007bff;
+        opacity: 0.8;
+    }
 
-.input-file-hidden {
-    display: none;
-}
+    .input-file-hidden {
+        display: none;
+    }
 
-.btn-trocar-imagem {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 3px 6px;
-    font-size: 11px;
-    cursor: pointer;
-}
+    .btn-trocar-imagem {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 3px 6px;
+        font-size: 11px;
+        cursor: pointer;
+    }
 
-.btn-trocar-imagem:hover {
-    background: rgba(0, 0, 0, 0.9);
-}
+    .btn-trocar-imagem:hover {
+        background: rgba(0, 0, 0, 0.9);
+    }
 
-.imagem-label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block;
-    font-size: 12px;
-}
+    .imagem-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+        font-size: 12px;
+    }
 </style>
 
 <!-- JavaScript para Preencher Modal -->
@@ -402,7 +441,7 @@
     function preencherModal(id, nome, valor, material, quantidadeTotal, categoriaId, marcaId, descricao,
         estoqueP, estoqueM, estoqueG, estoqueGG, quantidade775, quantidade8, quantidade825, quantidade85,
         imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5) {
-        
+
         document.getElementById('quantidadeProduto').value = quantidadeTotal ?? 0;
         document.getElementById('quanti775').value = quantidade775 ?? 0;
         document.getElementById('quanti8').value = quantidade8 ?? 0;
@@ -440,33 +479,46 @@
         }
     }
 
+    function getPureFileName(filePath) {
+        // 1. Extrai apenas o nome do arquivo com extensão
+        const fileNameWithExt = filePath.split(/[\\/]/).pop();
+
+        // 2. Remove a extensão
+        return fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf('.'));
+    }
+
     function carregarImagensExistentes(img1, img2, img3, img4, img5) {
         const imagens = [img1, img2, img3, img4, img5];
-        const defaultImage = "{{ asset('uploads/produtos/padrao/1.gif')}}"; // Substitua pelo caminho da sua imagem padrão
-        
+        const defaultImage =
+            "{{ asset('uploads/produtos/padrao/1.gif') }}"; // Substitua pelo caminho da sua imagem padrão
+
         for (let i = 1; i <= 5; i++) {
-            const preview = document.getElementById(`preview-${i}`);
-            const imagemUrl = imagens[i-1];
-            
+            const imagemUrl = imagens[i - 1];
+            const numeroImagem = getPureFileName(imagemUrl);
+            var preview = document.getElementById(`preview-${i}`);
+
             if (imagemUrl && imagemUrl.trim() !== '') {
+                var preview = document.getElementById(`preview-${numeroImagem}`);
                 preview.src = imagemUrl;
+                document.getElementById(`deleteImage-${i}`).value = i;
             } else {
                 preview.src = defaultImage;
             }
-            
+
             // Limpar o input file para evitar conflitos
             document.getElementById(`file-input-${i}`).value = '';
         }
     }
 
+    //
     function previewImagem(input, numeroImagem) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            
+
             reader.onload = function(e) {
                 document.getElementById(`preview-${numeroImagem}`).src = e.target.result;
             }
-            
+
             reader.readAsDataURL(input.files[0]);
         }
     }

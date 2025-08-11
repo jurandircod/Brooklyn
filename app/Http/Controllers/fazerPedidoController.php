@@ -172,4 +172,13 @@ class FazerPedidoController extends Controller
             'endereco_id.exists' => 'O endereço selecionado não existe ou não pertence a você',
         ]);
     }
+
+    public static function pedidosApi($pedidosPassados)
+    {
+        $pedidos = $pedidosPassados;
+            return response()->json([
+                'table' => view('site.layouts._pages.perfil.partials.pedidos-table', compact('pedidos'))->render(),
+                'pagination' => view('site.layouts._pages.perfil.partials.pedidos-pagination', compact('pedidos'))->render()
+            ]);
+    }
 }

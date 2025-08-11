@@ -8,6 +8,7 @@ use App\model\{pedido, Endereco};
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Perfil;
 
 class AddressController extends Controller
 {
@@ -17,12 +18,9 @@ class AddressController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    static function index()
     {
-        $user = Auth::user();
-        if ($user == null) {
-            return redirect()->route('login');
-        }
+
     }
 
     public function getCityByCep($cep)
@@ -156,15 +154,17 @@ class AddressController extends Controller
         }
     }
 
-    public function enviaParaformEnderecos(Request $request, $id)
+    public function enviaParaformEnderecos($id)
     {
-        $pedidos = $this->enviarPedidos();
         $enderecos = Endereco::where('id', $id)->get();
         $activeTab = 3;
         $enderecosMostrar = Endereco::where('user_id', Auth::user()->id)->get();
         $enderecoEditar = Endereco::where('id', $id)->first();
-        return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos', 'enderecosMostrar', 'pedidos'));
+        return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos', 'enderecosMostrar'));
     }
+
+
+
 
     public function remover($id)
     {
@@ -179,10 +179,5 @@ class AddressController extends Controller
         $endereco->delete();
         Alert::alert('Endereço', 'Removido com sucesso', 'success');
         return redirect()->route('site.perfil', compact('activeTab'));
-    }
-
-    public function enviarPedidos()
-    {
-        return $pedidos = Pedido::where('user_id', Auth::user()->id)->get();
     }
 }

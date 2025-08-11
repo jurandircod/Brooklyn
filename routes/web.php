@@ -55,7 +55,7 @@ Route::post('/produto/avaliacao', [App\Http\Controllers\AvaliacaoController::cla
 Route::get('/exibirEndereco', [App\Http\Controllers\PerfilController::class, 'exibirEndereco'])->name('site.perfil.exibirEndereco');
 Route::group(['prefix' => 'perfil'], function () {
     Route::get('/', 'perfilController@index')->name('site.perfil');
-    Route::get('/{id}', 'AddressController@enviaParaformEnderecos')->name('site.perfil.enviaParaformEnderecos');
+    Route::get('/{id}', 'PerfilController@index')->name('site.perfil.enviaParaformEnderecos');
     Route::post('/salvar', 'AddressController@salvar')->name('site.perfil.salvarEndereco');
     Route::get('/remover/{id}', 'AddressController@remover')->name('site.perfil.removerEndereco');
     Route::post('/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');

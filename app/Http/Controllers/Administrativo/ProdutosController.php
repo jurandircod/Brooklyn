@@ -382,10 +382,10 @@ class ProdutosController extends Controller
                     ->withInput();
             }
 
-            dd($data);
             if (isset($data['deleteImage'])) {
-                $this->deleteImagem($data);
+                $verifica = $this->deleteImagem($data);
             }
+
             $this->atualizarImagem($request);
             DB::transaction(function () use ($data) {
                 $this->validateProductId($data['id'] ?? null);
@@ -402,21 +402,22 @@ class ProdutosController extends Controller
 
     protected function deleteImagem(array $data)
     {
-        $produto = Produto::findOrFail($data['id']);
-        $caminhoBase = public_path('uploads/produtos/' . $data['id'] . '/');
 
-        // Excluir imagens
-        $glob = glob($caminhoBase . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
+            $produto = Produto::findOrFail($data['id']);
+            $caminhoBase = public_path('uploads/produtos/' . $data['id'] . '/');
 
-        foreach ($data['deleteImage'] as $key => $value) {
-            foreach ($glob as $file) {
-                $fileName = pathinfo($file, PATHINFO_FILENAME);
-                if ($fileName == $value) {
-                    unlink($file); // Exclui a imagem
+            // Excluir imagens
+            $glob = glob($caminhoBase . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
+
+            foreach ($data['deleteImage'] as $key => $value) {
+                foreach ($glob as $file) {
+                    $fileName = pathinfo($file, PATHINFO_FILENAME);
+                    if ($fileName == $value) {
+                        unlink($file); // Exclui a imagem
+                    }
                 }
             }
-        }
-        return true;
+            return true;
     }
 
     public function atualizarImagem(Request $request)

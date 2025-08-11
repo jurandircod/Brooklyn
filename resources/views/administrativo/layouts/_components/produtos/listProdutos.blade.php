@@ -462,6 +462,7 @@
 
         // Carregar imagens existentes
 
+
         carregarImagensExistentes(imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5);
 
         if (categoriaId == 2) {
@@ -480,35 +481,56 @@
     }
 
     function getPureFileName(filePath) {
-        // 1. Extrai apenas o nome do arquivo com extensão
+        // 1. Verifica se filePath é uma string válida
+        if (typeof filePath !== 'string' || filePath.trim() === '') {
+            return null; // ou throw new Error('Caminho do arquivo inválido');
+        }
+
+        // 2. Extrai apenas o nome do arquivo com extensão
         const fileNameWithExt = filePath.split(/[\\/]/).pop();
 
-        // 2. Remove a extensão
-        return fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf('.'));
+        // 3. Verifica se fileNameWithExt é válido
+        if (!fileNameWithExt || fileNameWithExt === '') {
+            return null; // ou throw new Error('Nome do arquivo não encontrado');
+        }
+
+        // 4. Verifica se há uma extensão
+        const lastDotIndex = fileNameWithExt.lastIndexOf('.');
+        if (lastDotIndex === -1) {
+            return fileNameWithExt; // Retorna o nome sem extensão, se não houver ponto
+        }
+
+        // 5. Remove a extensão
+        return fileNameWithExt.substring(0, lastDotIndex);
     }
+
+
 
     function carregarImagensExistentes(img1, img2, img3, img4, img5) {
         const imagens = [img1, img2, img3, img4, img5];
-        const defaultImage =
-            "{{ asset('uploads/produtos/padrao/1.gif') }}"; // Substitua pelo caminho da sua imagem padrão
+        const defaultImage = "{{ asset('uploads/produtos/padrao/1.gif') }}";
 
-        for (let i = 1; i <= 5; i++) {
-            const imagemUrl = imagens[i - 1];
-            const numeroImagem = getPureFileName(imagemUrl);
-            var preview = document.getElementById(`preview-${i}`);
-
-            if (imagemUrl && imagemUrl.trim() !== '') {
-                var preview = document.getElementById(`preview-${numeroImagem}`);
-                preview.src = imagemUrl;
-                document.getElementById(`deleteImage-${i}`).value = i;
-            } else {
-                preview.src = defaultImage;
-            }
-
-            // Limpar o input file para evitar conflitos
-            document.getElementById(`file-input-${i}`).value = '';
+        // Primeiro, limpa todos os previews com a imagem padrão
+        for (let pos = 1; pos <= 5; pos++) {
+            const preview = document.getElementById(`preview-${pos}`);
+            preview.src = defaultImage;
+            document.getElementById(`deleteImage-${pos}`).value = '';
+            document.getElementById(`file-input-${pos}`).value = '';
         }
+
+        //percorre as imagens recebidas e coloca na posição correta
+        imagens.forEach((imagemUrl) => {
+            if (imagemUrl && imagemUrl.trim() !== '') {
+                const numeroImagem = getPureFileName(imagemUrl); // extrai o número do nome do arquivo
+                if (numeroImagem) {
+                    const preview = document.getElementById(`preview-${numeroImagem}`);
+                    preview.src = imagemUrl;
+                    document.getElementById(`deleteImage-${numeroImagem}`).value = numeroImagem;
+                }
+            }
+        });
     }
+
 
     //
     function previewImagem(input, numeroImagem) {

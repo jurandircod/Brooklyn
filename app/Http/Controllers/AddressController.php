@@ -133,7 +133,6 @@ class AddressController extends Controller
     {
         $activeTab = 3;
         $validator = $this->validarInput($request->all());
-        $pedidos = $this->enviarPedidos();
         if ($validator->fails()) {
             Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
             return redirect()
@@ -147,20 +146,17 @@ class AddressController extends Controller
             $endereco->update($request->all());
 
             Alert::alert('Endereço', 'Atualizado com sucesso', 'success');
-            return redirect()->route('site.perfil', compact('activeTab', 'pedidos'));
+            return redirect()->route('site.perfil', ['id' => null, 'activeTab' => 3]);
         } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
-            return view('site.perfil', compact('activeTab', 'pedidos'));
+            return view('site.perfil');
         }
     }
 
-    public function enviaParaformEnderecos($id)
+    public static function enviaParaformEnderecos($id)
     {
-        $enderecos = Endereco::where('id', $id)->get();
-        $activeTab = 3;
-        $enderecosMostrar = Endereco::where('user_id', Auth::user()->id)->get();
         $enderecoEditar = Endereco::where('id', $id)->first();
-        return view('site.perfil', compact('activeTab', 'enderecoEditar', 'enderecos', 'enderecosMostrar'));
+        return $enderecoEditar;
     }
 
 

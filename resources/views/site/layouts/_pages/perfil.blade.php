@@ -1,3 +1,4 @@
+{{ $activeTab }}
 <style>
     :root {
         --primary-color: #6A70D6;
@@ -563,54 +564,57 @@
                     <div class="sidebar">
                         <ul class="nav nav-tabs custome-nav-tabs flex-column category-option" id="myTab">
                             <li class="nav-item">
-                                <button class="nav-link font-light @if (empty($activeTab) && empty($_GET['activeTab'])) active @endif"
-                                    id="tab" data-bs-toggle="tab" data-bs-target="#dash" type="button">
+                                <button
+                                    class="nav-link font-light @if (empty($activeTab) && empty($_GET['activeTab'])) active 
+            @elseif ((isset($activeTab) && $activeTab == 'dash') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'dash')) active @endif"
+                                    id="dash-tab" data-bs-toggle="tab" data-bs-target="#dash" type="button">
                                     <i class="fas fa-tachometer-alt"></i> <b>Painel de Controle</b>
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link font-light" id="5-tab" data-bs-toggle="tab"
-                                    data-bs-target="#profile" type="button">
+                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'profile') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'profile')) active @endif"
+                                    id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button">
                                     <i class="fas fa-user"></i> <b>Perfil</b>
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 3) || (isset($_GET['activeTab']) && $_GET['activeTab'] == 3)) active @endif"
-                                    id="6-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button">
+                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'endereco') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'endereco')) active @endif"
+                                    id="endereco-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button">
                                     <i class="fas fa-plus-circle"></i> <b>Cadastrar Endereço</b>
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link font-light" id="1-tab" data-bs-toggle="tab"
-                                    data-bs-target="#order" type="button">
+                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'order') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'order')) active @endif"
+                                    id="order-tab" data-bs-toggle="tab" data-bs-target="#order" type="button">
                                     <i class="fas fa-shopping-bag"></i> <b>Pedidos</b>
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link font-light" id="2-tab" data-bs-toggle="tab"
-                                    data-bs-target="#wishlist" type="button">
+                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'wishlist') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'wishlist')) active @endif"
+                                    id="wishlist-tab" data-bs-toggle="tab" data-bs-target="#wishlist" type="button">
                                     <i class="fas fa-heart"></i> <b>Wishlist</b>
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 6) || (isset($_GET['activeTab']) && $_GET['activeTab'] == 6)) active @endif"
-                                    id="3-tab" data-bs-toggle="tab" data-bs-target="#save" type="button">
+                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'save') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'save')) active @endif"
+                                    id="save-tab" data-bs-toggle="tab" data-bs-target="#save" type="button">
                                     <i class="fas fa-map-marker-alt"></i> <b>Endereços salvos</b>
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link font-light" id="4-tab" data-bs-toggle="tab"
-                                    data-bs-target="#pay" type="button">
+                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'pay') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'pay')) active @endif"
+                                    id="pay-tab" data-bs-toggle="tab" data-bs-target="#pay" type="button">
                                     <i class="fas fa-credit-card"></i> <b>Pagamento</b>
                                 </button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link font-light" id="6-tab" data-bs-toggle="tab"
-                                    data-bs-target="#security" type="button">
+                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'security') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'security')) active @endif"
+                                    id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button">
                                     <i class="fas fa-shield-alt"></i> <b>Segurança</b>
                                 </button>
                             </li>
                         </ul>
+
                     </div>
                 </div>
 
@@ -783,8 +787,9 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 6) show active @endif @endisset"
-                                id="save">
+
+                            <div class="tab-pane fade @isset($activeTab) @if ($activeTab == 6) show active @endif @endisset @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 6) show active @endif @endisset" id="save">
+                                
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <h3>Endereços Salvos</h3>
                                     <a href="{{ route('site.perfil.exibirEndereco') }}" class="btn btn-solid-default">
@@ -964,7 +969,6 @@
                                         @isset($enderecoEditar)
                                             <input type="hidden" name="id" value="{{ $enderecoEditar->id }}">
                                         @endisset
-
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">

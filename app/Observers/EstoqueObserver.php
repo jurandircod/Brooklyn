@@ -7,35 +7,22 @@ use App\Model\Estoque;
 class EstoqueObserver
 {
 
+    protected $mapaTamanhoCamisas = [
+        'quantidadeP' => 'p',
+        'quantidadeM' => 'm',
+        'quantidadeG' => 'g',
+        'quantidadeGG' => 'gg',
+    ];
+
+    protected $mapaTamanhoSkates = [
+        'quantidade775' => '775',
+        'quantidade8' => '8',
+        'quantidade825' => '825',
+        'quantidade85' => '85',
+    ];
     public function saving(Estoque $estoque)
     {
-        // Soma todos os campos de tamanho
-        // Verifica se é um produto com tamanhos específicos (camiseta, skate, etc.)
-        $temTamanhosEspecificos =
-            ($estoque->quantidadeP > 0) ||
-            ($estoque->quantidadeM > 0) ||
-            ($estoque->quantidadeG > 0) ||
-            ($estoque->quantidadeGG > 0) ||
-            ($estoque->quantidade775 > 0) ||
-            ($estoque->quantidade8 > 0) ||
-            ($estoque->quantidade825 > 0) ||
-            ($estoque->quantidade85 > 0);
 
-        if ($temTamanhosEspecificos) {
-            // Produto com tamanhos específicos: soma apenas os campos de tamanho
-            $estoque->quantidade =
-                ($estoque->quantidadeP ?? 0) +
-                ($estoque->quantidadeM ?? 0) +
-                ($estoque->quantidadeG ?? 0) +
-                ($estoque->quantidadeGG ?? 0) +
-                ($estoque->quantidade775 ?? 0) +
-                ($estoque->quantidade8 ?? 0) +
-                ($estoque->quantidade825 ?? 0) +
-                ($estoque->quantidade85 ?? 0);
-        } else {
-            // Produto sem tamanhos específicos: usa apenas o campo quantidade
-            $estoque->quantidade = $estoque->quantidade ?? 0;
-        }
     }
     /**
      * Handle the estoque "created" event.
@@ -56,7 +43,9 @@ class EstoqueObserver
      */
     public function updated(Estoque $estoque)
     {
-        //
+        if ($estoque->quantidade < 0) {
+            $estoque->quantidade = 0;
+        }        
     }
 
     /**

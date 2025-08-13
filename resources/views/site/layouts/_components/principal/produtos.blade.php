@@ -13,7 +13,7 @@
 
         <div class="row g-sm-4 g-3">
             @foreach ($produtos as $index => $produto)
-                @if ($produto->estoque && $produto->estoque->quantidade > 0)
+                @if ($produto->estoque)
                     <div class="col-xl-2 col-lg-2 col-6">
                         <div class="product-box">
                             <div class="img-wrapper">

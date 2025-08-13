@@ -25,7 +25,17 @@ class ProdutosController extends Controller
     protected $categorias;   // Lista de categorias
     protected $marcas;       // Lista de marcas
     protected $estoques;     // Lista de estoques
-
+    private  $mapaTamanho = [
+        'quantidadeP' => 'p',
+        'quantidadeM' => 'm',
+        'quantidadeG' => 'g',
+        'quantidadeGG' => 'gg',
+        'quantidade775' => '775',
+        'quantidade8' => '8',
+        'quantidade825' => '825',
+        'quantidade85' => '85',
+        'quantidade' => 'padrao',
+    ];
     /**
      * ProdutosController constructor.
      * Inicializa as listas de marcas, produtos, categorias e estoques.
@@ -154,16 +164,8 @@ class ProdutosController extends Controller
     {
         $data['user_id'] = auth()->id();
         $produto = Produto::create($data);
-        if ($data['categoria_id'] == 1) {
-            $estoque = $this->createStockObjectCamisa($data);
-        } else if ($data['categoria_id'] == 2) {
-            $estoque = $this->createStockObjectSkate($data);
-        } else {
-            $estoque = $this->createStockObject($data);
-        }
-        $estoque->produto_id = $produto->id;
-        $estoque->save();
-
+        //Cria estoque de camisas, skates e outros
+        $this->createStockObject($data, $produto->id);
         return $produto;
     }
 
@@ -196,16 +198,30 @@ class ProdutosController extends Controller
      * @param array $data
      * @return Estoque
      */
-    protected function createStockObjectCamisa(array $data): Estoque
+    protected function createStockObject(array $data, int $produtoId)
     {
-        $dataEstoque = new Estoque([
-            'quantidadeP' => $data['quantidadeP'] ?? 0,
-            'quantidadeM' => $data['quantidadeM'] ?? 0,
-            'quantidadeG' => $data['quantidadeG'] ?? 0,
-            'quantidadeGG' => $data['quantidadeGG'] ?? 0,
-        ]);
-        return $dataEstoque;
+        foreach ($data as $key => $value) {
+            if (!isset($this->mapaTamanho[$key])) {
+                continue;
+            }
+
+            $tamanho = strval($this->mapaTamanho[$key]) ?? 'padrao';
+            $quantidade = intVal($value) ?? 0;
+            if (intVal($quantidade) > 0) {
+                Estoque::updateOrCreate(
+                    [
+                        'produto_id' => $produtoId,
+                        'tamanho' => $tamanho
+                    ],
+                    [
+                        'quantidade' => $quantidade,
+                        'ativo' => 'S'
+                    ]
+                );
+            }
+        }
     }
+
 
     /**
      * Cria um objeto skate de estoque a partir dos dados do produto.
@@ -213,24 +229,6 @@ class ProdutosController extends Controller
      * @param array $data
      * @return Estoque
      */
-    public function createStockObjectSkate(array $data): Estoque
-    {
-        $dataEstoque = new Estoque([
-            'quantidade775' => $data['quantidade775'] ?? $data['quanti775'] ?? 0,
-            'quantidade8' => $data['quantidade8'] ?? 0,
-            'quantidade825' => $data['quantidade825'] ?? 0,
-            'quantidade85' => $data['quantidade85'] ?? 0,
-        ]);
-        return $dataEstoque;
-    }
-
-    public function createStockObject(array $data): Estoque
-    {
-        $dataEstoque = new Estoque([
-            'quantidade' => $data['quantidade'] ?? 0,
-        ]);
-        return $dataEstoque;
-    }
 
     /**
      * Faz o upload das imagens para o diretório especificado.
@@ -403,21 +401,21 @@ class ProdutosController extends Controller
     protected function deleteImagem(array $data)
     {
 
-            $produto = Produto::findOrFail($data['id']);
-            $caminhoBase = public_path('uploads/produtos/' . $data['id'] . '/');
+        $produto = Produto::findOrFail($data['id']);
+        $caminhoBase = public_path('uploads/produtos/' . $data['id'] . '/');
 
-            // Excluir imagens
-            $glob = glob($caminhoBase . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
+        // Excluir imagens
+        $glob = glob($caminhoBase . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
 
-            foreach ($data['deleteImage'] as $key => $value) {
-                foreach ($glob as $file) {
-                    $fileName = pathinfo($file, PATHINFO_FILENAME);
-                    if ($fileName == $value) {
-                        unlink($file); // Exclui a imagem
-                    }
+        foreach ($data['deleteImage'] as $key => $value) {
+            foreach ($glob as $file) {
+                $fileName = pathinfo($file, PATHINFO_FILENAME);
+                if ($fileName == $value) {
+                    unlink($file); // Exclui a imagem
                 }
             }
-            return true;
+        }
+        return true;
     }
 
     public function atualizarImagem(Request $request)
@@ -504,14 +502,7 @@ class ProdutosController extends Controller
      */
     protected function updateProductStock(Produto $produto, array $data)
     {
-        $estoque = Estoque::firstOrNew(['produto_id' => $produto->id]);
-        $estoque->fill($this->createStockObject($data)->toArray());
-        if (in_array($data['categoria_id'], [1, 2])) {
-            $estoque->quantidade = 0; // Observer calculará automaticamente
-        } else {
-            $estoque->quantidade = $data['quantidadeProduto'] ?? 0;
-        }
-        $estoque->save();
+        $this->createStockObject($data, $produto->id);
     }
 
     /**

@@ -16,16 +16,9 @@ class CreateEstoquesTable extends Migration
         Schema::create('estoques', function (Blueprint $table) {
             $table->id();
             $table->double('quantidade')->default(0);
-            $table->unsignedBigInteger('produto_id')->unique();
+            $table->unsignedBigInteger('produto_id');
             $table->foreign('produto_id')->references('id')->on('produtos');
-            $table->double('quantidadeP')->default(0);
-            $table->double('quantidadeM')->default(0);
-            $table->double('quantidadeG')->default(0);
-            $table->double('quantidadeGG')->default(0);
-            $table->double('quantidade775')->default(0);
-            $table->double('quantidade8')->default(0);
-            $table->double('quantidade825')->default(0);
-            $table->double('quantidade85')->default(0);
+            $table->string('tamanho')->default('padrao');
             $table->enum('ativo', ['S', 'N'])->default('S');
             $table->timestamps();
         });

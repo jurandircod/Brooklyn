@@ -42,7 +42,9 @@
                     <tbody>
                         @foreach ($produtos as $produto)
                             @php
-                                $estoque = $estoques->firstWhere('id', $produto->id);
+                                $tamanhoMap = [];
+                                $estoque = $produto->estoque->where('produto_id', $produto->id);
+                                $tamanhoMap[] = $estoque;
                                 $categoria = $produto->categoria->listarCategoria($produto->categoria_id);
                                 $marca =
                                     $produto->marca_id != null
@@ -69,26 +71,18 @@
         @json($produto->nome), 
         @json($produto->valor), 
         @json($produto->material),  
-        @json($estoque['quantidade'] ?? 0),
         @json($produto->categoria_id),
         @json($produto->marca_id),
         @json($produto->descricao),
-        @json($estoque->quantidadeP ?? 0),
-        @json($estoque->quantidadeM ?? 0),
-        @json($estoque->quantidadeG ?? 0),
-        @json($estoque->quantidadeGG ?? 0),
-        @json($estoque->quantidade775 ?? 0),
-        @json($estoque->quantidade8 ?? 0),
-        @json($estoque->quantidade825 ?? 0),
-        @json($estoque->quantidade85 ?? 0),
         @json($produto->imagem_url ?? ''),
         @json($produto->imagem_url2 ?? ''),
         @json($produto->imagem_url3 ?? ''),
         @json($produto->imagem_url4 ?? ''),
-        @json($produto->imagem_url5 ?? '')
+        @json($produto->imagem_url5 ?? ''),
+        @json($tamanhoMap)
     )'>
                                         Alterar
-                                    </button>
+                                    </button>,
 
                                 </td>
 
@@ -309,7 +303,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Tamanho 7.75</label>
-                                        <input type="number" id="quanti775" class="form-control" name="quanti775">
+                                        <input type="number" id="quanti775" class="form-control" name="quantidade775">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -436,17 +430,12 @@
     }
 </style>
 
+
 <!-- JavaScript para Preencher Modal -->
 <script>
-    function preencherModal(id, nome, valor, material, quantidadeTotal, categoriaId, marcaId, descricao,
-        estoqueP, estoqueM, estoqueG, estoqueGG, quantidade775, quantidade8, quantidade825, quantidade85,
-        imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5) {
+    function preencherModal(id, nome, valor, material, categoriaId, marcaId, descricao,
+        imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5, tamanho) {
 
-        document.getElementById('quantidadeProduto').value = quantidadeTotal ?? 0;
-        document.getElementById('quanti775').value = quantidade775 ?? 0;
-        document.getElementById('quanti8').value = quantidade8 ?? 0;
-        document.getElementById('quanti825').value = quantidade825 ?? 0;
-        document.getElementById('quanti85').value = quantidade85 ?? 0;
         document.getElementById('produtoId').value = id;
         document.getElementById('nomeProduto').value = nome;
         document.getElementById('valorProduto').value = valor;
@@ -454,26 +443,52 @@
         document.getElementById('descricaoProduto').value = descricao;
         document.getElementById('categoriaProduto').value = categoriaId;
         document.getElementById('marcaProduto').value = marcaId || '';
-        document.getElementById('quantidadePC').value = estoqueP ?? 0;
-        document.getElementById('quantidadeMC').value = estoqueM ?? 0;
-        document.getElementById('quantidadeGC').value = estoqueG ?? 0;
-        document.getElementById('quantidadeGGC').value = estoqueGG ?? 0;
 
 
+        
+        tamanho.forEach((grupo, grupoIndex) => {
+            grupo.forEach(item => {
+                if (item.produto_id == id) {
+                    switch (item.tamanho) {
+                        case 'p':
+                            document.getElementById('quantidadePC').value = item.quantidade ?? 0;
+                            break;
+                        case 'm':
+                            document.getElementById('quantidadeMC').value = item.quantidade ?? 0;
+                            break;
+                        case 'g':
+                            document.getElementById('quantidadeGC').value = item.quantidade ?? 0;
+                            break;
+                        case 'gg':
+                            document.getElementById('quantidadeGGC').value = item.quantidade ?? 0;
+                            break;
+                        case '775':
+                            document.getElementById('quanti775').value = item.quantidade ?? 0;
+                            break;
+                        case '8':
+                            document.getElementById('quanti8').value = item.quantidade ?? 0;
+                            break;
+                        case '825':
+                            document.getElementById('quanti825').value = item.quantidade ?? 0;
+                            break;
+                        case '85':
+                            document.getElementById('quanti85').value = item.quantidade ?? 0;
+                            break;
+                    }
+                }
+            });
+        });
         // Carregar imagens existentes
-
 
         carregarImagensExistentes(imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5);
 
-        if (categoriaId == 2) {
+        if (categoriaId == 2) { // Tênis
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'block';
-            document.getElementById('estoqueProd').style.display = 'none';
-        } else if (categoriaId == 1) {
+        } else if (categoriaId == 1) { // Camisetas
             document.getElementById('estoqueCard').style.display = 'block';
             document.getElementById('estoqueCardSkt').style.display = 'none';
-            document.getElementById('estoqueProd').style.display = 'none';
-        } else if (categoriaId >= 3) {
+        } else { // Outras categorias
             document.getElementById('estoqueProd').style.display = 'block';
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'none';
@@ -481,27 +496,11 @@
     }
 
     function getPureFileName(filePath) {
-        // 1. Verifica se filePath é uma string válida
-        if (typeof filePath !== 'string' || filePath.trim() === '') {
-            return null; // ou throw new Error('Caminho do arquivo inválido');
-        }
+        if (!filePath || typeof filePath !== 'string') return null;
 
-        // 2. Extrai apenas o nome do arquivo com extensão
-        const fileNameWithExt = filePath.split(/[\\/]/).pop();
-
-        // 3. Verifica se fileNameWithExt é válido
-        if (!fileNameWithExt || fileNameWithExt === '') {
-            return null; // ou throw new Error('Nome do arquivo não encontrado');
-        }
-
-        // 4. Verifica se há uma extensão
-        const lastDotIndex = fileNameWithExt.lastIndexOf('.');
-        if (lastDotIndex === -1) {
-            return fileNameWithExt; // Retorna o nome sem extensão, se não houver ponto
-        }
-
-        // 5. Remove a extensão
-        return fileNameWithExt.substring(0, lastDotIndex);
+        const fileName = filePath.split('/').pop();
+        const match = fileName.match(/(\d+)\./);
+        return match ? parseInt(match[1]) : null;
     }
 
 
@@ -510,22 +509,19 @@
         const imagens = [img1, img2, img3, img4, img5];
         const defaultImage = "{{ asset('uploads/produtos/padrao/1.gif') }}";
 
-        // Primeiro, limpa todos os previews com a imagem padrão
-        for (let pos = 1; pos <= 5; pos++) {
-            const preview = document.getElementById(`preview-${pos}`);
-            preview.src = defaultImage;
-            document.getElementById(`deleteImage-${pos}`).value = '';
-            document.getElementById(`file-input-${pos}`).value = '';
+        // Limpar todas as prévias primeiro
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById(`preview-${i}`).src = defaultImage;
+            document.getElementById(`deleteImage-${i}`).checked = false;
         }
 
-        //percorre as imagens recebidas e coloca na posição correta
-        imagens.forEach((imagemUrl) => {
-            if (imagemUrl && imagemUrl.trim() !== '') {
-                const numeroImagem = getPureFileName(imagemUrl); // extrai o número do nome do arquivo
-                if (numeroImagem) {
-                    const preview = document.getElementById(`preview-${numeroImagem}`);
-                    preview.src = imagemUrl;
-                    document.getElementById(`deleteImage-${numeroImagem}`).value = numeroImagem;
+        // Carregar imagens existentes
+        imagens.forEach((url, index) => {
+            if (url && url !== '') {
+                const numero = getPureFileName(url);
+                if (numero && numero >= 1 && numero <= 5) {
+                    document.getElementById(`preview-${numero}`).src = url;
+                    document.getElementById(`deleteImage-${numero}`).checked = true;
                 }
             }
         });

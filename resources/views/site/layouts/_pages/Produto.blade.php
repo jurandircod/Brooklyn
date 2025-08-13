@@ -1,4 +1,3 @@
-
 <section>
     <div class="container">
         <div class="row gx-4 gy-5">
@@ -107,43 +106,27 @@
                                     <div class="size-box">
                                         <ul>
                                             @if ($produto->categoria_id == 1)
-                                                <li><a href="javascript:void(0)" class="size-option"
-                                                        data-size="P">P</a> <a
-                                                        href="javascript:void(0)">{{ $estoque->quantidadeP }}</a></li>
-                                                <li><a href="javascript:void(0)" class="size-option"
-                                                        data-size="M">M</a> <a
-                                                        href="javascript:void(0)">{{ $estoque->quantidadeM }}</a></li>
-                                                <li><a href="javascript:void(0)" class="size-option"
-                                                        data-size="G">G</a> <a
-                                                        href="javascript:void(0)">{{ $estoque->quantidadeG }}</a></li>
-                                                <li><a href="javascript:void(0)" class="size-option"
-                                                        data-size="GG">GG</a> <a
-                                                        href="javascript:void(0)">{{ $estoque->quantidadeGG }}</a>
-                                                </li>
+                                                @foreach ($estoque as $tamanho => $tamanhoMap)
+                                                    <li><a href="javascript:void(0)" class="size-option"
+                                                            data-size="P">{{ $estoque->tamanho }}</a> <a
+                                                            href="javascript:void(0)">{{ $estoque->quantidade }}</a>
+                                                    </li>
+                                                @endforeach
                                             @elseif ($produto->categoria_id == 2)
                                                 <h6 class="product-title size-text">Tamanhos</h6>
-                                                <li><a href="javascript:void(0)" class="size-option"
-                                                        data-size="775">7.75</a> <a
-                                                        href="javascript:void(0)">{{ $estoque->quantidade775 }}</a>
-                                                </li>
-                                                <li><a href="javascript:void(0)" class="size-option"
-                                                        data-size="8">8</a> <a
-                                                        href="javascript:void(0)">{{ $estoque->quantidade8 }}</a></li>
-                                                <li><a href="javascript:void(0)" class="size-option"
-                                                        data-size="825">8.25</a> <a
-                                                        href="javascript:void(0)">{{ $estoque->quantidade825 }}</a>
-                                                </li>
-                                                <li><a href="javascript:void(0)" class="size-option"
-                                                        data-size="85">8.5</a> <a
-                                                        href="javascript:void(0)">{{ $estoque->quantidade85 }}</a>
-                                                </li>
+                                                @foreach ($estoque as $tamanho => $tamanhoMap)
+                                                    <li><a href="javascript:void(0)" class="size-option"
+                                                            data-size="775">{{ $tamanho }}</a> <a
+                                                            href="javascript:void(0)">{{ $estoque->quantidade }}</a>
+                                                    </li>
+                                                @endforeach
                                             @else
                                                 <h6 class="product-title size-text">Quantidade</h6>
                                             @endif
 
-                                            <input type="number" id="quantidade" name="quantidade"
-                                                class="form-control" min="1" value="1"
-                                                style="width: 100px;" /> <a href=""></a>
+                                            <input type="number" id="quantidade" name="quantidade" class="form-control"
+                                                min="1" value="1" style="width: 100px;" /> <a
+                                                href=""></a>
                                             <small id="quantidade-error" style="color: red; display: none;">Quantidade
                                                 indisponível para o estoque selecionado</small>
                                         </ul>
@@ -179,7 +162,7 @@
 
                             <div class="mt-2 mt-md-3 border-product">
                                 <h6 class="product-title hurry-title d-block">Corra ainda temos
-                                    <span>{{ $produto->estoque->quantidade }}</span> em estoque
+                                    <span></span> em estoque
                                 </h6>
                                 <div class="progress">
                                     <div class="progress-bar" role="progressbar" style="width: 78%"></div>
@@ -259,7 +242,7 @@
             };
         @elseif (isset($produto->categoria_id) && $produto->categoria_id == 2)
             estoqueDisponivel = {
-                "775": {{ isset($estoque->quantidade775) ? $estoque->quantidade775 : 0 }},
+                "775": {{ isset($estoque->quantidade) ? $estoque->quantidade : 0 }},
                 "8": {{ isset($estoque->quantidade8) ? $estoque->quantidade8 : 0 }},
                 "825": {{ isset($estoque->quantidade825) ? $estoque->quantidade825 : 0 }},
                 "85": {{ isset($estoque->quantidade85) ? $estoque->quantidade85 : 0 }},

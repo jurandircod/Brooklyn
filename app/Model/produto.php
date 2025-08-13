@@ -36,6 +36,10 @@ class Produto extends Model
         return $this->hasMany(ItemCarrinho::class);
     }
 
+    public function estoque()
+    {
+        return $this->hasMany(Estoque::class, 'produto_id', 'id');
+    }
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -84,8 +88,4 @@ class Produto extends Model
         return \App\Helpers\ImagemHelper::pastaImagensProduto($this->id);
     }
 
-    public function estoque()
-    {
-        return $this->hasOne(Estoque::class, 'produto_id', 'id');
-    }
 }

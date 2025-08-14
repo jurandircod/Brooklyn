@@ -106,23 +106,30 @@
                                     <div class="size-box">
                                         <ul>
                                             @if ($produto->categoria_id == 1)
-                                                @foreach ($estoque as $tamanho => $tamanhoMap)
+                                                @foreach ($tamanhosComQuantidade as $tamanho => $estoque)
                                                     <li><a href="javascript:void(0)" class="size-option"
-                                                            data-size="P">{{ $estoque->tamanho }}</a> <a
-                                                            href="javascript:void(0)">{{ $estoque->quantidade }}</a>
+                                                            data-size="{{ $estoque['tamanho'] }}">{{ $estoque['tamanho'] }}</a>
+                                                        <a href="javascript:void(0)">{{ $estoque['quantidade'] }}</a>
                                                     </li>
                                                 @endforeach
                                             @elseif ($produto->categoria_id == 2)
                                                 <h6 class="product-title size-text">Tamanhos</h6>
-                                                @foreach ($estoque as $tamanho => $tamanhoMap)
+                                                @foreach ($tamanhosComQuantidade as $tamanho => $estoque)
                                                     <li><a href="javascript:void(0)" class="size-option"
-                                                            data-size="775">{{ $tamanho }}</a> <a
-                                                            href="javascript:void(0)">{{ $estoque->quantidade }}</a>
+                                                            data-size="{{ $estoque['tamanho'] }}">{{ $estoque['tamanho'] }}</a>
+                                                        <a href="javascript:void(0)">{{ $estoque['quantidade'] }}</a>
                                                     </li>
                                                 @endforeach
-                                            @else
-                                                <h6 class="product-title size-text">Quantidade</h6>
+                                            @elseif ($produto->categoria_id == 3)
+                                                <h6 class="product-title size-text">Tamanhos</h6>
+                                                @foreach ($tamanhosComQuantidade as $tamanho => $estoque)
+                                                    <li><a href="javascript:void(0)" class="size-option"
+                                                            data-size="{{ $estoque['tamanho'] }}">{{ $estoque['tamanho'] }}</a>
+                                                        <a href="javascript:void(0)">{{ $estoque['quantidade'] }}</a>
+                                                    </li>
+                                                @endforeach
                                             @endif
+                                            <h6 class="product-title size-text">Quantidade</h6>
 
                                             <input type="number" id="quantidade" name="quantidade" class="form-control"
                                                 min="1" value="1" style="width: 100px;" /> <a
@@ -232,29 +239,15 @@
         const temTamanho =
             {{ isset($produto->categoria_id) && in_array($produto->categoria_id, [1, 2]) ? 'true' : 'false' }};
 
+        // Inicializa estoque
         let estoqueDisponivel = {};
-        @if (isset($produto->categoria_id) && $produto->categoria_id == 1)
-            estoqueDisponivel = {
-                P: {{ isset($estoque->quantidadeP) ? $estoque->quantidadeP : 0 }},
-                M: {{ isset($estoque->quantidadeM) ? $estoque->quantidadeM : 0 }},
-                G: {{ isset($estoque->quantidadeG) ? $estoque->quantidadeG : 0 }},
-                GG: {{ isset($estoque->quantidadeGG) ? $estoque->quantidadeGG : 0 }},
-            };
-        @elseif (isset($produto->categoria_id) && $produto->categoria_id == 2)
-            estoqueDisponivel = {
-                "775": {{ isset($estoque->quantidade) ? $estoque->quantidade : 0 }},
-                "8": {{ isset($estoque->quantidade8) ? $estoque->quantidade8 : 0 }},
-                "825": {{ isset($estoque->quantidade825) ? $estoque->quantidade825 : 0 }},
-                "85": {{ isset($estoque->quantidade85) ? $estoque->quantidade85 : 0 }},
-            };
-        @else
-            estoqueDisponivel = {
-                quantidade: {{ isset($estoque->quantidade) ? $estoque->quantidade : 0 }},
-                tamanho: 'quantidade',
-            };
-        @endif
+        @foreach ($tamanhosComQuantidade as $item)
+            estoqueDisponivel["{{ $item['tamanho'] }}"] = {{ $item['quantidade'] }};
+        @endforeach
 
-        // Validate estoqueDisponivel to prevent runtime errors
+        console.log(estoqueDisponivel); // Corrigido de 'consoloe.log' para 'console.log'
+
+        // Valida estoque
         if (!Object.keys(estoqueDisponivel).length) {
             console.error("Erro: estoqueDisponivel não foi inicializado corretamente.");
             estoqueDisponivel = {
@@ -267,6 +260,7 @@
         const errorMessage = document.querySelector(".error-message");
         const errorQuantidade = document.getElementById("quantidade-error");
 
+        // Configura eventos para os tamanhos
         sizeOptions.forEach(option => {
             option.addEventListener("click", function() {
                 sizeOptions.forEach(opt => opt.classList.remove('selected'));
@@ -277,14 +271,21 @@
                 errorMessage.style.display = 'none';
                 errorQuantidade.style.display = 'none';
 
-                const estoque = estoqueDisponivel[selectedSize] || 1;
+                const estoque = estoqueDisponivel[selectedSize] || 0;
                 inputQuantidade.max = estoque;
-                inputQuantidade.value = 1;
+                inputQuantidade.value = estoque > 0 ? 1 : 0;
+
+                if (estoque === 0) {
+                    errorQuantidade.textContent = "Produto esgotado para este tamanho";
+                    errorQuantidade.style.display = 'block';
+                } else {
+                    errorQuantidade.style.display = 'none';
+                }
             });
         });
 
+        // Configura evento para o botão de adicionar ao carrinho
         const botoes = document.querySelectorAll(".addtocart-btn");
-
         botoes.forEach(botao => {
             botao.addEventListener("click", function() {
                 if (temTamanho && !selectedSize) {
@@ -296,7 +297,17 @@
                 const estoqueKey = selectedSize || 'quantidade';
                 const estoqueMaximo = estoqueDisponivel[estoqueKey] || 0;
 
-                if (isNaN(quantidade) || quantidade <= 0 || quantidade > estoqueMaximo) {
+                // Verificação de quantidade
+                if (isNaN(quantidade) || quantidade <= 0) {
+                    errorQuantidade.textContent = "Quantidade inválida";
+                    errorQuantidade.style.display = 'block';
+                    return;
+                }
+
+                if (quantidade > estoqueMaximo) {
+                    errorQuantidade.textContent = estoqueMaximo > 0 ?
+                        `Quantidade máxima disponível: ${estoqueMaximo}` :
+                        "Produto esgotado para este tamanho";
                     errorQuantidade.style.display = 'block';
                     return;
                 }
@@ -311,8 +322,6 @@
                     backgroundColor: "#4CAF50",
                     stopOnFocus: true
                 }).showToast();
-
-                console.log(quantidade);
 
                 fetch("{{ route('site.carrinho.itemCarrinho.adicionar') }}", {
                         method: "POST",

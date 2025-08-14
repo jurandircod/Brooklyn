@@ -11,17 +11,6 @@ use PHPUnit\Util\Json;
 class ItemCarrinhoController extends Controller
 {
     private $itemCarrinho;
-    private  $mapaTamanho = [
-        'P' => 'quantidadeP',
-        'M' => 'quantidadeM',
-        'G' => 'quantidadeG',
-        'GG' => 'quantidadeGG',
-        '775' => 'quantidade775',
-        '8' => 'quantidade8',
-        '825' => 'quantidade825',
-        '85' => 'quantidade85',
-        'quantidade' => 'quantidade',
-    ];
 
     public function __construct()
     {
@@ -46,14 +35,13 @@ class ItemCarrinhoController extends Controller
                 ]);
             }
 
-
             $produtoId = $request->produto_id;
             // verifica se o produto existe
             ExistenciaController::produtoExiste($request->produto_id);
             $produto = Produto::findOrFail($request->produto_id);
             $estoque = new Estoque;
-            $estoqueProduto = $estoque->listarEstoque($produto->id);
             $tamanho = $request->input('tamanho');
+            $estoqueProduto = Estoque::where('produto_id', $produto->id)->where('tamanho', $tamanho)->first();
             $quantidadeSolicitada = $request->input('quantidade');
             number_format($quantidadeSolicitada, 2, ',', '.');
 
@@ -68,11 +56,15 @@ class ItemCarrinhoController extends Controller
 
             if ($verificaResposta == 100) {
                 return response()->json(['status' => 'error', 'message' => 'Tamanho inválido']);
+                exit;
             } elseif ($verificaResposta == 200) {
                 return response()->json(['status' => 'error', 'message' => 'Quantidade no carrinho ultrapassa o estoque']);
+                exit;
             } elseif ($verificaResposta == 300) {
-                return response()->json(['status' => 'error', 'message' => 'Estoque Indisponível']);
+                return response()->json(['status' => 'error', 'message' => "Estoque Indisponível"]);
+                exit;
             }
+
 
             // Verifica se item igual já existe no carrinho com mesmo tamanho e se o carrinho está ativo
             $itemExistente = $this->itemCarrinho->VerificaItemCarrinho($carrinho->id, $produto->id, $tamanho);
@@ -100,25 +92,18 @@ class ItemCarrinhoController extends Controller
 
     private function verificaEstoque($tamanho, Estoque $estoqueProduto, $quantidadeSolicitada, $produtoId)
     {
-
-        if (!array_key_exists($tamanho, $this->mapaTamanho)) {
-            return 100;
-            exit;
-        }
-
-        $campoTamanho = $this->mapaTamanho[$tamanho];
         $carrinho = Carrinho::where('user_id', auth()->id())->where('status', 'ativo')->first();
         $itemCarrinho = ItemCarrinho::where('tamanho', $tamanho)->where('produto_id', $produtoId)->where('carrinho_id', $carrinho->id)->first();
         if (isset($itemCarrinho)) {
-            $teste = $itemCarrinho->quantidade + $quantidadeSolicitada;
-            if ($estoqueProduto->$campoTamanho < $teste) {
+            $verificaQuantidade = $itemCarrinho->quantidade + $quantidadeSolicitada;
+            if ($estoqueProduto->quantidade < $verificaQuantidade) {
                 return 200;
                 exit;
             }
         }
 
         // se for menor que o estoque produto
-        if ($estoqueProduto->$campoTamanho < $quantidadeSolicitada) {
+        if ($estoqueProduto->quantidade < $quantidadeSolicitada) {
             return 300;
             exit;
         }
@@ -126,23 +111,22 @@ class ItemCarrinhoController extends Controller
 
     public function quantidadeItensCarrinho()
     {
-        $carrinho = Carrinho::where('user_id', Auth::id())->where('status', 'ativo')->first(); 
+        $carrinho = Carrinho::where('user_id', Auth::id())->where('status', 'ativo')->first();
 
         $quantidade = 0;
         $ultimaModificacao = null;
 
         if ($carrinho && $carrinho->status == 'ativo') {
             $quantidade = ItemCarrinho::where('carrinho_id', $carrinho->id)->count();
-            
-            
+
             // Obtém a última modificação (usa updated_at do carrinho ou do último item)
             $ultimaModificacaoItem = ItemCarrinho::where('carrinho_id', $carrinho->id)
-            ->latest('updated_at')
-            ->value('updated_at');
-            
+                ->latest('updated_at')
+                ->value('updated_at');
+
             $ultimaModificacao = $ultimaModificacaoItem ?: $carrinho->updated_at;
         }
-        
+
         return response()->json([
             'quantidade' => $quantidade,
             'ultima_modificacao' => $ultimaModificacao ? $ultimaModificacao->toDateTimeString() : null
@@ -170,22 +154,20 @@ class ItemCarrinhoController extends Controller
 
             $quantidadeAtual = $item->quantidade;
             $diferenca = $nova_quantidade - $quantidadeAtual;
-            $estoque = Estoque::where('produto_id', $item->produto_id)->firstOrFail();
-
 
             ExistenciaController::estoqueExiste($item->produto_id);
 
             // Mapeia o campo correto conforme o tamanho
             $mapaTamanho = [
-                'P' => 'quantidadeP',
-                'M' => 'quantidadeM',
-                'G' => 'quantidadeG',
-                'GG' => 'quantidadeGG',
-                '7.75' => 'quantidade775',
-                '8' => 'quantidade8',
-                '8.25' => 'quantidade825',
-                '8.5' => 'quantidade85',
-                'quantidade' => 'quantidade',
+                'p' => 'p',
+                'm' => 'm',
+                'g' => 'g',
+                'gg' => 'gg',
+                '7.75' => '775',
+                '8' => '8',
+                '8.25' => '825',
+                '8.5' => '85',
+                'quantidade' => 'padrao',
             ];
 
             if (!array_key_exists($tamanho, $mapaTamanho)) {
@@ -197,18 +179,20 @@ class ItemCarrinhoController extends Controller
 
             $campoTamanho = $mapaTamanho[$tamanho];
 
+            $estoque = Estoque::where('produto_id', $item->produto_id)->where('tamanho', $campoTamanho)->firstOrFail();
+
             // Se estiver aumentando a quantidade no carrinho
-            if ($estoque->$campoTamanho < $nova_quantidade) {
+            if ($estoque->quantidade < $nova_quantidade) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Quantidade indisponível em estoque'
+                    'message' => "indisponível em estoque"
                 ]);
                 exit;
             }
 
 
             if ($diferenca < 0) {
-                // transforma o numero e positvo para restirar o item
+                // transforma o numero e positvo para retirar o item
                 $item->quantidade = $quantidadeAtual - abs($diferenca);
             } else {
                 $item->quantidade = $nova_quantidade;
@@ -224,7 +208,7 @@ class ItemCarrinhoController extends Controller
             $endereco = Endereco::where('user_id', $user_id)->first();
             if (!$endereco) {
                 $taxaFrete = 0;
-            }else{
+            } else {
                 $freteValor = $frete->calcularFrete($endereco->cep);
                 $taxaFrete = intVal($freteValor['valor']);
             }

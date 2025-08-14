@@ -29,7 +29,7 @@ class Estoque extends Model
         if (empty($produtoId)) {
             return null;
         } else {
-            $produtoEstoque = Estoque::where('produto_id', $produtoId)->orWhere('quantidadeP' , $tamanho)->orWhere('quantidadeM' , $tamanho)->orWhere('quantidadeG' , $tamanho)->orWhere('quantidadeGG' , $tamanho)->orWhere('quantidade775' , $tamanho)->orWhere('quantidade8' , $tamanho)->orWhere('quantidade825' , $tamanho)->orWhere('quantidade85' , $tamanho)->first();
+            $produtoEstoque = Estoque::where('produto_id', $produtoId)->orWhere()->where('tamanho', $tamanho)->first();
             return $produtoEstoque;
         }
     }

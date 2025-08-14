@@ -759,27 +759,14 @@
                                         <!-- Tamanho -->
                                         <td data-label="Tamanho">
                                             <!-- pega o tamnho e envia pro backend-->
-                                            @if ($item->tamanho == 'P')
-                                                <span class="size-badge" data-size-selected="P">P</span>
-                                            @elseif ($item->tamanho == 'M')
-                                                <span class="size-badge" data-size-selected="M">M</span>
-                                            @elseif ($item->tamanho == 'G')
-                                                <span class="size-badge" data-size-selected="G">G</span>
-                                            @elseif ($item->tamanho == 'GG')
-                                                <span class="size-badge" data-size-selected="GG">GG</span>
-                                            @elseif ($item->tamanho == '775')
-                                                <span class="size-badge" data-size-selected="775">7.75</span>
-                                            @elseif ($item->tamanho == '8')
-                                                <span class="size-badge" data-size-selected="8">8</span>
-                                            @elseif ($item->tamanho == '825')
-                                                <span class="size-badge" data-size-selected="825">8.25</span>
-                                            @elseif ($item->tamanho == '85')
-                                                <span class="size-badge" data-size-selected="85">8.5</span>
-                                            @else
-                                                <span class="size-badge">Produto Padrão</span>
-                                                <span class="size-badge" hidden
-                                                    data-size-selected="quantidade">quantidade</span>
-                                            @endif
+
+
+
+                                            <span class="size-badge"
+                                                data-size-selected="{{ $item->tamanho }}">{{ $item->tamanho }}</span>
+
+
+
                                         </td>
                                         <!-- Quantidade -->
                                         <td data-label="Quantidade">
@@ -838,9 +825,11 @@
                                             <i class="fas fa-calculator me-2"></i>
                                             Resumo do Pedido
                                         </h3>
-                                        <h6>Subtotal <span id="subtotal">R$ {{ number_format($preco_total, 2, ',', '.') }}</span></h6>
+                                        <h6>Subtotal <span id="subtotal">R$
+                                                {{ number_format($preco_total, 2, ',', '.') }}</span></h6>
                                         <h6>Taxa de Entrega <span id="taxaFrete">R$ 0,00</span></h6>
-                                        <h6>Total <span id="preco_total">R$ {{ number_format($preco_total, 2, ',', '.') }}</span></h6>
+                                        <h6>Total <span id="preco_total">R$
+                                                {{ number_format($preco_total, 2, ',', '.') }}</span></h6>
                                         <div class="bottom-details">
                                             <a href="{{ route('site.fazerPedido') }}">
                                                 <i class="fas fa-credit-card me-2"></i>

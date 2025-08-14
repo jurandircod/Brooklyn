@@ -20,29 +20,7 @@ class ItemCarrinhoObserver
 
     public function saving(ItemCarrinho $itemCarrinho)
     {
-        $tamanhoMap = [
-            'P' => 'quantidadeP',
-            'M' => 'quantidadeM',
-            'G' => 'quantidadeG',
-            'GG' => 'quantidadeGG',
-            '775' => 'quantidade775',
-            '8' => 'quantidade8',
-            '825' => 'quantidade825',
-            '85' => 'quantidade85',
-            'quantidade' => 'quantidade',
-        ];
-
-        if (!array_key_exists($itemCarrinho->tamanho, $tamanhoMap)) {
-            throw new \Exception('Tamanho inválido!');
-        }
-
-        $itemCarrinho->tamanho;
-        $itemCarrinho->quantidade;
-        $estoque = $itemCarrinho->produto->estoque;
-        $campoTamanho = $tamanhoMap[$itemCarrinho->tamanho];
-        if ($itemCarrinho->quantidade > $estoque->$campoTamanho) {
-            $itemCarrinho->quantidade = $estoque->$campoTamanho;
-        }
+        
     }
     /**
      * Handle the item carrinho "updated" event.

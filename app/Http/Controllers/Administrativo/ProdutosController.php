@@ -26,15 +26,20 @@ class ProdutosController extends Controller
     protected $marcas;       // Lista de marcas
     protected $estoques;     // Lista de estoques
     private  $mapaTamanho = [
-        'quantidadeP' => 'p',
-        'quantidadeM' => 'm',
-        'quantidadeG' => 'g',
-        'quantidadeGG' => 'gg',
-        'quantidade775' => '775',
-        'quantidade8' => '8',
-        'quantidade825' => '825',
-        'quantidade85' => '85',
+        'p' => 'p',
+        'm' => 'm',
+        'g' => 'g',
+        'gg' => 'gg',
+        '775' => '775',
+        '8' => '8',
+        '825' => '825',
+        '85' => '85',
         'quantidade' => 'padrao',
+        '38' => '38',
+        '39' => '39',
+        '40' => '40',
+        '41' => '41',
+        '42' => '42',
     ];
     /**
      * ProdutosController constructor.
@@ -86,7 +91,7 @@ class ProdutosController extends Controller
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
             'valor' => 'required|min:0.01',
-            'url_imagem' => 'required|array|min:1'
+            'url_imagem' => 'required|array|min:1',
         ], [
             'valor.integer' => 'O campo valor deve ser um número inteiro',
             'url_imagem.required' => 'O campo imagem é obrigatório',
@@ -126,7 +131,6 @@ class ProdutosController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-
         try {
             DB::transaction(function () use ($data) {
                 $data = $this->prepareProductData($data);
@@ -401,16 +405,14 @@ class ProdutosController extends Controller
     protected function deleteImagem(array $data)
     {
 
-        $produto = Produto::findOrFail($data['id']);
         $caminhoBase = public_path('uploads/produtos/' . $data['id'] . '/');
-
-        // Excluir imagens
+        // pega todos os arquivos
         $glob = glob($caminhoBase . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
 
         foreach ($data['deleteImage'] as $key => $value) {
             foreach ($glob as $file) {
                 $fileName = pathinfo($file, PATHINFO_FILENAME);
-                if ($fileName == $value) {
+                if ($fileName == $key) {
                     unlink($file); // Exclui a imagem
                 }
             }

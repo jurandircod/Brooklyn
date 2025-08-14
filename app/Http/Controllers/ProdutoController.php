@@ -27,6 +27,7 @@ class ProdutoController extends Controller
         }
 
         $estoque = Estoque::where('produto_id', $id)->first();
+        $estoqueCollection = Estoque::where('produto_id', $id)->get();
 
         $produtosDaMesmaCategoria = Produto::where('categoria_id', $produto->categoria_id)
             ->where('id', '!=', $id)
@@ -46,7 +47,13 @@ class ProdutoController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(4);
 
-        return view('site.produto', compact('produto', 'estoque', 'produtosDaMesmaCategoria', 'avaliacoes'));
+        $tamanhosComQuantidade = $estoqueCollection->map(function ($item) {
+            return [
+                'tamanho' => $item->tamanho,
+                'quantidade' => $item->quantidade
+            ];
+        })->toArray();
+        
+        return view('site.produto', compact('produto', 'estoque', 'produtosDaMesmaCategoria', 'avaliacoes', 'tamanhosComQuantidade'));
     }
-
 }

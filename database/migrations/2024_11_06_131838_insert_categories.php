@@ -14,7 +14,8 @@ class InsertCategories extends Migration
     {
         DB::table('categorias')->insert([
             ['nome' => 'Camisas'],
-            ['nome' => 'Skates']
+            ['nome' => 'Skates'],
+            ['nome' => 'Tênis']
         ]);
     }
 
@@ -25,6 +26,6 @@ class InsertCategories extends Migration
      */
     public function down()
     {
-        DB::table('categorias')->whereIn('nome', ['Camisas', 'Skates'])->delete();
+        DB::table('categorias')->whereIn('nome', ['Camisas', 'Skates', 'Tênis'])->delete();
     }
 }

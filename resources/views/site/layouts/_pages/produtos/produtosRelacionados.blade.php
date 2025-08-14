@@ -4,7 +4,7 @@
         <h2 class="mb-lg-4 mb-3 text-center color-white">Novos Produtos</h2>
         <div class="row">
             @foreach ($produtosDaMesmaCategoria as $index => $produto)
-                @if ($produto->estoque && $produto->estoque->quantidade > 0)
+                @if ($produto->estoque)
                     <div class="col-xl-2 col-lg-2 col-6">
                         <div class="product-box">
                             <div class="img-wrapper">

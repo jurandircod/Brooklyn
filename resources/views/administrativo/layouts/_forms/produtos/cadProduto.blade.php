@@ -137,18 +137,19 @@
                                     <input type="text" name="material" id="material" class="form-control"
                                         placeholder="Digite o tipo de material" value="{{ old('material') }}">
                                 </div>
-                                
+
                                 <div class="col-md-5 mb-3">
                                     <label for="inputGroupFile02" class="form-label">Imagens do Produto <span
                                             style="color: red">*</span></label>
-                                    <input type="file" class="form-control" id="inputGroupFile02"
-                                        name="url_imagem[]" multiple accept="image/png, image/jpeg, image/jpg" value="{{ old('url_imagem[]') }}"
-                                        onchange="verificarLimiteFotos()">
-                                        @error('url_imagem')
-                                            <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
-                                        @enderror
+                                    <input type="file" class="form-control" id="inputGroupFile02" name="url_imagem[]"
+                                        multiple accept="image/png, image/jpeg, image/jpg"
+                                        value="{{ old('url_imagem[]') }}" onchange="verificarLimiteFotos()">
+                                    @error('url_imagem')
+                                        <span class="invalid-feedback d-block"
+                                            style="color: red">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                 
+
 
                                 <div class="col-md-6 mb-3" id="quantidadeSection" style="display: block">
                                     <label for="quantidade" class="form-label">Quantidade em Estoque <span
@@ -165,18 +166,18 @@
                             </div>
 
                             <!-- Tamanhos camisas-->
-                            <div class="row mb-3" id="sizeSection" style="display: none;">
+                            <div class="row mb-3" id="camisaSection" style="display: none;">
                                 <div class="col-md-12 mb-3">
                                     <div class="row">
-                                        @foreach (['P', 'M', 'G', 'GG'] as $size)
+                                        @foreach (['p', 'm', 'g', 'gg'] as $size)
                                             <div class="col-md-3">
                                                 <label for="quantidade{{ $size }}"
                                                     class="form-label">Quantidade em Estoque Tamanho
                                                     {{ $size }}</label>
                                                 <input type="number" class="form-control"
                                                     id="quantidade{{ $size }}"
-                                                    name="quantidade{{ $size }}"
-                                                    value="{{ old('quantidade' . $size) }}"
+                                                    name="{{$size }}"
+                                                    value="{{ old($size) }}"
                                                     placeholder="Digite a quantidade" min="0" disabled>
                                             </div>
                                         @endforeach
@@ -190,8 +191,6 @@
                                     @endforeach
                                 </div>
                             </div>
-
-
                             <!-- Tamanhos skates-->
                             <div class="row mb-3" id="skateSection" style="display: none;">
                                 <div class="col-md-12 mb-3">
@@ -203,8 +202,8 @@
                                                     {{ $size }}</label>
                                                 <input type="number" class="form-control"
                                                     id="quantidade{{ $size }}"
-                                                    name="quantidade{{ $size }}"
-                                                    value="{{ old('quantidade' . $size) }}"
+                                                    name="{{ $size }}"
+                                                    value="{{ old($size) }}"
                                                     placeholder="Digite a quantidade" min="0" disabled>
                                             </div>
                                         @endforeach
@@ -213,6 +212,32 @@
                                 <div class="col-md-12 mb-3">
                                     <div class="mb-2"><b>Selecione os tamanhos</b></div>
                                     @foreach (['775', '8', '825', '85'] as $size)
+                                        <label class="size-option"
+                                            data-size="{{ $size }}">{{ $size }}</label>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <div class="row mb-3" id="tenisSection" style="display: none;">
+                                <div class="col-md-12 mb-3">
+                                    <div class="row">
+                                        @foreach (['38', '39', '40', '41', '42'] as $size)
+                                            <div class="col-md-3">
+                                                <label for="quantidade{{ $size }}"
+                                                    class="form-label">Quantidade em Estoque Tamanho
+                                                    {{ $size }}</label>
+                                                <input type="number" class="form-control"
+                                                    id="quantidade{{ $size }}"
+                                                    name="{{ $size }}"
+                                                    value="{{ old($size) }}"
+                                                    placeholder="Digite a quantidade" min="0" disabled>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="mb-2"><b>Selecione os tamanhos</b></div>
+                                    @foreach (['38', '39', '40', '41', '42'] as $size)
                                         <label class="size-option"
                                             data-size="{{ $size }}">{{ $size }}</label>
                                     @endforeach
@@ -344,28 +369,35 @@
         if (!categoria) return;
 
         const selectedText = categoria.options[categoria.selectedIndex]?.text || '';
-        const sizeSection = document.getElementById('sizeSection');
-       
+        const camisaSection = document.getElementById('camisaSection');
+        const tenisSection = document.getElementById('tenisSection');
         const skateSection = document.getElementById('skateSection');
         const quantidadeSection = document.getElementById('quantidadeSection');
 
-        if (!sizeSection || !skateSection || !quantidadeSection) return;
+
+        if (!camisaSection || !skateSection || !quantidadeSection) return;
 
         if (selectedText === 'Camisas') {
-            sizeSection.style.display = 'block';
+            camisaSection.style.display = 'block';
             skateSection.style.display = 'none';
-            
             quantidadeSection.style.display = 'none';
+            tenisSection.style.display = 'none';
         } else if (selectedText === 'Skates') {
-            sizeSection.style.display = 'none';
-            
+            camisaSection.style.display = 'none';
             skateSection.style.display = 'block';
             quantidadeSection.style.display = 'none';
+            tenisSection.style.display = 'none';
+        } else if (selectedText === 'Tênis') {
+            camisaSection.style.display = 'none';
+            skateSection.style.display = 'none';
+            quantidadeSection.style.display = 'none';
+            tenisSection.style.display = 'block';
         } else {
             // Outras categorias
             skateSection.style.display = 'none';
-            sizeSection.style.display = 'none';
+            camisaSection.style.display = 'none';
             quantidadeSection.style.display = 'block';
+            tenisSection.style.display = 'none';
         }
     }, 100);
 

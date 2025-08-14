@@ -82,7 +82,7 @@
         @json($tamanhoMap)
     )'>
                                         Alterar
-                                    </button>,
+                                    </button>
 
                                 </td>
 
@@ -303,7 +303,8 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Tamanho 7.75</label>
-                                        <input type="number" id="quanti775" class="form-control" name="quantidade775">
+                                        <input type="number" id="quanti775" class="form-control"
+                                            name="quantidade775">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -444,40 +445,68 @@
         document.getElementById('categoriaProduto').value = categoriaId;
         document.getElementById('marcaProduto').value = marcaId || '';
 
+        console.log(tamanho);
 
-        
-        tamanho.forEach((grupo, grupoIndex) => {
-            grupo.forEach(item => {
-                if (item.produto_id == id) {
-                    switch (item.tamanho) {
-                        case 'p':
-                            document.getElementById('quantidadePC').value = item.quantidade ?? 0;
-                            break;
-                        case 'm':
-                            document.getElementById('quantidadeMC').value = item.quantidade ?? 0;
-                            break;
-                        case 'g':
-                            document.getElementById('quantidadeGC').value = item.quantidade ?? 0;
-                            break;
-                        case 'gg':
-                            document.getElementById('quantidadeGGC').value = item.quantidade ?? 0;
-                            break;
-                        case '775':
-                            document.getElementById('quanti775').value = item.quantidade ?? 0;
-                            break;
-                        case '8':
-                            document.getElementById('quanti8').value = item.quantidade ?? 0;
-                            break;
-                        case '825':
-                            document.getElementById('quanti825').value = item.quantidade ?? 0;
-                            break;
-                        case '85':
-                            document.getElementById('quanti85').value = item.quantidade ?? 0;
-                            break;
+        // Verifica se é um array vazio simples []
+        function isEmptyArray(arr) {
+            return Array.isArray(arr) && arr.length === 0;
+        }
+
+        // Verifica se é um array contendo um array vazio [[]]
+        function isArrayWithEmptyArray(arr) {
+            return Array.isArray(arr) && arr.length === 1 &&
+                Array.isArray(arr[0]) && arr[0].length === 0;
+        }
+
+        // Verifica se é um array vazio ou contendo array vazio
+        function isEmptyOrContainsEmpty(arr) {
+            return isEmptyArray(arr) || isArrayWithEmptyArray(arr);
+        }
+
+        console.log(isEmptyOrContainsEmpty(tamanho));
+        if (isEmptyOrContainsEmpty(tamanho)) {
+            document.getElementById('quanti775').value = 0;
+            document.getElementById('quanti8').value = 0;
+            document.getElementById('quanti825').value = 0;
+            document.getElementById('quanti85').value = 0;
+            document.getElementById('quantidadePC').value = 0;
+            document.getElementById('quantidadeMC').value = 0;
+            document.getElementById('quantidadeGC').value = 0;
+            document.getElementById('quantidadeGGC').value = 0;
+        } else {
+            tamanho.forEach((grupo, grupoIndex) => {
+                grupo.forEach(item => {
+                    if (item.produto_id == id) {
+                        switch (item.tamanho) {
+                            case 'p':
+                                document.getElementById('quantidadePC').value = item.quantidade ?? 0;
+                                break;
+                            case 'm':
+                                document.getElementById('quantidadeMC').value = item.quantidade ?? 0;
+                                break;
+                            case 'g':
+                                document.getElementById('quantidadeGC').value = item.quantidade ?? 0;
+                                break;
+                            case 'gg':
+                                document.getElementById('quantidadeGGC').value = item.quantidade ?? 0;
+                                break;
+                            case '775':
+                                document.getElementById('quanti775').value = item.quantidade ?? 0;
+                                break;
+                            case '8':
+                                document.getElementById('quanti8').value = item.quantidade ?? 0;
+                                break;
+                            case '825':
+                                document.getElementById('quanti825').value = item.quantidade ?? 0;
+                                break;
+                            case '85':
+                                document.getElementById('quanti85').value = item.quantidade ?? 0;
+                                break;
+                        }
                     }
-                }
-            });
-        });
+                });
+            })
+        };
         // Carregar imagens existentes
 
         carregarImagensExistentes(imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5);
@@ -488,6 +517,10 @@
         } else if (categoriaId == 1) { // Camisetas
             document.getElementById('estoqueCard').style.display = 'block';
             document.getElementById('estoqueCardSkt').style.display = 'none';
+        } else if (categoriaId == 3) { // Tênis
+            document.getElementById('estoqueCard').style.display = 'none';
+            document.getElementById('estoqueCardSkt').style.display = 'none';
+            document.getElementById('estoqueProd').style.display = 'none';
         } else { // Outras categorias
             document.getElementById('estoqueProd').style.display = 'block';
             document.getElementById('estoqueCard').style.display = 'none';
@@ -521,7 +554,7 @@
                 const numero = getPureFileName(url);
                 if (numero && numero >= 1 && numero <= 5) {
                     document.getElementById(`preview-${numero}`).src = url;
-                    document.getElementById(`deleteImage-${numero}`).checked = true;
+                    document.getElementById(`deleteImage-${numero}`).checked = false;
                 }
             }
         });

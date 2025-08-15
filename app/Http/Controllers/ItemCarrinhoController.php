@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\model\{Produto, User, Endereco, Carrinho, Estoque, ItemCarrinho};
+use App\model\{Produto, User, Endereco, Carrinho, Estoque, ItemCarrinho, MapaTamanho};
 use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\Auth;
 use PHPUnit\Util\Json;
@@ -11,10 +11,13 @@ use PHPUnit\Util\Json;
 class ItemCarrinhoController extends Controller
 {
     private $itemCarrinho;
-
+    private $mapaTamanho;
+    private $calcularFrete;
     public function __construct()
     {
         $this->itemCarrinho = new ItemCarrinho;
+        $this->mapaTamanho = new MapaTamanho;
+        $this->calcularFrete = new CalculaFreteController;
     }
 
     public function adicionar(Request $request)
@@ -146,41 +149,16 @@ class ItemCarrinhoController extends Controller
             $tamanho = $request->tamanho;
 
             // Busca o item do carrinho
-            $item = ItemCarrinho::whereHas('carrinho', function ($query) use ($user_id) {
-                $query->where('user_id', $user_id);
-            })
-                ->where('id', $item_id)
-                ->firstOrFail();
+            $item = $this->itemCarrinho->itemCarrinho($item_id, $user_id);
 
             $quantidadeAtual = $item->quantidade;
             $diferenca = $nova_quantidade - $quantidadeAtual;
 
             ExistenciaController::estoqueExiste($item->produto_id);
-
             // Mapeia o campo correto conforme o tamanho
-            $mapaTamanho = [
-                'p' => 'p',
-                'm' => 'm',
-                'g' => 'g',
-                'gg' => 'gg',
-                '7.75' => '775',
-                '8' => '8',
-                '8.25' => '825',
-                '8.5' => '85',
-                'quantidade' => 'padrao',
-            ];
 
-            if (!array_key_exists($tamanho, $mapaTamanho)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Tamanho inválido!'
-                ]);
-            }
-
-            $campoTamanho = $mapaTamanho[$tamanho];
-
-            $estoque = Estoque::where('produto_id', $item->produto_id)->where('tamanho', $campoTamanho)->firstOrFail();
-
+            $tamanhoTratado = $this->mapaTamanho->getTamanhoDisponiveis($request->categoria_id, $tamanho);
+            $estoque = Estoque::where('produto_id', $item->produto_id)->where('tamanho', $tamanhoTratado)->firstOrFail();
             // Se estiver aumentando a quantidade no carrinho
             if ($estoque->quantidade < $nova_quantidade) {
                 return response()->json([
@@ -204,12 +182,11 @@ class ItemCarrinhoController extends Controller
             // Calcula totais
             $carrinho = $item->carrinho;
             $subtotal = $carrinho->itens->sum('preco_total');
-            $frete = new CalculaFreteController();
             $endereco = Endereco::where('user_id', $user_id)->first();
             if (!$endereco) {
                 $taxaFrete = 0;
             } else {
-                $freteValor = $frete->calcularFrete($endereco->cep);
+                $freteValor = $this->calcularFrete->calcularFrete($endereco->cep);
                 $taxaFrete = intVal($freteValor['valor']);
             }
 
@@ -239,10 +216,7 @@ class ItemCarrinhoController extends Controller
             // verifica se o produto existe
             ExistenciaController::itemExiste($item_id);
             // Busca o item do carrinho
-            $item = ItemCarrinho::whereHas('carrinho', function ($query) use ($user_id) {
-                $query->where('user_id', $user_id);
-            })->where('id', $item_id)->firstOrFail();
-
+            $item = $this->itemCarrinho->itemCarrinho($item_id, $user_id);
             // Remove o item do carrinho
             $item->delete();
             // Recalcula os valores do carrinho
@@ -265,4 +239,6 @@ class ItemCarrinhoController extends Controller
             ], 500);
         }
     }
+
+    
 }

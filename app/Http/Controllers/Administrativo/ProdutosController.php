@@ -536,4 +536,5 @@ class ProdutosController extends Controller
         Alert::alert($title, $message, $type);
         return redirect()->route('administrativo.produtos');
     }
+
 }

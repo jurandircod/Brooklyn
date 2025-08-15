@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
             min_price: formData.get('min_price') || null,
             max_price: formData.get('max_price') || null
         };
+    
 
         // Armazenar filtros ativos
         activeFilters = data;

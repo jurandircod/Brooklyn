@@ -71,35 +71,35 @@
                                             <li>
                                                 <div class="form-check ps-0 custome-form-check">
                                                     <input class="checkbox_animated check-it" id="size_p"
-                                                        name="sizes[]" type="checkbox" value="P">
+                                                        name="sizes[]" type="checkbox" value="p">
                                                     <label class="form-check-label" for="size_p">P</label>
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="form-check ps-0 custome-form-check">
                                                     <input class="checkbox_animated check-it" id="size_m"
-                                                        name="sizes[]" type="checkbox" value="M">
+                                                        name="sizes[]" type="checkbox" value="m">
                                                     <label class="form-check-label" for="size_m">M</label>
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="form-check ps-0 custome-form-check">
                                                     <input class="checkbox_animated check-it" id="size_g"
-                                                        name="sizes[]" type="checkbox" value="G">
+                                                        name="sizes[]" type="checkbox" value="g">
                                                     <label class="form-check-label" for="size_g">G</label>
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="form-check ps-0 custome-form-check">
                                                     <input class="checkbox_animated check-it" id="size_gg"
-                                                        name="sizes[]" type="checkbox" value="GG">
+                                                        name="sizes[]" type="checkbox" value="gg">
                                                     <label class="form-check-label" for="size_gg">GG</label>
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="form-check ps-0 custome-form-check">
                                                     <input class="checkbox_animated check-it" id="size_775"
-                                                        name="sizes[]" type="checkbox" value="7.75">
+                                                        name="sizes[]" type="checkbox" value="775">
                                                     <label class="form-check-label" for="size_775">7.75</label>
                                                 </div>
                                             </li>
@@ -113,14 +113,14 @@
                                             <li>
                                                 <div class="form-check ps-0 custome-form-check">
                                                     <input class="checkbox_animated check-it" id="size_825"
-                                                        name="sizes[]" type="checkbox" value="8.25">
+                                                        name="sizes[]" type="checkbox" value="825">
                                                     <label class="form-check-label" for="size_825">8.25</label>
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="form-check ps-0 custome-form-check">
                                                     <input class="checkbox_animated check-it" id="size_85"
-                                                        name="sizes[]" type="checkbox" value="8.5">
+                                                        name="sizes[]" type="checkbox" value="85">
                                                     <label class="form-check-label" for="size_85">8.5</label>
                                                 </div>
                                             </li>

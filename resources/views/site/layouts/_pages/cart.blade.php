@@ -779,6 +779,8 @@
                                                 </div>
                                             </div>
                                         </td>
+                                        <input type="hidden" name="categoria_id" id="categoria_id" value="{{ $item->produto->categoria->id }}">
+
                                         <!-- Preço total -->
                                         <td data-label="Total">
                                             <h2 class="price td-color">{{ $item->preco_total }}</h2>
@@ -852,6 +854,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Seleciona todos os inputs de quantidade
         const quantityInputs = document.querySelectorAll('input[name="quantity"]');
+        const categoriaId = document.getElementById('categoria_id').value;
 
         // Adiciona evento de change a cada input
         quantityInputs.forEach(input => {
@@ -914,7 +917,8 @@
                     body: JSON.stringify({
                         item_id: itemId,
                         quantidade: quantity,
-                        tamanho: sizeSelected
+                        tamanho: sizeSelected,
+                        categoria_id: categoriaId
                     })
                 })
                 .then(response => {

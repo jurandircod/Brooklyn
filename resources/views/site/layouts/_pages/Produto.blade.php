@@ -144,7 +144,7 @@
 
                                 <!-- Script para informar se o produto tem tamanho -->
                                 <script>
-                                    const temTamanho = {{ in_array($produto->categoria_id, [1, 2]) ? 'true' : 'false' }};
+                                    const temTamanho = {{ in_array($produto->categoria_id, [1, 2, 3]) ? 'true' : 'false' }};
                                 </script>
 
 

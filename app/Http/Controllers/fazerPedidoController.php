@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\model\{Carrinho, Estoque, ItemCarrinho, Pedido, Endereco};
+use App\model\{Carrinho, Estoque, ItemCarrinho, Pedido, Endereco, MapaTamanho};
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
@@ -43,7 +43,6 @@ class FazerPedidoController extends Controller
             ->map(function ($item) {
                 $item->produto_nome = $item->produto->nome;
                 $item->produto_valor = $item->produto->valor;
-                $item->tamanho = $item->produto->estoque->tamanho;
                 $item->produto_imagem = optional($item->produto->fotos->first())->url_imagem;
                 $item->produto_id = $item->produto->id;
                 return $item;
@@ -58,18 +57,18 @@ class FazerPedidoController extends Controller
             return back();
         }
 
-        /*
+        
         $request->merge([
             'cpf' => '11117634965',
             'descricao' => 'teste'
         ]);
-*/
+
         $validator = $this->validateInput($request->all());
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
 
-        /*      if ($request->metodo_pagamento == 'pix') {
+        if ($request->metodo_pagamento == 'pix') {
             $payment = new PaymentController(new MercadoPagoService());
             $qrcode = $payment->createPixPayment($request);
             $data = $qrcode->getData();
@@ -81,7 +80,7 @@ class FazerPedidoController extends Controller
             return view('site.pix', compact('status', 'qr_code', 'qr_code_base64', 'expiration', 'valor'));
             exit;
         }
-        */
+
 
         return DB::transaction(function () use ($request, $user) {
             $carrinho = Carrinho::where('user_id', $user->id)->where('status', 'ativo')->first();
@@ -89,19 +88,19 @@ class FazerPedidoController extends Controller
                 Alert::error('Erro', 'Carrinho inválido');
                 return back();
             }
-            
+
             $itens = ItemCarrinho::where('carrinho_id', $carrinho->id)->get();
             if ($itens->isEmpty()) {
                 Alert::error('Erro', 'Carrinho vazio');
                 return back();
             }
-            
+
             $carrinho = $itens->first()->carrinho;
             if (!$carrinho || $carrinho->status == 'finalizado') {
                 Alert::error('Erro', 'Carrinho inválido ou já finalizado');
                 return back();
             }
-            
+
             // Verifica estoque antes de processar
             foreach ($itens as $item) {
                 $tamanho = $item->tamanho;
@@ -113,8 +112,8 @@ class FazerPedidoController extends Controller
                 $estoque->quantidade -= $item->quantidade;
                 $estoque->save();
             }
-        
-            
+
+
 
             $preco_total = $itens->sum('preco_total');
 

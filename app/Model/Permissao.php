@@ -12,7 +12,7 @@ class Permissao extends Model
     protected $keyType = 'int';      // Define que a chave primária é do tipo int
     protected $fillable = ['role_id', 'tipo_acesso', 'descricao'];
 
-    public function users()
+    public function user()
     {
         return $this->belongsToMany(User::class, 'permissoes_users', 'role_id', 'user_id');
     }

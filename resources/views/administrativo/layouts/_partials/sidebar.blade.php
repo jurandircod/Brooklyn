@@ -12,13 +12,13 @@
         <!-- Sidebar user panel -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="{{ asset('adminLte/dist/img/user2-160x160.jpg') }}"
+                <img src="{{ asset('dist/img/avatar5.png') }}" class="img-circle elevation-2 img-user-profile"
                     class="img-circle elevation-2 img-user-profile" alt="User Image">
             </div>
             <div class="info">
                 <a href="#" class="d-block">
-                    <span class="text-white">Jurandir</span>
-                    <small class="d-block text-white">Admin</small>
+                    <span class="text-white">{{ Auth::user()->name }}</span>
+                    <small class="d-block text-white">{{ Auth::user()->email }}</small>
                 </a>
             </div>
         </div>

@@ -463,7 +463,7 @@
             return isEmptyArray(arr) || isArrayWithEmptyArray(arr);
         }
 
-        console.log(isEmptyOrContainsEmpty(tamanho));
+        
         if (isEmptyOrContainsEmpty(tamanho)) {
             document.getElementById('quanti775').value = 0;
             document.getElementById('quanti8').value = 0;

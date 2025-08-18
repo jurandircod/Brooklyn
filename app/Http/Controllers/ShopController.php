@@ -33,6 +33,8 @@ class ShopController extends Controller
             // Para filtros com paginação, pegar a página da URL se existir
             $page = $request->input('page', $request->query('page', 1));
             $produtos = $query->paginate(8, ['*'], 'page', $page);
+            $sizes = $request->input('sizes', []);
+            
 
             // Se for uma requisição de filtro (POST)
             if ($request->isMethod('POST')) {
@@ -46,7 +48,8 @@ class ShopController extends Controller
                         'total' => $produtos->total(),
                         'per_page' => $produtos->perPage(),
                         'has_pages' => $produtos->hasPages()
-                    ]
+                    ],
+                    'teste' => $sizes,
                 ], 200);
             }
 
@@ -121,11 +124,13 @@ class ShopController extends Controller
 
         // Filtro por tamanhos
         if (!empty($sizes)) {
-            $query->whereHas('estoque', function ($q) use ($sizes) {
-                $q->whereIn('tamanho', $sizes)
-                    ->where('quantidade', '>', 0) // Apenas tamanhos com estoque
-                    ->where('ativo', 'S'); // Apenas tamanhos ativos
-            });
+            foreach ($sizes as $size) {
+                $query->orWhereHas('estoque', function ($q) use ($size) {
+                    $q->where('tamanho', $size)
+                        ->where('quantidade', '>', 0) // Apenas tamanhos com estoque
+                        ->where('ativo', 'S'); // Apenas tamanhos ativos
+                });
+            }
         }
     }
 }

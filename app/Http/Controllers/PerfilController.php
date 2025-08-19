@@ -27,7 +27,7 @@ class PerfilController extends Controller
         } else if ($activeTab == 3) {
             return view('site.perfil', ['enderecosMostrar' => $enderecosMostrar, 'pedidos' => $pedidos, 'activeTab' => $activeTab]);
         } else {
-            $activeTab = 6;
+            $activeTab = null;
             return view('site.perfil', ['enderecosMostrar' => $enderecosMostrar, 'pedidos' => $pedidos, 'activeTab' => $activeTab]);
         }
     }

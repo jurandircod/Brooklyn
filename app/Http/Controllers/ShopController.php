@@ -34,7 +34,7 @@ class ShopController extends Controller
             $page = $request->input('page', $request->query('page', 1));
             $produtos = $query->paginate(8, ['*'], 'page', $page);
             $sizes = $request->input('sizes', []);
-            
+
 
             // Se for uma requisição de filtro (POST)
             if ($request->isMethod('POST')) {
@@ -67,6 +67,7 @@ class ShopController extends Controller
 
     private function buildQuery(Request $request)
     {
+        //
         $query = Produto::query()->with(['categoria', 'marca', 'fotos']);
 
         // Se não há filtros, retorna query básica
@@ -77,13 +78,11 @@ class ShopController extends Controller
         // Validação
         $validator = Validator::make($request->all(), [
             'sizes' => 'nullable|array',
-            'sizes.*' => 'string|in:p,m,g,gg,775,8,825,85',
             'categorias' => 'nullable|array',
             'categorias.*' => 'integer|exists:categorias,id',
             'marcas' => 'nullable|array',
             'marcas.*' => 'integer|exists:marcas,id',
-            'min_price' => 'nullable|numeric|min:0',
-            'max_price' => 'nullable|numeric|min:0|gte:min_price',
+
         ]);
 
         if ($validator->fails()) {
@@ -123,14 +122,17 @@ class ShopController extends Controller
         }
 
         // Filtro por tamanhos
+        // Filtro por tamanhos - Alternativa
         if (!empty($sizes)) {
-            foreach ($sizes as $size) {
-                $query->orWhereHas('estoque', function ($q) use ($size) {
-                    $q->where('tamanho', $size)
-                        ->where('quantidade', '>', 0) // Apenas tamanhos com estoque
-                        ->where('ativo', 'S'); // Apenas tamanhos ativos
-                });
-            }
+            $query->where(function ($subQuery) use ($sizes) {
+                foreach ($sizes as $size) {
+                    $subQuery->orWhereHas('estoque', function ($q) use ($size) {
+                        $q->where('tamanho', $size)
+                            ->where('quantidade', '>', 0)
+                            ->where('ativo', 'S');
+                    });
+                }
+            });
         }
     }
 }

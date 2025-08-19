@@ -1,4 +1,3 @@
-{{ $activeTab }}
 <style>
     :root {
         --primary-color: #6A70D6;
@@ -567,49 +566,57 @@
                                 <button
                                     class="nav-link font-light @if (empty($activeTab) && empty($_GET['activeTab'])) active 
             @elseif ((isset($activeTab) && $activeTab == 'dash') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'dash')) active @endif"
-                                    id="dash-tab" data-bs-toggle="tab" data-bs-target="#dash" type="button">
+                                    id="dash-tab" data-bs-toggle="tab" data-bs-target="#dash" type="button"
+                                    onclick="disableTabs()">
                                     <i class="fas fa-tachometer-alt"></i> <b>Painel de Controle</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'profile') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'profile')) active @endif"
-                                    id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button">
+                                    id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+                                    onclick="disableTabs()">
                                     <i class="fas fa-user"></i> <b>Perfil</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'endereco') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'endereco')) active @endif"
-                                    id="endereco-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button">
+                                    id="endereco-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button"
+                                    onclick="disableTabs()">
                                     <i class="fas fa-plus-circle"></i> <b>Cadastrar Endereço</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'order') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'order')) active @endif"
-                                    id="order-tab" data-bs-toggle="tab" data-bs-target="#order" type="button">
+                                    id="order-tab" data-bs-toggle="tab" data-bs-target="#order" type="button"
+                                    onclick="disableTabs()">
                                     <i class="fas fa-shopping-bag"></i> <b>Pedidos</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'wishlist') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'wishlist')) active @endif"
-                                    id="wishlist-tab" data-bs-toggle="tab" data-bs-target="#wishlist" type="button">
+                                    id="wishlist-tab" data-bs-toggle="tab" data-bs-target="#wishlist" type="button"
+                                    onclick="disableTabs()">
                                     <i class="fas fa-heart"></i> <b>Wishlist</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'save') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'save')) active @endif"
-                                    id="save-tab" data-bs-toggle="tab" data-bs-target="#save" type="button">
+                                    id="save-tab" data-bs-toggle="tab" data-bs-target="#save" type="button"
+                                    onclick="disableTabs()">
                                     <i class="fas fa-map-marker-alt"></i> <b>Endereços salvos</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'pay') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'pay')) active @endif"
-                                    id="pay-tab" data-bs-toggle="tab" data-bs-target="#pay" type="button">
+                                    id="pay-tab" data-bs-toggle="tab" data-bs-target="#pay" type="button"
+                                    onclick="disableTabs()">
                                     <i class="fas fa-credit-card"></i> <b>Pagamento</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'security') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'security')) active @endif"
-                                    id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button">
+                                    id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button"
+                                    onclick="disableTabs()">
                                     <i class="fas fa-shield-alt"></i> <b>Segurança</b>
                                 </button>
                             </li>
@@ -617,6 +624,15 @@
 
                     </div>
                 </div>
+
+                <script>
+                    function disableTabs() {
+                        const elementos = document.querySelectorAll('#enderecos .active');
+                        elementos.forEach(elemento => {
+                            elemento.classList.replace('active', 'inactive');
+                        });
+                    }
+                </script>
 
                 <div class="col-lg-9">
                     <div class="content-area">
@@ -718,78 +734,9 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade" id="wishlist">
-                                <div class="box-head mb-3">
-                                    <h3>Minha Lista de Desejos</h3>
-                                </div>
-                                <div class="table-container">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Imagem</th>
-                                                <th scope="col">ID do Pedido</th>
-                                                <th scope="col">Detalhes do Produto</th>
-                                                <th scope="col">Preço</th>
-                                                <th scope="col">Ação</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <a href="details.php">
-                                                        <img src="assets/images/fashion/product/front/1.jpg"
-                                                            class="img-fluid rounded"
-                                                            style="width: 60px; height: 60px; object-fit: cover;"
-                                                            alt="">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <p class="m-0 fw-bold">#125021</p>
-                                                </td>
-                                                <td>
-                                                    <p class="fs-6 m-0">Outwear & Coats</p>
-                                                </td>
-                                                <td>
-                                                    <p class="theme-color fs-6 fw-bold">$49.54</p>
-                                                </td>
-                                                <td>
-                                                    <a href="cart.php" class="btn btn-solid-default btn-sm fw-bold">
-                                                        <i class="fas fa-shopping-cart"></i> Mover para Carrinho
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="details.php">
-                                                        <img src="assets/images/fashion/product/front/2.jpg"
-                                                            class="img-fluid rounded"
-                                                            style="width: 60px; height: 60px; object-fit: cover;"
-                                                            alt="">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <p class="m-0 fw-bold">#125367</p>
-                                                </td>
-                                                <td>
-                                                    <p class="fs-6 m-0">Outwear & Coats</p>
-                                                </td>
-                                                <td>
-                                                    <p class="theme-color fs-6 fw-bold">$49.54</p>
-                                                </td>
-                                                <td>
-                                                    <a href="cart.php" class="btn btn-solid-default btn-sm fw-bold">
-                                                        <i class="fas fa-shopping-cart"></i> Mover para Carrinho
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                            <div class="tab-pane fade @isset($activeTab) @if ($activeTab == 6) show active @endif @endisset @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 6) show active @endif @endisset"
+                                id="save">
 
-
-                            <div class="tab-pane fade @isset($activeTab) @if ($activeTab == 6) show active @endif @endisset @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 6) show active @endif @endisset" id="save">
-                                
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <h3>Endereços Salvos</h3>
                                     <a href="{{ route('site.perfil.exibirEndereco') }}" class="btn btn-solid-default">
@@ -951,7 +898,7 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade @isset($activeTab) @if ($activeTab == 3) show active @endif @endisset @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 3) show active @endif @endisset"
+                            <div class="tab-pane fade show @isset($activeTab) @if ($activeTab == 3)  active @endif @endisset"
                                 id="endereco">
                                 <div class="info-card">
                                     <h3 class="mb-4">

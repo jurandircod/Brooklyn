@@ -67,109 +67,151 @@
                                 <div id="collapseFive" class="accordion-collapse collapse show"
                                     aria-labelledby="headingFive" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
-                                        <ul class="category-list">
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_p"
-                                                        name="sizes[]" type="checkbox" value="p">
-                                                    <label class="form-check-label" for="size_p">P</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_m"
-                                                        name="sizes[]" type="checkbox" value="m">
-                                                    <label class="form-check-label" for="size_m">M</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_g"
-                                                        name="sizes[]" type="checkbox" value="g">
-                                                    <label class="form-check-label" for="size_g">G</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_gg"
-                                                        name="sizes[]" type="checkbox" value="gg">
-                                                    <label class="form-check-label" for="size_gg">GG</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_775"
-                                                        name="sizes[]" type="checkbox" value="775">
-                                                    <label class="form-check-label" for="size_775">7.75</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_8"
-                                                        name="sizes[]" type="checkbox" value="8">
-                                                    <label class="form-check-label" for="size_8">8</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_825"
-                                                        name="sizes[]" type="checkbox" value="825">
-                                                    <label class="form-check-label" for="size_825">8.25</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_85"
-                                                        name="sizes[]" type="checkbox" value="85">
-                                                    <label class="form-check-label" for="size_85">8.5</label>
-                                                </div>
-                                            </li>
 
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_38"
-                                                        name="sizes[]" type="checkbox" value="38">
-                                                    <label class="form-check-label" for="size_38">38</label>
-                                                </div>
+                                        <!-- Botões de categoria -->
+                                        <ul class="nav nav-tabs" id="sizeTab" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="tab-camisas" data-bs-toggle="tab"
+                                                    data-bs-target="#sizes-camisas" type="button"
+                                                    role="tab">Camisas</button>
                                             </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_39"
-                                                        name="sizes[]" type="checkbox" value="39">
-                                                    <label class="form-check-label" for="size_39">39</label>
-                                                </div>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="tab-shapes" data-bs-toggle="tab"
+                                                    data-bs-target="#sizes-shapes" type="button"
+                                                    role="tab">Shapes</button>
                                             </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_40"
-                                                        name="sizes[]" type="checkbox" value="40">
-                                                    <label class="form-check-label" for="size_40">40</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_41"
-                                                        name="sizes[]" type="checkbox" value="41">
-                                                    <label class="form-check-label" for="size_41">41</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_42"
-                                                        name="sizes[]" type="checkbox" value="42">
-                                                    <label class="form-check-label" for="size_42">42</label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="form-check ps-0 custome-form-check">
-                                                    <input class="checkbox_animated check-it" id="size_43"
-                                                        name="sizes[]" type="checkbox" value="43">
-                                                    <label class="form-check-label" for="size_43">43</label>
-                                                </div>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="tab-calcados" data-bs-toggle="tab"
+                                                    data-bs-target="#sizes-calcados" type="button"
+                                                    role="tab">Calçados</button>
                                             </li>
                                         </ul>
+
+                                        <!-- Conteúdo das categorias -->
+                                        <div class="tab-content mt-3" id="sizeTabContent">
+
+                                            <!-- Camisas -->
+                                            <div class="tab-pane fade show active" id="sizes-camisas" role="tabpanel">
+                                                <ul class="category-list">
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_p"
+                                                                name="sizes[]" type="checkbox" value="p">
+                                                            <label class="form-check-label" for="size_p">P</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_m"
+                                                                name="sizes[]" type="checkbox" value="m">
+                                                            <label class="form-check-label" for="size_m">M</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_g"
+                                                                name="sizes[]" type="checkbox" value="g">
+                                                            <label class="form-check-label" for="size_g">G</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_gg"
+                                                                name="sizes[]" type="checkbox" value="gg">
+                                                            <label class="form-check-label" for="size_gg">GG</label>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                            <!-- Shapes -->
+                                            <div class="tab-pane fade" id="sizes-shapes" role="tabpanel">
+                                                <ul class="category-list">
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_775"
+                                                                name="sizes[]" type="checkbox" value="775">
+                                                            <label class="form-check-label"
+                                                                for="size_775">7.75</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_8"
+                                                                name="sizes[]" type="checkbox" value="8">
+                                                            <label class="form-check-label" for="size_8">8</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_825"
+                                                                name="sizes[]" type="checkbox" value="825">
+                                                            <label class="form-check-label"
+                                                                for="size_825">8.25</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_85"
+                                                                name="sizes[]" type="checkbox" value="85">
+                                                            <label class="form-check-label" for="size_85">8.5</label>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                            <!-- Calçados -->
+                                            <div class="tab-pane fade" id="sizes-calcados" role="tabpanel">
+                                                <ul class="category-list">
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_38"
+                                                                name="sizes[]" type="checkbox" value="38">
+                                                            <label class="form-check-label" for="size_38">38</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_39"
+                                                                name="sizes[]" type="checkbox" value="39">
+                                                            <label class="form-check-label" for="size_39">39</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_40"
+                                                                name="sizes[]" type="checkbox" value="40">
+                                                            <label class="form-check-label" for="size_40">40</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_41"
+                                                                name="sizes[]" type="checkbox" value="41">
+                                                            <label class="form-check-label" for="size_41">41</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_42"
+                                                                name="sizes[]" type="checkbox" value="42">
+                                                            <label class="form-check-label" for="size_42">42</label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form-check ps-0 custome-form-check">
+                                                            <input class="checkbox_animated check-it" id="size_43"
+                                                                name="sizes[]" type="checkbox" value="43">
+                                                            <label class="form-check-label" for="size_43">43</label>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
 
                             <div class="accordion-item category-rating">

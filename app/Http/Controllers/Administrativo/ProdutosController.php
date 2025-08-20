@@ -11,6 +11,7 @@ use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 /**
  * Class ProdutosController
@@ -41,6 +42,7 @@ class ProdutosController extends Controller
         '41' => '41',
         '42' => '42',
     ];
+
     /**
      * ProdutosController constructor.
      * Inicializa as listas de marcas, produtos, categorias e estoques.
@@ -53,30 +55,225 @@ class ProdutosController extends Controller
     }
 
     /**
-     * Exibe a lista de produtos.
+     * Exibe a lista de produtos com paginação.
      *
-     * @return \Illuminate\View\View
+     * @param Request $request
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Configurações de paginação
+        $perPage = $request->get('per_page', 10); // Itens por página (padrão: 10)
+        $search = $request->get('search', ''); // Termo de busca
+        $categoria = $request->get('categoria_id', ''); // Filtro por categoria
+        $marca = $request->get('marca_id', ''); // Filtro por marca
+        $orderBy = $request->get('order_by', 'nome'); // Ordenação (padrão: nome)
+        $orderDirection = $request->get('order_direction', 'asc'); // Direção da ordenação
+
+        // Buscar produtos paginados
+        $produtos = $this->myProductsPaginated($perPage, $search, $categoria, $marca, $orderBy, $orderDirection);
+
+        // Se for uma requisição AJAX (para DataTables), retornar JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'draw' => intval($request->get('draw')),
+                'recordsTotal' => $produtos->total(),
+                'recordsFiltered' => $produtos->total(),
+                'data' => $produtos->items()
+            ]);
+        }
+
+        // Retornar view normal
         return view('administrativo.produto', [
-            'produtos' => $this->myProducts(),
+            'produtos' => $produtos,
             'categorias' => $this->categorias,
             'marcas' => $this->marcas,
-            'estoques' => $this->estoques
+            'estoques' => $this->estoques,
+            'currentSearch' => $search,
+            'currentCategoria' => $categoria,
+            'currentMarca' => $marca,
+            'perPage' => $perPage
         ]);
     }
 
     /**
-     * Obtém os produtos do usuário autenticado.
+     * Obtém os produtos do usuário autenticado com paginação e filtros.
      *
+     * @param int $perPage
+     * @param string $search
+     * @param string $categoria
+     * @param string $marca
+     * @param string $orderBy
+     * @param string $orderDirection
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function myProductsPaginated($perPage = 10, $search = '', $categoria = '', $marca = '', $orderBy = 'nome', $orderDirection = 'asc')
+    {
+        $query = Produto::where('user_id', auth()->id())
+            ->with(['categoria', 'marca', 'estoque']); // Eager loading para performance
+
+        // Aplicar filtros de busca
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nome', 'LIKE', "%{$search}%")
+                    ->orWhere('material', 'LIKE', "%{$search}%")
+                    ->orWhere('descricao', 'LIKE', "%{$search}%")
+                    ->orWhereHas('categoria', function ($subQ) use ($search) {
+                        $subQ->where('nome', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('marca', function ($subQ) use ($search) {
+                        $subQ->where('nome', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
+
+        // Filtrar por categoria
+        if (!empty($categoria)) {
+            $query->where('categoria_id', $categoria);
+        }
+
+        // Filtrar por marca
+        if (!empty($marca)) {
+            $query->where('marca_id', $marca);
+        }
+
+        // Aplicar ordenação
+        $allowedOrderColumns = ['nome', 'valor', 'material', 'created_at', 'updated_at'];
+        if (in_array($orderBy, $allowedOrderColumns)) {
+            $query->orderBy($orderBy, $orderDirection === 'desc' ? 'desc' : 'asc');
+        }
+
+        // Retornar dados paginados
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * Método original mantido para compatibilidade
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function myProducts()
     {
-        $itens = Produto::where('user_id', auth()->id())->get();
-        return $itens;
+        return Produto::where('user_id', auth()->id())->get();
     }
+
+    /**
+     * API endpoint para buscar produtos (usado pelo DataTables)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiProdutos(Request $request)
+    {
+        $produtos = Produto::with(['categoria', 'marca', 'estoque'])
+            ->select('produtos.*');
+
+        // Se não vier ordenação do DataTables, força ordenação por ID desc
+        if (!$request->has('order') || empty($request->input('order')[0]['dir'])) {
+            $produtos->orderBy('id', 'desc');
+        }
+
+        return datatables()->eloquent($produtos)
+            ->addColumn('imagem_url', function ($produto) {
+                $path = $produto->imagem_url;
+
+                if (! $path) {
+                    return null;
+                }
+
+                // Se já for URL absoluta, retorna como veio
+                if (filter_var($path, FILTER_VALIDATE_URL)) {
+                    return $path;
+                }
+
+                // Normaliza: remove barras iniciais
+                $path = ltrim($path, '/');
+
+                // Se o campo já contém 'uploads/produtos/...' retorna asset direto
+                if (Str::startsWith($path, 'uploads/')) {
+                    return asset($path);
+                }
+
+                // Caso o campo armazene só o nome/filename, monta o path padrão
+                return asset('uploads/produtos/' . $path);
+            })
+            ->addColumn('categoria', fn($produto) => $produto->categoria->nome ?? '')
+            ->addColumn('marca', fn($produto) => $produto->marca->nome ?? '')
+            ->addColumn('quantidade_total', fn($produto) => $produto->estoque->sum('quantidade'))
+            // devolve draw como inteiro (fallback 0) — opcional, o Yajra normalmente já trata isso
+            ->with([
+                'draw' => intval($request->input('draw', 0))
+            ])
+            ->toJson();
+    }
+
+
+
+    /**
+     * Método para exportar produtos (Excel, PDF, etc.)
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function exportar(Request $request)
+    {
+        $formato = $request->get('formato', 'excel'); // excel, pdf, csv
+        $produtos = $this->myProducts(); // Todos os produtos para exportação
+
+        switch ($formato) {
+            case 'excel':
+                return $this->exportarExcel($produtos);
+            case 'pdf':
+                return $this->exportarPDF($produtos);
+            case 'csv':
+                return $this->exportarCSV($produtos);
+            default:
+                return redirect()->back()->with('error', 'Formato não suportado');
+        }
+    }
+
+    /**
+     * Busca rápida de produtos (para autocomplete)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function buscarProdutos(Request $request)
+    {
+        $term = $request->get('q', '');
+        $limit = $request->get('limit', 10);
+
+        $produtos = Produto::where('user_id', auth()->id())
+            ->where(function ($query) use ($term) {
+                $query->where('nome', 'LIKE', "%{$term}%")
+                    ->orWhere('material', 'LIKE', "%{$term}%");
+            })
+            ->select('id', 'nome', 'valor', 'imagem_url')
+            ->limit($limit)
+            ->get();
+
+        return response()->json($produtos);
+    }
+
+    // Métodos privados para exportação (implementar conforme necessário)
+    private function exportarExcel($produtos)
+    {
+        // Implementar exportação Excel
+        // return Excel::download(new ProdutosExport($produtos), 'produtos.xlsx');
+    }
+
+    private function exportarPDF($produtos)
+    {
+        // Implementar exportação PDF
+        // return PDF::loadView('administrativo.produtos.pdf', compact('produtos'))->download('produtos.pdf');
+    }
+
+    private function exportarCSV($produtos)
+    {
+        // Implementar exportação CSV
+    }
+
+    // Todos os outros métodos do controller permanecem iguais
+    // (validarInput, salvarProduto, prepareProductData, etc...)
 
     /**
      * Valida os dados de entrada do produto.
@@ -536,5 +733,4 @@ class ProdutosController extends Controller
         Alert::alert($title, $message, $type);
         return redirect()->route('administrativo.produtos');
     }
-
 }

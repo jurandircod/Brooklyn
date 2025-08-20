@@ -1,3 +1,5 @@
+<!-- Adicione no head -->
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -15,111 +17,65 @@
 </section>
 
 <div class="container-fluid">
-    <!-- /.card -->
     <div class="col-12">
-        <!-- /.card -->
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title text-white">Listar Produtos</h3>
+
+                <!-- Filtros -->
+                <div class="card-tools">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select id="filtroCategoria" class="form-control form-control-sm">
+                                <option value="">Todas as Categorias</option>
+                                @foreach ($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="filtroMarca" class="form-control form-control-sm">
+                                <option value="">Todas as Marcas</option>
+                                @foreach ($marcas as $marca)
+                                    <option value="{{ $marca->id }}">{{ $marca->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" id="btnLimparFiltros" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-eraser"></i> Limpar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- /.card-header -->
+
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="produtosTable" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Imagem</th>
                             <th>Nome</th>
                             <th>Valor</th>
                             <th>Material</th>
-                            <th>Quantidade Total</th>
+                            <th>Estoque</th>
                             <th>Categoria</th>
                             <th>Marca</th>
                             <th>Descrição</th>
-                            <th>Alterar</th>
-                            <th>Excluir</th>
+                            <th width="80px">Ações</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        @foreach ($produtos as $produto)
-                            @php
-                                $tamanhoMap = [];
-                                $estoque = $produto->estoque->where('produto_id', $produto->id);
-                                $tamanhoMap[] = $estoque;
-                                $categoria = $produto->categoria->listarCategoria($produto->categoria_id);
-                                $marca =
-                                    $produto->marca_id != null
-                                        ? $produto->marca->listarMarca($produto->marca_id)
-                                        : null;
-                            @endphp
-
-                            <tr>
-                                <td> <img src="{{ $produto->imagem_url }}" class="blur-up lazyload" alt=""
-                                        style="width: 80px; height: auto;"></td>
-                                <td>{{ $produto->nome }}</td>
-                                <td>R$: {{ $produto->valor }}</td>
-                                <td>{{ $produto->material }}</td>
-                                <td>{{ $estoque['quantidade'] ?? 0 }}</td>
-                                <td>{{ $categoria['nome'] ?? 'Sem Categoria' }}</td>
-                                <td>{{ $marca['nome'] ?? 'Sem Marca' }}</td>
-                                <td>{{ $produto->descricao }}</td>
-                                <td>
-
-                                    <button class="btn btn-sm btn-warning mt-1" data-toggle="modal"
-                                        data-target="#produtoModal"
-                                        onclick='preencherModal(
-        @json($produto->id), 
-        @json($produto->nome), 
-        @json($produto->valor), 
-        @json($produto->material),  
-        @json($produto->categoria_id),
-        @json($produto->marca_id),
-        @json($produto->descricao),
-        @json($produto->imagem_url ?? ''),
-        @json($produto->imagem_url2 ?? ''),
-        @json($produto->imagem_url3 ?? ''),
-        @json($produto->imagem_url4 ?? ''),
-        @json($produto->imagem_url5 ?? ''),
-        @json($tamanhoMap)
-    )'>
-                                        Alterar
-                                    </button>
-
-                                </td>
-
-                                <td>
-                                    <form action="{{ route('administrativo.produto.excluir') }}" method="post">
-                                        @csrf
-                                        <input type="hidden" name="produto_id" value="{{ $produto->id }}">
-                                        <button type="submit" class="btn btn-sm btn-danger mt-1">Excluir</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
+                        <!-- Dados carregados via AJAX -->
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Imagem</th>
-                            <th>Nome</th>
-                            <th>Valor</th>
-                            <th>Material</th>
-                            <th>Estoque</th>
-                            <th>Quantidade Total</th>
-                            <th>Categoria</th>
-                            <th>Marca</th>
-                            <th>Descrição</th>
-                            <th>Função</th>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
-            <!-- /.card-body -->
         </div>
-        <!-- /.card -->
     </div>
-    <!-- /.col -->
 </div>
 
-<!-- Modal para Editar Produto -->
+<!-- Modal permanece o mesmo -->
 <div class="modal fade" id="produtoModal" tabindex="-1" role="dialog" aria-labelledby="produtoModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="background-color: #f8f9fa;">
@@ -380,7 +336,6 @@
         </div>
     </div>
 </div>
-
 <style>
     .imagem-container {
         position: relative;
@@ -430,10 +385,299 @@
         font-size: 12px;
     }
 </style>
-
-
-<!-- JavaScript para Preencher Modal -->
+<!-- ... seu modal atual ... -->
+<!-- CSS (padrão) -->
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Cria a tabela e guarda referência global para uso em attachModalEvents
+        window.produtosTable = new DataTable("#produtosTable", {
+            processing: true,
+            serverSide: true,
+            ajax: function(data, callback, settings) {
+                const params = new URLSearchParams();
+                params.append("draw", data.draw);
+                params.append("start", data.start);
+                params.append("length", data.length);
+                if (document.querySelector("#filtroCategoria")) {
+                    params.append("filtroCategoria", document.querySelector("#filtroCategoria")
+                        .value);
+                }
+                if (document.querySelector("#filtroMarca")) {
+                    params.append("filtroMarca", document.querySelector("#filtroMarca").value);
+                }
+
+                fetch("/administrativo/produtos/api?" + params.toString())
+                    .then(res => res.json())
+                    .then(json => callback(json));
+            },
+            columns: [{
+                    data: "imagem_url",
+                    render: function(data) {
+                        if (!data) return "";
+                        const src = data.replace(/(https?:\/\/[^\/]+\/uploads\/produtos\/)+/,
+                            "$1");
+                        return `<img src="${src}" width="50" />`;
+                    },
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: "nome"
+                },
+                {
+                    data: "valor"
+                },
+                {
+                    data: "material"
+                },
+                {
+                    data: "quantidade_total"
+                }, // Estoque
+                {
+                    data: "categoria"
+                },
+                {
+                    data: "marca"
+                },
+                {
+                    data: "descricao"
+                },
+                {
+                    data: "id",
+                    render: function(data, type, row) {
+                        // codifica o objeto row para um atributo data-row (seguro)
+                        const payload = encodeURIComponent(JSON.stringify(row));
+                        // botões: Alterar (warning) e Excluir (danger)
+                        return `
+                        <button type="button" class="btn btn-sm btn-warning mt-1 btn-edit" data-row="${payload}">
+                            Alterar
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger mt-1 btn-delete" data-id="${data}">
+                            Excluir
+                        </button>
+                    `;
+                    },
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+            drawCallback: function() {
+                attachModalEvents(); // reaplica listeners
+            }
+        });
+
+        // Filtros
+        document.querySelectorAll("#filtroCategoria, #filtroMarca").forEach(el => {
+            el.addEventListener("change", () => {
+                // tenta usar API do DataTable; fallback para reload da página
+                if (window.produtosTable && typeof window.produtosTable.draw === "function") {
+                    window.produtosTable.draw();
+                } else {
+                    location.reload();
+                }
+            });
+        });
+
+        document.querySelector("#btnLimparFiltros").addEventListener("click", () => {
+            if (document.querySelector("#filtroCategoria")) document.querySelector("#filtroCategoria")
+                .value = "";
+            if (document.querySelector("#filtroMarca")) document.querySelector("#filtroMarca").value =
+                "";
+            if (window.produtosTable && typeof window.produtosTable.draw === "function") {
+                window.produtosTable.draw();
+            } else {
+                location.reload();
+            }
+        });
+
+        // refresh manual
+        window.refreshTable = function() {
+            if (window.produtosTable && window.produtosTable.ajax && typeof window.produtosTable.ajax
+                .reload === "function") {
+                window.produtosTable.ajax.reload(null, false);
+            } else if (window.produtosTable && typeof window.produtosTable.draw === "function") {
+                window.produtosTable.draw();
+            } else {
+                location.reload();
+            }
+            atualizarEstatisticas();
+        };
+
+        // Implementação de attachModalEvents
+        function attachModalEvents() {
+            // remover listeners antigos para evitar duplicação
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.replaceWith(btn.cloneNode(true));
+            });
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.replaceWith(btn.cloneNode(true));
+            });
+
+            // re-seleciona após clone
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const encoded = this.getAttribute('data-row');
+                    if (!encoded) return;
+                    let row;
+                    try {
+                        row = JSON.parse(decodeURIComponent(encoded));
+                    } catch (err) {
+                        console.error('Erro ao parsear data-row', err);
+                        return;
+                    }
+
+                    // tenta obter campos com nomes alternativos (para compatibilidade)
+                    const id = row.id ?? row.produto_id ?? null;
+                    const nome = row.nome ?? row.title ?? '';
+                    const valor = row.valor ?? row.price ?? '';
+                    const material = row.material ?? '';
+                    const categoriaId = row.categoria_id ?? row.categoriaId ?? row.categoria ??
+                        null;
+                    const marcaId = row.marca_id ?? row.marcaId ?? row.marca ?? null;
+                    const descricao = row.descricao ?? row.description ?? '';
+                    const imagemUrl = row.imagem_url ?? row.imagemUrl ?? row.imagem ?? '';
+                    const imagemUrl2 = row.imagem_url2 ?? row.imagemUrl2 ?? '';
+                    const imagemUrl3 = row.imagem_url3 ?? row.imagemUrl3 ?? '';
+                    const imagemUrl4 = row.imagem_url4 ?? row.imagemUrl4 ?? '';
+                    const imagemUrl5 = row.imagem_url5 ?? row.imagemUrl5 ?? '';
+                    // possíveis nomes para tamanhos
+                    const tamanho = row.tamanho ?? row.tamanhos ?? row.tamanhoMap ?? row
+                        .tamanho_map ?? [];
+
+                    // chama a função que preenche o modal (preservando assinatura)
+                    // preencherModal(id, nome, valor, material, categoriaId, marcaId, descricao, imagemUrl1, imagemUrl2, ...)
+                    if (typeof preencherModal === "function") {
+                        preencherModal(
+                            id,
+                            nome,
+                            valor,
+                            material,
+                            categoriaId,
+                            marcaId,
+                            descricao,
+                            imagemUrl,
+                            imagemUrl2,
+                            imagemUrl3,
+                            imagemUrl4,
+                            imagemUrl5,
+                            tamanho
+                        );
+                    } else {
+                        console.warn("preencherModal não encontrado.");
+                    }
+
+                    // Abrir modal usando API do Bootstrap 5 (sem jQuery). Se não existir, tenta fallback BS4/jQuery.
+                    const modalEl = document.getElementById('produtoModal');
+                    if (!modalEl) {
+                        console.warn("Modal #produtoModal não encontrado no DOM.");
+                        return;
+                    }
+
+                    if (typeof bootstrap !== "undefined" && bootstrap.Modal) {
+                        try {
+                            const modal = new bootstrap.Modal(modalEl);
+                            modal.show();
+                        } catch (err) {
+                            console.error('Erro ao abrir modal via bootstrap.Modal', err);
+                        }
+                    } else if (window.$ && typeof window.$(modalEl).modal === "function") {
+                        // fallback para Bootstrap 4 com jQuery disponível
+                        window.$(modalEl).modal('show');
+                    } else {
+                        // fallback simples (apenas visibilidade) - talvez não tenha animações/ backdrop
+                        modalEl.classList.add('show');
+                        modalEl.style.display = 'block';
+                        modalEl.removeAttribute('aria-hidden');
+                    }
+                });
+            });
+
+            // delete
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const id = this.getAttribute('data-id');
+                    if (!id) return;
+
+                    if (!confirm(
+                            'Deseja realmente excluir este produto? Essa ação não pode ser desfeita.'
+                            )) {
+                        return;
+                    }
+
+                    // procura token CSRF em meta (Laravel padrão)
+                    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                    const csrf = tokenMeta ? tokenMeta.getAttribute('content') : null;
+
+                    fetch(`/administrativo/produtos/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...(csrf ? {
+                                'X-CSRF-TOKEN': csrf
+                            } : {})
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            // sucesso -> recarrega tabela
+                            if (window.produtosTable && window.produtosTable.ajax &&
+                                typeof window.produtosTable.ajax.reload === "function"
+                                ) {
+                                window.produtosTable.ajax.reload(null, false);
+                            } else if (window.produtosTable && typeof window
+                                .produtosTable.draw === "function") {
+                                window.produtosTable.draw();
+                            } else {
+                                location.reload();
+                            }
+                        } else {
+                            response.json().then(j => {
+                                alert(j.message ||
+                                    'Falha ao excluir o produto.');
+                            }).catch(() => {
+                                alert('Falha ao excluir o produto.');
+                            });
+                        }
+                    }).catch(err => {
+                        console.error(err);
+                        alert('Erro na requisição de exclusão.');
+                    });
+                });
+            });
+        }
+
+        // chama a primeira vez (já será chamada nas drawCallbacks também)
+        attachModalEvents();
+
+        // Atualizar estatísticas sem jQuery
+        function atualizarEstatisticas() {
+            const params = new URLSearchParams({
+                length: -1,
+                draw: 1
+            });
+            fetch("{{ route('administrativo.produtos.api') }}?" + params.toString())
+                .then(res => res.json())
+                .then(response => {
+                    const totalProdutos = response.recordsTotal ?? 0;
+                    const produtosSemEstoque = Array.isArray(response.data) ? response.data.filter(item => (
+                        item.quantidade_total == 0)).length : 0;
+
+                    const elTotal = document.getElementById('totalProdutos');
+                    const elSem = document.getElementById('produtosSemEstoque');
+                    const elCom = document.getElementById('produtosComEstoque');
+
+                    if (elTotal) elTotal.textContent = totalProdutos;
+                    if (elSem) elSem.textContent = produtosSemEstoque;
+                    if (elCom) elCom.textContent = (totalProdutos - produtosSemEstoque);
+                })
+                .catch(err => console.error('Erro atualizarEstatisticas:', err));
+        }
+
+        // atualizar periodicamente
+        setInterval(atualizarEstatisticas, 300000);
+    });
+
+
+    // Suas funções existentes permanecem as mesmas
     function preencherModal(id, nome, valor, material, categoriaId, marcaId, descricao,
         imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5, tamanho) {
 
@@ -445,26 +689,24 @@
         document.getElementById('categoriaProduto').value = categoriaId;
         document.getElementById('marcaProduto').value = marcaId || '';
 
-        console.log(tamanho);
-
-        // Verifica se é um array vazio simples []
+        // Verificação se é um array vazio simples []
         function isEmptyArray(arr) {
             return Array.isArray(arr) && arr.length === 0;
         }
 
-        // Verifica se é um array contendo um array vazio [[]]
+        // Verificação se é um array contendo um array vazio [[]]
         function isArrayWithEmptyArray(arr) {
             return Array.isArray(arr) && arr.length === 1 &&
                 Array.isArray(arr[0]) && arr[0].length === 0;
         }
 
-        // Verifica se é um array vazio ou contendo array vazio
+        // Verificação se é um array vazio ou contendo array vazio
         function isEmptyOrContainsEmpty(arr) {
             return isEmptyArray(arr) || isArrayWithEmptyArray(arr);
         }
 
-        
         if (isEmptyOrContainsEmpty(tamanho)) {
+            // Zerar todos os campos
             document.getElementById('quanti775').value = 0;
             document.getElementById('quanti8').value = 0;
             document.getElementById('quanti825').value = 0;
@@ -474,8 +716,9 @@
             document.getElementById('quantidadeGC').value = 0;
             document.getElementById('quantidadeGGC').value = 0;
         } else {
-            tamanho.forEach((grupo, grupoIndex) => {
-                grupo.forEach(item => {
+            // Processar estoques
+            if (Array.isArray(tamanho)) {
+                tamanho.forEach(item => {
                     if (item.produto_id == id) {
                         switch (item.tamanho) {
                             case 'p':
@@ -505,22 +748,25 @@
                         }
                     }
                 });
-            })
-        };
-        // Carregar imagens existentes
+            }
+        }
 
+        // Carregar imagens existentes
         carregarImagensExistentes(imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5);
 
+        // Controlar exibição dos cards de estoque baseado na categoria
         if (categoriaId == 2) { // Tênis
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'block';
+            document.getElementById('estoqueProd').style.display = 'none';
         } else if (categoriaId == 1) { // Camisetas
             document.getElementById('estoqueCard').style.display = 'block';
             document.getElementById('estoqueCardSkt').style.display = 'none';
-        } else if (categoriaId == 3) { // Tênis
+            document.getElementById('estoqueProd').style.display = 'none';
+        } else if (categoriaId == 3) { // Outros sem tamanho
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'none';
-            document.getElementById('estoqueProd').style.display = 'none';
+            document.getElementById('estoqueProd').style.display = 'block';
         } else { // Outras categorias
             document.getElementById('estoqueProd').style.display = 'block';
             document.getElementById('estoqueCard').style.display = 'none';
@@ -535,8 +781,6 @@
         const match = fileName.match(/(\d+)\./);
         return match ? parseInt(match[1]) : null;
     }
-
-
 
     function carregarImagensExistentes(img1, img2, img3, img4, img5) {
         const imagens = [img1, img2, img3, img4, img5];
@@ -560,8 +804,6 @@
         });
     }
 
-
-    //
     function previewImagem(input, numeroImagem) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -573,4 +815,114 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+    // Função para atualizar estatísticas em tempo real
+    function atualizarEstatisticas() {
+        $.get("{{ route('administrativo.produtos.api') }}", {
+            length: -1, // Todos os registros
+            draw: 1
+        }).done(function(response) {
+            const totalProdutos = response.recordsTotal;
+            const produtosSemEstoque = response.data.filter(item => item.quantidade_total == 0).length;
+
+            // Atualizar badges/cards de estatísticas se existirem
+            $('#totalProdutos').text(totalProdutos);
+            $('#produtosSemEstoque').text(produtosSemEstoque);
+            $('#produtosComEstoque').text(totalProdutos - produtosSemEstoque);
+        });
+    }
+
+    // Atualizar estatísticas a cada 5 minutos
+    setInterval(atualizarEstatisticas, 300000);
+
+    // Função para refresh manual da tabela
+    function refreshTable() {
+        $('#tabelaProdutos').DataTable().ajax.reload(null, false);
+        atualizarEstatisticas();
+    }
 </script>
+
+<!-- CSS customizado -->
+<style>
+    .btn-group-sm>.btn,
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 0.25rem;
+    }
+
+    .img-thumbnail {
+        border-radius: 0.375rem;
+    }
+
+    .badge {
+        font-size: 0.75em;
+    }
+
+    .card-tools .row {
+        margin-right: -5px;
+        margin-left: -5px;
+    }
+
+    .card-tools .col-md-3 {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+
+    /* Loading overlay para DataTables */
+    .dataTables_processing {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: auto !important;
+        margin: 0 !important;
+        padding: 1rem 2rem !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.375rem !important;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+    }
+
+    /* Responsividade da tabela */
+    @media (max-width: 768px) {
+        .btn-group-sm>.btn {
+            padding: 0.125rem 0.25rem;
+            font-size: 0.675rem;
+        }
+
+        .card-tools .row {
+            flex-direction: column;
+        }
+
+        .card-tools .col-md-3 {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* Melhorias visuais */
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #e3e6f0;
+    }
+
+    .table thead th {
+        background-color: #f8f9fc;
+        border-bottom: 2px solid #e3e6f0;
+        font-weight: 600;
+        color: #5a5c69;
+    }
+
+    .badge-success {
+        background-color: #1cc88a;
+    }
+
+    .badge-warning {
+        background-color: #f6c23e;
+    }
+
+    .badge-danger {
+        background-color: #e74a3b;
+    }
+</style>

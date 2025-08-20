@@ -21,6 +21,57 @@ use App\Http\Controllers\Administrativo\{PrincipalController, VendasController, 
 |
 */
 
+Route::prefix('administrativo')->middleware(['auth'])->group(function () {
+
+    // Rota principal com suporte a paginação
+    Route::get('/produtos', [ProdutosController::class, 'index'])
+        ->name('administrativo.produtos');
+
+    // API para DataTables (AJAX)
+    Route::get('/produtos/api', [ProdutosController::class, 'apiProdutos'])
+        ->name('administrativo.produtos.api');
+
+    // Busca rápida (autocomplete)
+    Route::get('/produtos/buscar', [ProdutosController::class, 'buscarProdutos'])
+        ->name('administrativo.produtos.buscar');
+
+    // Exportação
+    Route::get('/produtos/exportar', [ProdutosController::class, 'exportar'])
+        ->name('administrativo.produtos.exportar');
+
+    // Rotas existentes mantidas
+    Route::post('/produto/salvar', [ProdutosController::class, 'salvarProduto'])
+        ->name('administrativo.produto.salvar');
+
+    Route::post('/produto/atualizar', [ProdutosController::class, 'atualizar'])
+        ->name('administrativo.produto.atualizar');
+
+    Route::post('/produto/excluir', [ProdutosController::class, 'excluir'])
+        ->name('administrativo.produto.excluir');
+});
+
+// Exemplo de rotas RESTful alternativas (opcional)
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::resource('produtos', ProdutosController::class, [
+        'names' => [
+            'index' => 'admin.produtos.index',
+            'create' => 'admin.produtos.create',
+            'store' => 'admin.produtos.store',
+            'show' => 'admin.produtos.show',
+            'edit' => 'admin.produtos.edit',
+            'update' => 'admin.produtos.update',
+            'destroy' => 'admin.produtos.destroy'
+        ]
+    ]);
+
+    // Rotas customizadas adicionais
+    Route::get('produtos/{id}/duplicate', [ProdutosController::class, 'duplicate'])
+        ->name('admin.produtos.duplicate');
+
+    Route::patch('produtos/{id}/toggle-status', [ProdutosController::class, 'toggleStatus'])
+        ->name('admin.produtos.toggle-status');
+});
+
 // Rotas públicas
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/register/salvar', [RegisterController::class, 'register'])->name('registerSalvar');
@@ -121,7 +172,7 @@ Route::group(['prefix' => 'administrativo', 'middleware' => ['auth', 'admin']], 
         Route::post('/enviaFormAlterar', [ProdutosController::class, 'atualizar'])->name('administrativo.produto.atualizar');
         Route::post('/excluir', [ProdutosController::class, 'excluir'])->name('administrativo.produto.excluir');
         Route::get('/administrativo/produtos/{id}/dados', [ProdutosController::class, 'obterDadosProduto'])
-    ->name('administrativo.produto.dados')->middleware(['auth', 'admin']);
+            ->name('administrativo.produto.dados')->middleware(['auth', 'admin']);
     });
 
     // Rotas de marcas

@@ -567,56 +567,43 @@
                                     class="nav-link font-light @if (empty($activeTab) && empty($_GET['activeTab'])) active 
             @elseif ((isset($activeTab) && $activeTab == 'dash') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'dash')) active @endif"
                                     id="dash-tab" data-bs-toggle="tab" data-bs-target="#dash" type="button"
-                                    onclick="disableTabs()">
+                                    onclick="showTabContent(event, 'dash')">
                                     <i class="fas fa-tachometer-alt"></i> <b>Painel de Controle</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'profile') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'profile')) active @endif"
                                     id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
-                                    onclick="disableTabs()">
+                                    onclick="showTabContent(event, 'profile')">
                                     <i class="fas fa-user"></i> <b>Perfil</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'endereco') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'endereco')) active @endif"
                                     id="endereco-tab" data-bs-toggle="tab" data-bs-target="#endereco" type="button"
-                                    onclick="disableTabs()">
+                                    onclick="showTabContent(event, 'endereco')">
                                     <i class="fas fa-plus-circle"></i> <b>Cadastrar Endereço</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'order') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'order')) active @endif"
                                     id="order-tab" data-bs-toggle="tab" data-bs-target="#order" type="button"
-                                    onclick="disableTabs()">
+                                    onclick="showTabContent(event, 'order')">
                                     <i class="fas fa-shopping-bag"></i> <b>Pedidos</b>
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'wishlist') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'wishlist')) active @endif"
-                                    id="wishlist-tab" data-bs-toggle="tab" data-bs-target="#wishlist" type="button"
-                                    onclick="disableTabs()">
-                                    <i class="fas fa-heart"></i> <b>Wishlist</b>
                                 </button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'save') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'save')) active @endif"
                                     id="save-tab" data-bs-toggle="tab" data-bs-target="#save" type="button"
-                                    onclick="disableTabs()">
+                                    onclick="showTabContent(event, 'save')">
                                     <i class="fas fa-map-marker-alt"></i> <b>Endereços salvos</b>
                                 </button>
                             </li>
-                            <li class="nav-item">
-                                <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'pay') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'pay')) active @endif"
-                                    id="pay-tab" data-bs-toggle="tab" data-bs-target="#pay" type="button"
-                                    onclick="disableTabs()">
-                                    <i class="fas fa-credit-card"></i> <b>Pagamento</b>
-                                </button>
-                            </li>
+
                             <li class="nav-item">
                                 <button class="nav-link font-light @if ((isset($activeTab) && $activeTab == 'security') || (isset($_GET['activeTab']) && $_GET['activeTab'] == 'security')) active @endif"
                                     id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button"
-                                    onclick="disableTabs()">
+                                    onclick="showTabContent(event, 'security')">
                                     <i class="fas fa-shield-alt"></i> <b>Segurança</b>
                                 </button>
                             </li>
@@ -624,15 +611,6 @@
 
                     </div>
                 </div>
-
-                <script>
-                    function disableTabs() {
-                        const elementos = document.querySelectorAll('#enderecos .active');
-                        elementos.forEach(elemento => {
-                            elemento.classList.replace('active', 'inactive');
-                        });
-                    }
-                </script>
 
                 <div class="col-lg-9">
                     <div class="content-area">
@@ -781,45 +759,6 @@
                                             @endforeach
                                         @endif
                                     @endisset
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="pay">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h3>Cartões & Pagamento</h3>
-                                    <button class="btn btn-solid-default" data-bs-toggle="modal"
-                                        data-bs-target="#addPayment">
-                                        <i class="fas fa-plus"></i> Adicionar Novo Cartão
-                                    </button>
-                                </div>
-
-                                <div class="address-grid">
-                                    <div class="info-card">
-                                        <div class="card-details"
-                                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
-                                            <div class="card-number mb-3">
-                                                <h4>XXXX - XXXX - XXXX - 2548</h4>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-end">
-                                                <div>
-                                                    <small>VÁLIDO ATÉ</small>
-                                                    <h5>12/23</h5>
-                                                </div>
-                                                <div>
-                                                    <h6>mark jecno</h6>
-                                                    <span class="badge bg-light text-dark">Primário</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex gap-2">
-                                            <button class="btn btn-outline flex-fill">
-                                                <i class="far fa-edit"></i> Editar
-                                            </button>
-                                            <button class="btn btn-outline text-danger border-danger">
-                                                <i class="far fa-trash-alt"></i> Deletar
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -1173,6 +1112,31 @@
             }
         });
     });
+</script>
+
+<script>
+    function showTabContent(event, tabId) {
+        // esconde todas as abas
+        const elementosConteudo = document.querySelectorAll('#myTabContent .tab-pane');
+        elementosConteudo.forEach(elemento => {
+            elemento.classList.remove('active', 'show');
+        });
+
+        // desmarca todos os botões
+        const botoesSidebar = document.querySelectorAll('#myTab .nav-link');
+        botoesSidebar.forEach(botao => {
+            botao.classList.remove('active');
+        });
+
+        // ativa só o botão clicado
+        event.currentTarget.classList.add('active');
+
+        // mostra o conteúdo correspondente
+        const tabAtiva = document.getElementById(tabId);
+        if (tabAtiva) {
+            tabAtiva.classList.add('active', 'show');
+        }
+    }
 </script>
 
 <script>

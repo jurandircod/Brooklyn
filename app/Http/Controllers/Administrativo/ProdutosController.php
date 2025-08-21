@@ -167,44 +167,51 @@ class ProdutosController extends Controller
         $produtos = Produto::with(['categoria', 'marca', 'estoque'])
             ->select('produtos.*');
 
-        // Se não vier ordenação do DataTables, força ordenação por ID desc
         if (!$request->has('order') || empty($request->input('order')[0]['dir'])) {
             $produtos->orderBy('id', 'desc');
         }
 
-        return datatables()->eloquent($produtos)
-            ->addColumn('imagem_url', function ($produto) {
-                $path = $produto->imagem_url;
+        // cria uma instância única do datatable
+        $datatable = datatables()->eloquent($produtos);
 
-                if (! $path) {
+        // adiciona colunas de imagens dinamicamente
+        for ($i = 1; $i <= 5; $i++) {
+            $attr = $i == 1 ? 'imagem_url' : 'imagem_url' . $i;
+            $datatable->addColumn($attr, function ($produto) use ($i, $attr) {
+                $path = $produto->$attr;
+                // mapeia para os accessors do model
+                $path = str_replace('\/', '/', $path);
+                if (!$path) {
                     return null;
                 }
 
-                // Se já for URL absoluta, retorna como veio
+                return $path;
+
                 if (filter_var($path, FILTER_VALIDATE_URL)) {
                     return $path;
                 }
 
-                // Normaliza: remove barras iniciais
                 $path = ltrim($path, '/');
 
-                // Se o campo já contém 'uploads/produtos/...' retorna asset direto
-                if (Str::startsWith($path, 'uploads/')) {
+                if (\Illuminate\Support\Str::startsWith($path, 'uploads/')) {
                     return asset($path);
                 }
 
-                // Caso o campo armazene só o nome/filename, monta o path padrão
-                return asset('uploads/produtos/' . $path);
-            })
+            });
+        }
+
+        // adiciona as demais colunas fixas
+        $datatable
             ->addColumn('categoria', fn($produto) => $produto->categoria->nome ?? '')
             ->addColumn('marca', fn($produto) => $produto->marca->nome ?? '')
             ->addColumn('quantidade_total', fn($produto) => $produto->estoque->sum('quantidade'))
-            // devolve draw como inteiro (fallback 0) — opcional, o Yajra normalmente já trata isso
             ->with([
                 'draw' => intval($request->input('draw', 0))
-            ])
-            ->toJson();
+            ]);
+
+        return $datatable->toJson();
     }
+
 
 
 

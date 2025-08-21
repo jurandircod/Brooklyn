@@ -82,7 +82,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="produtoModalLabel">Editar Produto</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close text-white" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -289,6 +289,52 @@
                         </div>
                     </div>
 
+                    <div class="card" id="estoqueCardTenis">
+                        <div class="card-header">
+                            <h3 class="card-title text-white">Estoque</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="">Tamanho 38</label>
+                                        <input type="number" id="38" class="form-control"
+                                            name="38">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidade8">Tamanho 39</label>
+                                        <input type="number" class="form-control" id="39"
+                                            name="39">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidade40">Tamanho 40</label>
+                                        <input type="number" class="form-control" id="40"
+                                            name="40">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidade41">Tamanho 41</label>
+                                        <input type="number" class="form-control" id="41" name="41">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="quantidade42">Tamanho 42</label>
+                                        <input type="number" class="form-control" id="42"
+                                            name="42">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
 
                     <div class="card" id="estoqueCard">
                         <div class="card-header">
@@ -329,7 +375,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                     <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                 </div>
             </form>
@@ -405,7 +451,8 @@
                 if (document.querySelector("#filtroMarca")) {
                     params.append("filtroMarca", document.querySelector("#filtroMarca").value);
                 }
-
+                console.log(params);
+                
                 fetch("/administrativo/produtos/api?" + params.toString())
                     .then(res => res.json())
                     .then(json => callback(json));
@@ -541,9 +588,7 @@
                     const imagemUrl4 = row.imagem_url4 ?? row.imagemUrl4 ?? '';
                     const imagemUrl5 = row.imagem_url5 ?? row.imagemUrl5 ?? '';
                     // possíveis nomes para tamanhos
-                    const tamanho = row.tamanho ?? row.tamanhos ?? row.tamanhoMap ?? row
-                        .tamanho_map ?? [];
-
+                    const tamanho = row.estoque ?? "";
                     // chama a função que preenche o modal (preservando assinatura)
                     // preencherModal(id, nome, valor, material, categoriaId, marcaId, descricao, imagemUrl1, imagemUrl2, ...)
                     if (typeof preencherModal === "function") {
@@ -600,7 +645,7 @@
 
                     if (!confirm(
                             'Deseja realmente excluir este produto? Essa ação não pode ser desfeita.'
-                            )) {
+                        )) {
                         return;
                     }
 
@@ -621,7 +666,7 @@
                             // sucesso -> recarrega tabela
                             if (window.produtosTable && window.produtosTable.ajax &&
                                 typeof window.produtosTable.ajax.reload === "function"
-                                ) {
+                            ) {
                                 window.produtosTable.ajax.reload(null, false);
                             } else if (window.produtosTable && typeof window
                                 .produtosTable.draw === "function") {
@@ -745,6 +790,21 @@
                             case '85':
                                 document.getElementById('quanti85').value = item.quantidade ?? 0;
                                 break;
+                            case '38':
+                                document.getElementById('38').value = item.quantidade ?? 0;
+                                break;
+                            case '39':
+                                document.getElementById('39').value = item.quantidade ?? 0;
+                                break;
+                            case '40':
+                                document.getElementById('40').value = item.quantidade ?? 0;
+                                break;
+                            case '41':
+                                document.getElementById('41').value = item.quantidade ?? 0;
+                                break;
+                            case '42':
+                                document.getElementById('42').value = item.quantidade ?? 0;
+                                break;
                         }
                     }
                 });
@@ -759,18 +819,22 @@
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'block';
             document.getElementById('estoqueProd').style.display = 'none';
+            document.getElementById('estoqueCardTenis').style.display = 'none';
         } else if (categoriaId == 1) { // Camisetas
             document.getElementById('estoqueCard').style.display = 'block';
             document.getElementById('estoqueCardSkt').style.display = 'none';
             document.getElementById('estoqueProd').style.display = 'none';
+            document.getElementById('estoqueCardTenis').style.display = 'none';
         } else if (categoriaId == 3) { // Outros sem tamanho
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'none';
-            document.getElementById('estoqueProd').style.display = 'block';
+            document.getElementById('estoqueProd').style.display = 'none';
+            document.getElementById('estoqueCardTenis').style.display = 'block';
         } else { // Outras categorias
             document.getElementById('estoqueProd').style.display = 'block';
             document.getElementById('estoqueCard').style.display = 'none';
             document.getElementById('estoqueCardSkt').style.display = 'none';
+            document.getElementById('estoqueCardTenis').style.display = 'none';
         }
     }
 

@@ -35,6 +35,11 @@
     <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <link rel="shortcut icon" href="{{ asset('dist/img/favicon.ico') }}">
+    <script>
+        window.defaultImage = "{{ asset('uploads/produtos/padrao/1.gif') }}";
+    </script>
+    <link rel="stylesheet" href="{{ asset('css/site/produtos/customize.css') }}">
+
 
     <!-- Bootstrap 5 (mantenha ou remova dependendo da necessidade de compatibilidade) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -61,19 +66,19 @@
     </div>
 
     <!-- SCRIPTS - ORDEM CORRIGIDA -->
-    
+
     <!-- 1. jQuery (PRIMEIRO - obrigatório para todos os plugins) -->
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
-    
+
     <!-- 2. jQuery UI (necessário para sortable e outros componentes) -->
     <script src="{{ asset('plugins/jquery-ui/jquery-ui.min.js') }}"></script>
-    
+
     <!-- 3. Bootstrap 4 -->
     <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    
+
     <!-- 4. Moment.js (para daterangepicker) -->
     <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
-    
+
     <!-- 5. Plugins diversos (que dependem de jQuery) -->
     <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
     <script src="{{ asset('plugins/sparklines/sparkline.js') }}"></script>
@@ -84,7 +89,7 @@
     <script src="{{ asset('plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
     <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
     <script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
-    
+
     <!-- 6. DataTables & Plugins (dependem de jQuery) -->
     <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -98,15 +103,20 @@
     <script src="{{ asset('plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
-    
+
+
+    <!-- 6. DataTables & Plugins (dependem de jQuery) -->
+    <script src="{{ asset('js/administrativo/produto/listProdutos.js') }}"></script>
     <!-- 7. AdminLTE -->
     <script src="{{ asset('dist/js/adminlte.js') }}"></script>
-    
+
     <!-- 8. Bootstrap 5 (se realmente necessário - pode conflitar com Bootstrap 4) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
+
     <!-- 9. Seus scripts personalizados (POR ÚLTIMO) -->
     <script src="{{ asset('dist/js/pages/dashboard.js') }}"></script>
 
 </body>
+
 </html>

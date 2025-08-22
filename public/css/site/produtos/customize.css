@@ -1,0 +1,131 @@
+
+    .imagem-container {
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .imagem-preview {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #f8f9fa;
+    }
+
+    .imagem-preview:hover {
+        border-color: #007bff;
+        opacity: 0.8;
+    }
+
+    .input-file-hidden {
+        display: none;
+    }
+
+    .btn-trocar-imagem {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 3px 6px;
+        font-size: 11px;
+        cursor: pointer;
+    }
+
+    .btn-trocar-imagem:hover {
+        background: rgba(0, 0, 0, 0.9);
+    }
+
+    .imagem-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+        font-size: 12px;
+    }
+
+    
+    .btn-group-sm>.btn,
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 0.25rem;
+    }
+
+    .img-thumbnail {
+        border-radius: 0.375rem;
+    }
+
+    .badge {
+        font-size: 0.75em;
+    }
+
+    .card-tools .row {
+        margin-right: -5px;
+        margin-left: -5px;
+    }
+
+    .card-tools .col-md-3 {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+
+    /* Loading overlay para DataTables */
+    .dataTables_processing {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: auto !important;
+        margin: 0 !important;
+        padding: 1rem 2rem !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.375rem !important;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+    }
+
+    /* Responsividade da tabela */
+    @media (max-width: 768px) {
+        .btn-group-sm>.btn {
+            padding: 0.125rem 0.25rem;
+            font-size: 0.675rem;
+        }
+
+        .card-tools .row {
+            flex-direction: column;
+        }
+
+        .card-tools .col-md-3 {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* Melhorias visuais */
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #e3e6f0;
+    }
+
+    .table thead th {
+        background-color: #f8f9fc;
+        border-bottom: 2px solid #e3e6f0;
+        font-weight: 600;
+        color: #5a5c69;
+    }
+
+    .badge-success {
+        background-color: #1cc88a;
+    }
+
+    .badge-warning {
+        background-color: #f6c23e;
+    }
+
+    .badge-danger {
+        background-color: #e74a3b;
+    }

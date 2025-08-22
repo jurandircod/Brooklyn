@@ -74,14 +74,6 @@ class ProdutosController extends Controller
         $produtos = $this->myProductsPaginated($perPage, $search, $categoria, $marca, $orderBy, $orderDirection);
 
         // Se for uma requisição AJAX (para DataTables), retornar JSON
-        if ($request->ajax()) {
-            return response()->json([
-                'draw' => intval($request->get('draw')),
-                'recordsTotal' => $produtos->total(),
-                'recordsFiltered' => $produtos->total(),
-                'data' => $produtos->items()
-            ]);
-        }
 
         // Retornar view normal
         return view('administrativo.produto', [
@@ -167,13 +159,30 @@ class ProdutosController extends Controller
         $produtos = Produto::with(['categoria', 'marca', 'estoque'])
             ->select('produtos.*');
 
+
         if (!$request->has('order') || empty($request->input('order')[0]['dir'])) {
             $produtos->orderBy('id', 'desc');
         }
 
+        if($request->has('search')) {
+            $produtos->where(function ($query) use ($request) {
+                $query->where('nome', 'LIKE', "%{$request->search}%")
+                    ->orWhere('material', 'LIKE', "%{$request->search}%")
+                    ->orWhere('descricao', 'LIKE', "%{$request->search}%");
+            });
+        }
+
+        if($request->has('filtroCategoria') and $request->filtroCategoria != 0) {
+            $produtos->where('categoria_id', $request->filtroCategoria);
+        }
+
+
+        if($request->has('filtroMarca') and $request->filtroMarca != 0) {
+            $produtos->where('marca_id', $request->filtroMarca);
+        }
         // cria uma instância única do datatable
         $datatable = datatables()->eloquent($produtos);
-
+        
         // adiciona colunas de imagens dinamicamente
         for ($i = 1; $i <= 5; $i++) {
             $attr = $i == 1 ? 'imagem_url' : 'imagem_url' . $i;
@@ -184,7 +193,7 @@ class ProdutosController extends Controller
                 if (!$path) {
                     return null;
                 }
-
+                
                 return $path;
 
                 if (filter_var($path, FILTER_VALIDATE_URL)) {
@@ -196,23 +205,21 @@ class ProdutosController extends Controller
                 if (\Illuminate\Support\Str::startsWith($path, 'uploads/')) {
                     return asset($path);
                 }
-
             });
         }
-
+        
         // adiciona as demais colunas fixas
         $datatable
-            ->addColumn('categoria', fn($produto) => $produto->categoria->nome ?? '')
-            ->addColumn('marca', fn($produto) => $produto->marca->nome ?? '')
-            ->addColumn('quantidade_total', fn($produto) => $produto->estoque->sum('quantidade'))
-            ->with([
-                'draw' => intval($request->input('draw', 0))
-            ]);
-
+        ->addColumn('categoria', fn($produto) => $produto->categoria->nome ?? '')
+        ->addColumn('marca', fn($produto) => $produto->marca->nome ?? '')
+        ->addColumn('quantidade_total', fn($produto) => $produto->estoque->sum('quantidade'))
+        ->with([
+            'draw' => intval($request->input('draw', 0))
+        ]);
         return $datatable->toJson();
     }
-
-
+    
+    
 
 
     /**

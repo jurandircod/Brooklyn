@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\model\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
 use App\Http\Controllers\ExistenciaController;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\File;
@@ -51,7 +52,6 @@ class ProdutosController extends Controller
     {
         $this->marcas = Marca::all();
         $this->categorias = Categoria::all();
-        $this->estoques = Estoque::all();
     }
 
     /**
@@ -75,12 +75,16 @@ class ProdutosController extends Controller
 
         // Se for uma requisição AJAX (para DataTables), retornar JSON
 
+        foreach ($produtos as $produto) {
+            $estoques[] = $produto->estoque;
+        }
+
         // Retornar view normal
         return view('administrativo.produto', [
             'produtos' => $produtos,
             'categorias' => $this->categorias,
             'marcas' => $this->marcas,
-            'estoques' => $this->estoques,
+            'estoques' => $estoques,
             'currentSearch' => $search,
             'currentCategoria' => $categoria,
             'currentMarca' => $marca,
@@ -159,12 +163,11 @@ class ProdutosController extends Controller
         $produtos = Produto::with(['categoria', 'marca', 'estoque'])
             ->select('produtos.*');
 
-
         if (!$request->has('order') || empty($request->input('order')[0]['dir'])) {
             $produtos->orderBy('id', 'desc');
         }
 
-        if($request->has('search')) {
+        if ($request->has('search')) {
             $produtos->where(function ($query) use ($request) {
                 $query->where('nome', 'LIKE', "%{$request->search}%")
                     ->orWhere('material', 'LIKE', "%{$request->search}%")
@@ -172,54 +175,54 @@ class ProdutosController extends Controller
             });
         }
 
-        if($request->has('filtroCategoria') and $request->filtroCategoria != 0) {
+        if ($request->has('filtroCategoria') and $request->filtroCategoria != 0) {
             $produtos->where('categoria_id', $request->filtroCategoria);
         }
 
-
-        if($request->has('filtroMarca') and $request->filtroMarca != 0) {
+        if ($request->has('filtroMarca') and $request->filtroMarca != 0) {
             $produtos->where('marca_id', $request->filtroMarca);
         }
-        // cria uma instância única do datatable
+
         $datatable = datatables()->eloquent($produtos);
-        
-        // adiciona colunas de imagens dinamicamente
+
+        // gera thumbs on the fly
         for ($i = 1; $i <= 5; $i++) {
             $attr = $i == 1 ? 'imagem_url' : 'imagem_url' . $i;
-            $datatable->addColumn($attr, function ($produto) use ($i, $attr) {
-                $path = $produto->$attr;
-                // mapeia para os accessors do model
-                $path = str_replace('\/', '/', $path);
-                if (!$path) {
+
+            $datatable->addColumn($attr . '_thumb', function ($produto) use ($attr) {
+                $path = public_path($produto->$attr);
+
+                if (!$produto->$attr || !file_exists($path)) {
                     return null;
                 }
-                
-                return $path;
 
-                if (filter_var($path, FILTER_VALIDATE_URL)) {
-                    return $path;
-                }
-
-                $path = ltrim($path, '/');
-
-                if (\Illuminate\Support\Str::startsWith($path, 'uploads/')) {
-                    return asset($path);
+                try {
+                    // gera versão pequena base64
+                    $img = Image::make($path)->fit(50, 50)->encode('data-url');
+                    return $img; // exemplo: data:image/jpeg;base64,...
+                } catch (\Exception $e) {
+                    return asset($produto->$attr); // fallback original
                 }
             });
+
+            // mantém o original também
+            $datatable->addColumn($attr, function ($produto) use ($attr) {
+                return $produto->$attr ? asset($produto->$attr) : null;
+            });
         }
-        
-        // adiciona as demais colunas fixas
+
         $datatable
-        ->addColumn('categoria', fn($produto) => $produto->categoria->nome ?? '')
-        ->addColumn('marca', fn($produto) => $produto->marca->nome ?? '')
-        ->addColumn('quantidade_total', fn($produto) => $produto->estoque->sum('quantidade'))
-        ->with([
-            'draw' => intval($request->input('draw', 0))
-        ]);
+            ->addColumn('categoria', fn($produto) => $produto->categoria->nome ?? '')
+            ->addColumn('marca', fn($produto) => $produto->marca->nome ?? '')
+            ->addColumn('quantidade_total', fn($produto) => $produto->estoque->sum('quantidade'))
+            ->with([
+                'draw' => intval($request->input('draw', 0))
+            ]);
+
         return $datatable->toJson();
     }
-    
-    
+
+
 
 
     /**
@@ -499,28 +502,34 @@ class ProdutosController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function excluir(Request $request)
+    public function excluir($id)
     {
         try {
-            $id = $request->input('produto_id');
+            // Remove esta linha pois o ID já vem pelo parâmetro da rota
+            // $id = $request->input('produto_id');
+
             $this->validateProductId($id);
 
             $produto = Produto::findOrFail($id);
 
             if (ItemCarrinho::where('produto_id', $id)->exists()) {
-                return $this->redirectWithError(
-                    'Erro ao excluir produto, já está em um carrinho, DESATIVE O PRODUTO',
-                    'Exclusão',
-                    'error'
-                );
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erro ao excluir produto, já está em um carrinho, DESATIVE O PRODUTO'
+                ], 422);
             }
 
             $this->deleteProductWithDependencies($produto);
 
-            Alert::success('Exclusão', 'Imagens excluídas com sucesso');
-            return redirect()->route('administrativo.produtos', ['produtos' => $this->produtos]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Produto excluído com sucesso'
+            ]);
         } catch (Exception $e) {
-            return $this->redirectWithError($e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 

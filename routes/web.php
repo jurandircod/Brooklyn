@@ -22,7 +22,6 @@ use App\Http\Controllers\Administrativo\{PrincipalController, VendasController, 
 */
 
 Route::prefix('administrativo')->middleware(['auth'])->group(function () {
-
     // Rota principal com suporte a paginação
     Route::get('/produtos', [ProdutosController::class, 'index'])
         ->name('administrativo.produtos');
@@ -46,7 +45,7 @@ Route::prefix('administrativo')->middleware(['auth'])->group(function () {
     Route::post('/produto/atualizar', [ProdutosController::class, 'atualizar'])
         ->name('administrativo.produto.atualizar');
 
-    Route::post('/produto/excluir', [ProdutosController::class, 'excluir'])
+    Route::delete('/produto/excluir/{id}', [ProdutosController::class, 'excluir'])
         ->name('administrativo.produto.excluir');
 });
 
@@ -170,7 +169,6 @@ Route::group(['prefix' => 'administrativo', 'middleware' => ['auth', 'admin']], 
         Route::post('/excluir/categoria', [CategoriaController::class, 'excluirCategoria'])->name('administrativo.produto.categoria.excluir');
         Route::post('/salvar', [ProdutosController::class, 'salvarProduto'])->name('administrativo.produto.salvar');
         Route::post('/enviaFormAlterar', [ProdutosController::class, 'atualizar'])->name('administrativo.produto.atualizar');
-        Route::post('/excluir', [ProdutosController::class, 'excluir'])->name('administrativo.produto.excluir');
         Route::get('/administrativo/produtos/{id}/dados', [ProdutosController::class, 'obterDadosProduto'])
             ->name('administrativo.produto.dados')->middleware(['auth', 'admin']);
     });

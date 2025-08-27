@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Cria a tabela e guarda referência global para uso em attachModalEvents
     window.produtosTable = new DataTable("#produtosTable", {
         processing: true,
         serverSide: true,
         ajax: function (data, callback, settings) {
+
             const params = new URLSearchParams();
             params.append("draw", data.draw);
             params.append("start", data.start);
@@ -26,46 +26,29 @@ document.addEventListener("DOMContentLoaded", function () {
             fetch("/administrativo/produtos/api?" + params.toString())
                 .then(res => res.json())
                 .then(json => callback(json));
+
         },
-        columns: [{
-            data: "imagem_url",
-            render: function (data) {
-                if (!data) return "";
-                const src = data.replace(/(https?:\/\/[^\/]+\/uploads\/produtos\/)+/,
-                    "$1");
-                return `<img src="${src}" width="50" />`;
+        columns: [
+            {
+                data: "imagem_url",
+                render: function (data) {
+                    if (!data) return "";
+                    return `<img src="${data}" width="50" height="50" 
+                        style="object-fit:cover;border-radius:4px;" />`;
+                }
             },
-            orderable: false,
-            searchable: false
-        },
-        {
-            data: "nome"
-        },
-        {
-            data: "valor"
-        },
-        {
-            data: "material"
-        },
-        {
-            data: "quantidade_total"
-        }, // Estoque
-        {
-            data: "categoria"
-        },
-        {
-            data: "marca"
-        },
-        {
-            data: "descricao"
-        },
-        {
-            data: "id",
-            render: function (data, type, row) {
-                // codifica o objeto row para um atributo data-row (seguro)
-                const payload = encodeURIComponent(JSON.stringify(row));
-                // botões: Alterar (warning) e Excluir (danger)
-                return `
+            { data: "nome" },
+            { data: "valor" },
+            { data: "material" },
+            { data: "quantidade_total" },
+            { data: "categoria" },
+            { data: "marca" },
+            { data: "descricao" },
+            {
+                data: "id",
+                render: function (data, type, row) {
+                    const payload = encodeURIComponent(JSON.stringify(row));
+                    return `
                         <button type="button" class="btn btn-sm btn-warning mt-1 btn-edit" data-row="${payload}">
                             Alterar
                         </button>
@@ -73,223 +56,80 @@ document.addEventListener("DOMContentLoaded", function () {
                             Excluir
                         </button>
                     `;
-            },
-            orderable: false,
-            searchable: false
-        }
-        ],
-        drawCallback: function () {
-            attachModalEvents(); // reaplica listeners
-        }
-    });
-
-    // Filtros
-    document.querySelectorAll("#filtroCategoria, #filtroMarca").forEach(el => {
-        el.addEventListener("change", () => {
-            // tenta usar API do DataTable; fallback para reload da página
-            if (window.produtosTable && typeof window.produtosTable.draw === "function") {
-                window.produtosTable.draw();
-            } else {
-                location.reload();
+                },
+                orderable: false,
+                searchable: false
             }
-        });
+        ]
     });
 
-    document.querySelector("#btnLimparFiltros").addEventListener("click", () => {
-        if (document.querySelector("#filtroCategoria")) document.querySelector("#filtroCategoria")
-            .value = "";
-        if (document.querySelector("#filtroMarca")) document.querySelector("#filtroMarca").value =
-            "";
-        if (window.produtosTable && typeof window.produtosTable.draw === "function") {
-            window.produtosTable.draw();
-        } else {
-            location.reload();
+    // ✅ Delegação de eventos (não precisa redraw)
+    document.querySelector("#produtosTable tbody").addEventListener("click", function (e) {
+        const editBtn = e.target.closest(".btn-edit");
+        const deleteBtn = e.target.closest(".btn-delete");
+
+        if (editBtn) {
+            const encoded = editBtn.getAttribute("data-row");
+            if (!encoded) return;
+            let row;
+            try {
+                row = JSON.parse(decodeURIComponent(encoded));
+            } catch (err) {
+                console.error("Erro ao parsear data-row", err);
+                return;
+            }
+
+            // chama preencherModal
+            if (typeof preencherModal === "function") {
+                preencherModal(
+                    row.id ?? null,
+                    row.nome ?? "",
+                    row.valor ?? "",
+                    row.material ?? "",
+                    row.categoria_id ?? null,
+                    row.marca_id ?? null,
+                    row.descricao ?? "",
+                    row.imagem_url ?? "",
+                    row.imagem_url2 ?? "",
+                    row.imagem_url3 ?? "",
+                    row.imagem_url4 ?? "",
+                    row.imagem_url5 ?? "",
+                    row.estoque ?? ""
+                );
+            }
+
+            // abre modal
+            const modalEl = document.getElementById("produtoModal");
+            if (modalEl && typeof bootstrap !== "undefined" && bootstrap.Modal) {
+                new bootstrap.Modal(modalEl).show();
+            }
+        }
+
+        if (deleteBtn) {
+            const id = deleteBtn.getAttribute("data-id");
+            if (!id) return;
+            if (!confirm("Deseja realmente excluir este produto?")) return;
+
+            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrf = tokenMeta ? tokenMeta.getAttribute("content") : null;
+
+            fetch(`/administrativo/produto/excluir/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(csrf ? { "X-CSRF-TOKEN": csrf } : {})
+                }
+            }).then(r => {
+                if (r.ok) {
+                    window.produtosTable.ajax.reload(null, false);
+                } else {
+                    alert("Falha ao excluir produto.");
+                }
+            });
         }
     });
-
-    // refresh manual
-    window.refreshTable = function () {
-        if (window.produtosTable && window.produtosTable.ajax && typeof window.produtosTable.ajax
-            .reload === "function") {
-            window.produtosTable.ajax.reload(null, false);
-        } else if (window.produtosTable && typeof window.produtosTable.draw === "function") {
-            window.produtosTable.draw();
-        } else {
-            location.reload();
-        }
-        atualizarEstatisticas();
-    };
-
-    // Implementação de attachModalEvents
-    function attachModalEvents() {
-        // remover listeners antigos para evitar duplicação
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.replaceWith(btn.cloneNode(true));
-        });
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.replaceWith(btn.cloneNode(true));
-        });
-
-        // re-seleciona após clone
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                const encoded = this.getAttribute('data-row');
-                if (!encoded) return;
-                let row;
-                try {
-                    row = JSON.parse(decodeURIComponent(encoded));
-                } catch (err) {
-                    console.error('Erro ao parsear data-row', err);
-                    return;
-                }
-
-                // tenta obter campos com nomes alternativos (para compatibilidade)
-                const id = row.id ?? row.produto_id ?? null;
-                const nome = row.nome ?? row.title ?? '';
-                const valor = row.valor ?? row.price ?? '';
-                const material = row.material ?? '';
-                const categoriaId = row.categoria_id ?? row.categoriaId ?? row.categoria ??
-                    null;
-                const marcaId = row.marca_id ?? row.marcaId ?? row.marca ?? null;
-                const descricao = row.descricao ?? row.description ?? '';
-                const imagemUrl = row.imagem_url ?? row.imagemUrl ?? row.imagem ?? '';
-                const imagemUrl2 = row.imagem_url2 ?? row.imagemUrl2 ?? '';
-                const imagemUrl3 = row.imagem_url3 ?? row.imagemUrl3 ?? '';
-                const imagemUrl4 = row.imagem_url4 ?? row.imagemUrl4 ?? '';
-                const imagemUrl5 = row.imagem_url5 ?? row.imagemUrl5 ?? '';
-                // possíveis nomes para tamanhos
-                const tamanho = row.estoque ?? "";
-                // chama a função que preenche o modal (preservando assinatura)
-                // preencherModal(id, nome, valor, material, categoriaId, marcaId, descricao, imagemUrl1, imagemUrl2, ...)
-                if (typeof preencherModal === "function") {
-                    preencherModal(
-                        id,
-                        nome,
-                        valor,
-                        material,
-                        categoriaId,
-                        marcaId,
-                        descricao,
-                        imagemUrl,
-                        imagemUrl2,
-                        imagemUrl3,
-                        imagemUrl4,
-                        imagemUrl5,
-                        tamanho
-                    );
-                } else {
-                    console.warn("preencherModal não encontrado.");
-                }
-
-                // Abrir modal usando API do Bootstrap 5 (sem jQuery). Se não existir, tenta fallback BS4/jQuery.
-                const modalEl = document.getElementById('produtoModal');
-                if (!modalEl) {
-                    console.warn("Modal #produtoModal não encontrado no DOM.");
-                    return;
-                }
-
-                if (typeof bootstrap !== "undefined" && bootstrap.Modal) {
-                    try {
-                        const modal = new bootstrap.Modal(modalEl);
-                        modal.show();
-                    } catch (err) {
-                        console.error('Erro ao abrir modal via bootstrap.Modal', err);
-                    }
-                } else if (window.$ && typeof window.$(modalEl).modal === "function") {
-                    // fallback para Bootstrap 4 com jQuery disponível
-                    window.$(modalEl).modal('show');
-                } else {
-                    // fallback simples (apenas visibilidade) - talvez não tenha animações/ backdrop
-                    modalEl.classList.add('show');
-                    modalEl.style.display = 'block';
-                    modalEl.removeAttribute('aria-hidden');
-                }
-            });
-        });
-
-        // delete
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                const id = this.getAttribute('data-id');
-                if (!id) return;
-
-                if (!confirm(
-                    'Deseja realmente excluir este produto? Essa ação não pode ser desfeita.'
-                )) {
-                    return;
-                }
-
-                // procura token CSRF em meta (Laravel padrão)
-                const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-                const csrf = tokenMeta ? tokenMeta.getAttribute('content') : null;
-
-                fetch(`/administrativo/produtos/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...(csrf ? {
-                            'X-CSRF-TOKEN': csrf
-                        } : {})
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        // sucesso -> recarrega tabela
-                        if (window.produtosTable && window.produtosTable.ajax &&
-                            typeof window.produtosTable.ajax.reload === "function"
-                        ) {
-                            window.produtosTable.ajax.reload(null, false);
-                        } else if (window.produtosTable && typeof window
-                            .produtosTable.draw === "function") {
-                            window.produtosTable.draw();
-                        } else {
-                            location.reload();
-                        }
-                    } else {
-                        response.json().then(j => {
-                            alert(j.message ||
-                                'Falha ao excluir o produto.');
-                        }).catch(() => {
-                            alert('Falha ao excluir o produto.');
-                        });
-                    }
-                }).catch(err => {
-                    console.error(err);
-                    alert('Erro na requisição de exclusão.');
-                });
-            });
-        });
-    }
-
-    // chama a primeira vez (já será chamada nas drawCallbacks também)
-    attachModalEvents();
-
-    // Atualizar estatísticas sem jQuery
-    function atualizarEstatisticas() {
-        const params = new URLSearchParams({
-            length: -1,
-            draw: 1
-        });
-        fetch("{{ route('administrativo.produtos.api') }}?" + params.toString())
-            .then(res => res.json())
-            .then(response => {
-                const totalProdutos = response.recordsTotal ?? 0;
-                const produtosSemEstoque = Array.isArray(response.data) ? response.data.filter(item => (
-                    item.quantidade_total == 0)).length : 0;
-
-                const elTotal = document.getElementById('totalProdutos');
-                const elSem = document.getElementById('produtosSemEstoque');
-                const elCom = document.getElementById('produtosComEstoque');
-
-                if (elTotal) elTotal.textContent = totalProdutos;
-                if (elSem) elSem.textContent = produtosSemEstoque;
-                if (elCom) elCom.textContent = (totalProdutos - produtosSemEstoque);
-            })
-            .catch(err => console.error('Erro atualizarEstatisticas:', err));
-    }
-
-    // atualizar periodicamente
-    setInterval(atualizarEstatisticas, 300000);
 });
+
 
 
 // Suas funções existentes permanecem as mesmas
@@ -419,40 +259,41 @@ function getPureFileName(filePath) {
     return match ? parseInt(match[1]) : null;
 }
 
-function carregarImagensExistentes(img1, img2, img3, img4, img5) {
-    const imagens = [img1, img2, img3, img4, img5];
+function carregarImagensExistentes(...imgs) {
     const defaultImage = window.defaultImage;
-
-    console.log(defaultImage);
-    // Limpar todas as prévias primeiro
+    // Limpa previews só se não tiver imagem
     for (let i = 1; i <= 5; i++) {
-        document.getElementById(`preview-${i}`).src = defaultImage;
-        document.getElementById(`deleteImage-${i}`).checked = false;
+        const preview = document.getElementById(`preview-${i}`);
+        const del = document.getElementById(`deleteImage-${i}`);
+        preview.src = defaultImage;
+        del.checked = false;
     }
 
-    // Carregar imagens existentes
-    imagens.forEach((url, index) => {
-        if (url && url !== '') {
-            const numero = getPureFileName(url);
-            if (numero && numero >= 1 && numero <= 5) {
-                document.getElementById(`preview-${numero}`).src = url;
-                document.getElementById(`deleteImage-${numero}`).checked = false;
+    imgs.forEach((url, idx) => {
+        if (url) {
+            const numero = getPureFileName(url) || (idx + 1);
+            const preview = document.getElementById(`preview-${numero}`);
+            if (preview) {
+                preview.loading = "lazy";
+                preview.decoding = "async";
+                preview.src = url;
             }
         }
     });
 }
 
+
 function previewImagem(input, numeroImagem) {
-    if (input.files && input.files[0]) {
+    if (input.files?.[0]) {
+        const preview = document.getElementById(`preview-${numeroImagem}`);
         const reader = new FileReader();
-
-        reader.onload = function (e) {
-            document.getElementById(`preview-${numeroImagem}`).src = e.target.result;
-        }
-
+        reader.onload = e => requestAnimationFrame(() => {
+            preview.src = e.target.result;
+        });
         reader.readAsDataURL(input.files[0]);
     }
 }
+
 
 // Função para atualizar estatísticas em tempo real
 function atualizarEstatisticas() {

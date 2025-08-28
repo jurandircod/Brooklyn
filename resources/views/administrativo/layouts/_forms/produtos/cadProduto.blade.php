@@ -142,9 +142,9 @@
                                     <label for="inputGroupFile02" class="form-label">Imagens do Produto <span
                                             style="color: red">*</span></label>
                                     <input type="file" class="form-control" id="inputGroupFile02" name="url_imagem[]"
-                                        multiple accept="image/png, image/jpeg, image/jpg"
-                                        value="{{ old('url_imagem[]') }}" onchange="verificarLimiteFotos()">
-                                    @error('url_imagem')
+                                        multiple accept="image/png,image/jpeg,image/jpg"
+                                        onchange="verificarLimiteFotos()">
+                                    @error('url_imagem.*')
                                         <span class="invalid-feedback d-block"
                                             style="color: red">{{ $message }}</span>
                                     @enderror
@@ -175,10 +175,9 @@
                                                     class="form-label">Quantidade em Estoque Tamanho
                                                     {{ $size }}</label>
                                                 <input type="number" class="form-control"
-                                                    id="quantidade{{ $size }}"
-                                                    name="{{$size }}"
-                                                    value="{{ old($size) }}"
-                                                    placeholder="Digite a quantidade" min="0" disabled>
+                                                    id="quantidade{{ $size }}" name="{{ $size }}"
+                                                    value="{{ old($size) }}" placeholder="Digite a quantidade"
+                                                    min="0" disabled>
                                             </div>
                                         @endforeach
                                     </div>
@@ -201,10 +200,9 @@
                                                     class="form-label">Quantidade em Estoque Tamanho
                                                     {{ $size }}</label>
                                                 <input type="number" class="form-control"
-                                                    id="quantidade{{ $size }}"
-                                                    name="{{ $size }}"
-                                                    value="{{ old($size) }}"
-                                                    placeholder="Digite a quantidade" min="0" disabled>
+                                                    id="quantidade{{ $size }}" name="{{ $size }}"
+                                                    value="{{ old($size) }}" placeholder="Digite a quantidade"
+                                                    min="0" disabled>
                                             </div>
                                         @endforeach
                                     </div>
@@ -227,10 +225,9 @@
                                                     class="form-label">Quantidade em Estoque Tamanho
                                                     {{ $size }}</label>
                                                 <input type="number" class="form-control"
-                                                    id="quantidade{{ $size }}"
-                                                    name="{{ $size }}"
-                                                    value="{{ old($size) }}"
-                                                    placeholder="Digite a quantidade" min="0" disabled>
+                                                    id="quantidade{{ $size }}" name="{{ $size }}"
+                                                    value="{{ old($size) }}" placeholder="Digite a quantidade"
+                                                    min="0" disabled>
                                             </div>
                                         @endforeach
                                     </div>

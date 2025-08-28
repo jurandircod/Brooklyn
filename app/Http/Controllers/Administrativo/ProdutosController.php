@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\model\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
-use App\Http\Controllers\ExistenciaController;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Class ProdutosController
@@ -74,10 +74,15 @@ class ProdutosController extends Controller
         $produtos = $this->myProductsPaginated($perPage, $search, $categoria, $marca, $orderBy, $orderDirection);
 
         // Se for uma requisição AJAX (para DataTables), retornar JSON
-
+        $estoques = [];
         foreach ($produtos as $produto) {
-            $estoques[] = $produto->estoque;
+            if ($produto->estoque->count() > 0) {
+                $estoques[] = $produto->estoque;
+            } else {
+                $estoques[] = 0;
+            }
         }
+
 
         // Retornar view normal
         return view('administrativo.produto', [
@@ -188,29 +193,11 @@ class ProdutosController extends Controller
         // gera thumbs on the fly
         for ($i = 1; $i <= 5; $i++) {
             $attr = $i == 1 ? 'imagem_url' : 'imagem_url' . $i;
-
-            $datatable->addColumn($attr . '_thumb', function ($produto) use ($attr) {
-                $path = public_path($produto->$attr);
-
-                if (!$produto->$attr || !file_exists($path)) {
-                    return null;
-                }
-
-                try {
-                    // gera versão pequena base64
-                    $img = Image::make($path)->fit(50, 50)->encode('data-url');
-                    return $img; // exemplo: data:image/jpeg;base64,...
-                } catch (\Exception $e) {
-                    return asset($produto->$attr); // fallback original
-                }
-            });
-
-            // mantém o original também
             $datatable->addColumn($attr, function ($produto) use ($attr) {
                 return $produto->$attr ? asset($produto->$attr) : null;
+                //mantém o original também
             });
         }
-
         $datatable
             ->addColumn('categoria', fn($produto) => $produto->categoria->nome ?? '')
             ->addColumn('marca', fn($produto) => $produto->marca->nome ?? '')
@@ -218,7 +205,6 @@ class ProdutosController extends Controller
             ->with([
                 'draw' => intval($request->input('draw', 0))
             ]);
-
         return $datatable->toJson();
     }
 
@@ -305,7 +291,8 @@ class ProdutosController extends Controller
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
             'valor' => 'required|min:0.01',
-            'url_imagem' => 'required|array|min:1',
+            'url_imagem' => 'required|array|min:1', // Garante que pelo menos 1 arquivo foi enviado
+            'url_imagem.*' => 'file|mimes:jpeg,png,jpg,gif|max:20480' // Valida cada arquivo
         ], [
             'valor.integer' => 'O campo valor deve ser um número inteiro',
             'url_imagem.required' => 'O campo imagem é obrigatório',
@@ -337,9 +324,7 @@ class ProdutosController extends Controller
     public function salvarProduto(Request $request)
     {
         $data = $request->all();
-
         $validator = $this->validarInput($data);
-
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
@@ -440,16 +425,8 @@ class ProdutosController extends Controller
         }
     }
 
-
     /**
-     * Cria um objeto skate de estoque a partir dos dados do produto.
-     *
-     * @param array $data
-     * @return Estoque
-     */
-
-    /**
-     * Faz o upload das imagens para o diretório especificado.
+     * Faz o upload e otimização das imagens para o diretório especificado.
      *
      * @param string $destinationPath
      * @return array
@@ -457,29 +434,211 @@ class ProdutosController extends Controller
     protected function uploadImages(string $destinationPath): array
     {
         $uploadedPaths = [];
-
         $i = 1;
-        foreach ($_FILES['url_imagem']['tmp_name'] ?? [] as $index => $tmpName) {
+
+        // Garante que existam arquivos
+        if (!isset($_FILES['url_imagem']) || !is_array($_FILES['url_imagem']['tmp_name'])) {
+            return $uploadedPaths;
+        }
+
+        // Cria pasta se necessário
+        $this->createFolder($destinationPath);
+
+        $count = count($_FILES['url_imagem']['tmp_name']);
+        for ($index = 0; $index < $count; $index++) {
             if ($_FILES['url_imagem']['error'][$index] !== UPLOAD_ERR_OK) {
                 continue;
             }
 
-            $url = basename($_FILES['url_imagem']['name'][$index]);
-            $extension = pathinfo($url, PATHINFO_EXTENSION);
+            $tmpName = $_FILES['url_imagem']['tmp_name'][$index];
+            $originalName = basename($_FILES['url_imagem']['name'][$index]);
+            $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
-            $fileName = pathinfo($url, PATHINFO_FILENAME);
-            $extension  = strtolower($extension);
+            // Salva como WebP quando possível (fallback cria jpeg/png se WebP não suportado)
+            $fileName = $i++ . '.webp';
+            $fullPath = rtrim($destinationPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
 
-            $fileName =  $i++ . '.' . $extension;
-            $fullPath = $destinationPath . $fileName;
-
-            if (move_uploaded_file($tmpName, $fullPath)) {
+            $ok = $this->convertToWebp($tmpName, $fullPath, 80);
+            if ($ok && file_exists($fullPath)) {
                 $uploadedPaths[] = $fullPath;
             } else {
-                $this->redirectWithError("Erro ao enviar o arquivo.");
+                Log::warning("Falha ao converter/Salvar imagem: {$originalName} -> {$fullPath}");
             }
         }
+
         return $uploadedPaths;
+    }
+
+    /**
+     * Converte imagem para WebP (tenta usar Intervention; se falhar, usa fallback GD)
+     *
+     * @param string $originalPath
+     * @param string $webpPath
+     * @param int $quality
+     * @return bool
+     */
+    protected function convertToWebp(string $originalPath, string $webpPath, int $quality = 80)
+    {
+        try {
+            ini_set('memory_limit', '512M');
+            // Usa Intervention Image (Facade)
+            $image = Image::make($originalPath);
+            $image->orientate(); // corrige orientação EXIF
+            $image->resize(1200, 1200, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+
+            // garante diretório
+            $dir = dirname($webpPath);
+            if (!file_exists($dir)) {
+                mkdir($dir, 0755, true);
+            }
+
+            // Tenta codificar em webp (Intervention depende de GD/Imagick com suporte webp)
+            $image->encode('webp', $quality);
+            $image->save($webpPath);
+            $image->destroy();
+
+            return file_exists($webpPath);
+        } catch (\Exception $e) {
+            Log::error('convertToWebp (Intervention) falhou: ' . $e->getMessage());
+            // Fallback nativo com GD/imagick -> tenta criar WebP direto, ou salva JPEG se não suportar
+            return $this->convertToWebpNative($originalPath, $webpPath, $quality);
+        }
+    }
+
+    /**
+     * Fallback nativo para criar WebP (usa GD se disponível). Retorna true se arquivo criado.
+     *
+     * @param string $originalPath
+     * @param string $webpPath
+     * @param int $quality
+     * @return bool
+     */
+    protected function convertToWebpNative(string $originalPath, string $webpPath, int $quality = 80)
+    {
+        try {
+            $info = getimagesize($originalPath);
+            if ($info === false) {
+                return false;
+            }
+            $mime = $info['mime'];
+
+            switch ($mime) {
+                case 'image/jpeg':
+                    $img = imagecreatefromjpeg($originalPath);
+                    break;
+                case 'image/png':
+                    $img = imagecreatefrompng($originalPath);
+                    // preserva transparência
+                    imagepalettetotruecolor($img);
+                    imagealphablending($img, true);
+                    imagesavealpha($img, true);
+                    break;
+                case 'image/gif':
+                    $img = imagecreatefromgif($originalPath);
+                    break;
+                default:
+                    return false;
+            }
+
+            // redimensiona se necessário
+            $width = imagesx($img);
+            $height = imagesy($img);
+            $max = 1200;
+            if ($width > $max || $height > $max) {
+                if ($width > $height) {
+                    $newW = $max;
+                    $newH = intval($height * ($max / $width));
+                } else {
+                    $newH = $max;
+                    $newW = intval($width * ($max / $height));
+                }
+                $tmp = imagecreatetruecolor($newW, $newH);
+
+                // preserva transparência quando necessário
+                if ($mime === 'image/png' || $mime === 'image/gif') {
+                    imagealphablending($tmp, false);
+                    imagesavealpha($tmp, true);
+                    $transparent = imagecolorallocatealpha($tmp, 255, 255, 255, 127);
+                    imagefilledrectangle($tmp, 0, 0, $newW, $newH, $transparent);
+                }
+
+                imagecopyresampled($tmp, $img, 0, 0, 0, 0, $newW, $newH, $width, $height);
+                imagedestroy($img);
+                $img = $tmp;
+            }
+
+            // garante diretório
+            $dir = dirname($webpPath);
+            if (!file_exists($dir)) {
+                mkdir($dir, 0755, true);
+            }
+
+            // se function imagewebp existe, gera webp; senão gera jpeg como fallback
+            if (function_exists('imagewebp')) {
+                // quality 0-100
+                imagewebp($img, $webpPath, $quality);
+            } else {
+                // fallback sem suporte a webp: salva jpeg no caminho solicitado (extensão pode ser webp mas conteúdo jpeg)
+                imagejpeg($img, $webpPath, $quality);
+            }
+
+            imagedestroy($img);
+
+            return file_exists($webpPath);
+        } catch (\Throwable $e) {
+            Log::error('convertToWebpNative falhou: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Otimiza e salva a imagem com configurações adequadas 
+     *
+     * @param string $tmpPath
+     * @param string $savePath
+     * @param string $extension
+     */
+    protected function optimizeAndSaveImage(string $tmpPath, string $savePath, string $extension)
+    {
+        // garante diretório
+        $dir = dirname($savePath);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        $image = Image::make($tmpPath);
+        $image->orientate();
+        $image->resize(1200, 1200, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        $ext = strtolower($extension);
+        switch ($ext) {
+            case 'jpeg':
+            case 'jpg':
+                $image->encode('jpg', 80);
+                break;
+            case 'png':
+                // PNG: encode aceita quality 0-9 para driver GD via Intervention; aqui usamos 8 como compressão
+                $image->encode('png', 8);
+                break;
+            case 'webp':
+                // tenta webp, se falhar o próprio Intervention lançará e o catch pode tratar
+                try {
+                    $image->encode('webp', 80);
+                } catch (\Exception $e) {
+                    Log::warning('encode webp falhou no optimizeAndSaveImage: ' . $e->getMessage());
+                    $image->encode('jpg', 80);
+                }
+                break;
+            default:
+                $image->encode($ext, 80);
+        }
+
+        $image->save($savePath);
+        $image->destroy();
     }
 
     /**
@@ -661,34 +820,27 @@ class ProdutosController extends Controller
 
             // Validação do arquivo
             $extensao = strtolower($arquivo->getClientOriginalExtension());
-            if (!in_array($extensao, ['png', 'jpg', 'jpeg', 'gif'])) {
-                continue; // Ou retornar erro
+            if (!in_array($extensao, ['png', 'jpg', 'jpeg', 'gif', 'webp'])) {
+                continue;
             }
 
             // Nome seguro para o arquivo
             $nomeArquivo = $i . '.' . $extensao;
-
             $caminhoCompleto = $caminhoBase . $nomeArquivo;
 
-            $glob = glob($caminhoBase . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
-
+            // Remove arquivo existente com o mesmo número
+            $glob = glob($caminhoBase . $i . '.{png,jpg,jpeg,gif,webp}', GLOB_BRACE);
             foreach ($glob as $file) {
-                $fileName = pathinfo($file, PATHINFO_FILENAME);
-                if ($fileName == $i) {
+                if (file_exists($file)) {
                     unlink($file);
                 }
             }
 
-            // Remove arquivo existente com o mesmo número
-            if (file_exists($caminhoCompleto)) {
-                unlink($caminhoCompleto);
-            }
-
-            // Move o novo arquivo
-            $arquivo->move($caminhoBase, $nomeArquivo);
+            // Otimiza e salva a nova imagem
+            $this->optimizeAndSaveImage($arquivo->getPathname(), $caminhoCompleto, $extensao);
         }
 
-        return redirect()->back()->with('success', 'Imagens atualizadas!');
+        return redirect()->back()->with('success', 'Imagens atualizadas e otimizadas!');
     }
 
 

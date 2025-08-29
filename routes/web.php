@@ -146,12 +146,11 @@ Route::group(['prefix' => 'administrativo', 'middleware' => ['auth', 'admin']], 
     Route::group(['prefix' => 'permissoes', 'middleware' => ['auth', 'admin']], function () {
         Route::get('/', [PermissoesController::class, 'permissoes'])->name('administrativo.permissoes');
         Route::get('/usuario', [PermissoesController::class, 'permissoesUsuarios'])->name('administrativo.permissoes.usuarios');
-        Route::post('/salvarPermissao', [PermissoesController::class, 'salvarPermissao'])->name('administrativo.salvarPermissao');
-        Route::post('/removerPermissao', [PermissoesController::class, 'removerPermissao'])->name('administrativo.removerPermissao');
-        Route::post('/enviarPermissao', [PermissoesController::class, 'enviarPermissao'])->name('administrativo.enviarPermissao');
-        Route::post('/editarPermissao', [PermissoesController::class, 'editarPermissao'])->name('administrativo.editarPermissao');
+        Route::post('/salvarPermissao', [PermissoesController::class, 'salvar'])->name('administrativo.permissao.salvar');
+        Route::post('/removerPermissao', [PermissoesController::class, 'remover'])->name('administrativo.permissao.remover');
+        Route::post('/enviarPermissao', [PermissoesController::class, 'editar'])->name('administrativo.permissao.editar');
         Route::post('/enviarPermissao/usuario', [User::class, 'enviarPermissao'])->name('administrativo.enviarPermissao.usuario');
-        Route::post('/editarPermissao/usuario', [PermissoesController::class, 'editarUsuarioPermissao'])->name('administrativo.editarPermissao.usuario');
+        Route::post('/editarPermissao/usuario', [PermissoesController::class, 'editarUsuarioPermissao'])->name('administrativo.permissao.editar.usuario');
     });
 
     // Rotas de produtos

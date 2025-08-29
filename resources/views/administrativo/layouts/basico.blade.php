@@ -225,7 +225,6 @@
         <div class="content-wrapper">
             @yield('conteudo')
         </div>
-        @include('administrativo.layouts._partials.footer')
     </div>
 
     <!-- SCRIPTS - ORDEM CORRIGIDA -->

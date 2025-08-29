@@ -31,7 +31,7 @@
                     <!-- /.card-header -->
                     <!-- form start -->
                     <form
-                        action="{{ isset($permissao->role_id) ? route('administrativo.editarPermissao') : route('administrativo.salvarPermissao') }}"
+                        action="{{ isset($permissao->role_id) ? route('administrativo.permissao.editar') : route('administrativo.permissao.salvar') }}"
                         method="POST">
 
                         @csrf
@@ -87,13 +87,10 @@
                             <button type="submit" class="btn btn-primary">Enviar</button>
                         </div>
                     </form>
-
                     <!-- /.card -->
-
                 </div>
                 <!--/.col (left) -->
                 <!-- right column -->
-
                 <!--/.col (right) -->
             </div>
             <!-- /.row -->

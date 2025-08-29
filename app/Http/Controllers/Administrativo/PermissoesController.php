@@ -8,6 +8,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use App\Model\{Permissao, User};
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PermissoesController extends Controller
 {
@@ -16,13 +17,17 @@ class PermissoesController extends Controller
 
     public function __construct()
     {
-        $this->permissoes = Permissao::all();
         $this->usuarios = User::all();
     }
 
+    /**
+     * Valida os dados de entrada ao cadastrar/editar permissões.
+     * 
+     * @param array $request Dados recebidos da requisição
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
     public function validarInput($request)
     {
-
         $validator = Validator::make($request, [
             'role_id' => 'required|numeric|min:0|max:10|unique:permissoes',
             'tipo_acesso' => 'required|string|unique:permissoes',
@@ -43,121 +48,163 @@ class PermissoesController extends Controller
         return $validator;
     }
 
+    /**
+     * Exibe a lista de permissões cadastradas com paginação.
+     * 
+     * @return \Illuminate\View\View
+     */
     public function permissoes()
     {
-        $permissoes = $this->permissoes;
+        $permissoes = Permissao::paginate(8);
         return view('administrativo.permissoes', compact('permissoes'));
     }
 
-    public function salvarPermissao(Request $request)
+    /**
+     * Salva uma nova permissão no banco de dados.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function salvar(Request $request)
     {
         $data = $request->all();
-
         $validator = $this->validarInput($data);
 
-        Alert::alert('Permissão', 'Salva com sucesso', 'success');
         if ($validator->fails()) {
-            Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
+            $this->enviarAlert('Endereço', 'Preencha os campos obrigatórios', 'error');
             return redirect()
                 ->route('administrativo.permissoes')
                 ->withErrors($validator)
                 ->withInput();
         } else {
-            Alert::alert('Permissão', 'Salva com sucesso', 'success');
             try {
                 Permissao::create($request->all());
+                $this->enviarAlert('Permissão', 'Salva com sucesso', 'success');
                 return redirect()->route('administrativo.permissoes');
             } catch (\Exception $e) {
-                Alert::alert('Erro', $e->getMessage(), 'error');
+                $this->enviarAlert('Erro', $e->getMessage(), 'error');
                 return redirect()->route('administrativo.permissoes');
             }
         }
     }
 
-    public function enviarPermissao(Request $request)
-    {
-
-        $permissoes = $this->permissoes;
-        $id = $request->input('role_id');
-        $permissao = Permissao::find($id);
-        return view('administrativo.permissoes', compact('permissao', 'permissoes'));
-    }
-
-    public function removerPermissao(Request $request)
+    /**
+     * Remove uma permissão caso não esteja associada a nenhum usuário.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function remover(Request $request)
     {
         try {
             $id = $request->input('role_id');
-            // verifica se o usuário possui permissão
             $usuarioAtivo = User::where('role_id', $id)->get();
             $permissao = Permissao::find($id);
+
             if ($usuarioAtivo->isEmpty()) {
                 $permissao->delete();
-                Alert::alert('Exclusão', 'Permissão excluída com sucesso', 'success');
-                return redirect()->route('administrativo.permissoes', compact('permissoes'));
+                $this->enviarAlert('Exclusão', 'Permissão excluída com sucesso', 'success');
             } else {
-                Alert::alert('Erro', 'Não é possível excluir essa permissão, pois possui usuários associados', 'error');
-                return redirect()->route('administrativo.permissoes', compact('permissoes'));
+                $this->enviarAlert('Erro', 'Não é possível excluir essa permissão, pois possui usuários associados', 'error');
             }
+
+            return redirect()->route('administrativo.permissoes', compact('permissoes'));
         } catch (\Exception $e) {
-            Alert::alert('Erro', $e->getMessage(), 'error');
+            $this->enviarAlert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.permissoes', compact('permissoes'));
         }
     }
 
-
-    public function editarPermissao(Request $request)
+    /**
+     * Edita ou cria uma permissão no banco de dados.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function editar(Request $request)
     {
-        
         try {
-            // pega o valor antigo do id para atualizar
-            $idEditar = $request->input('idEditar');
-            // pega informações para exibir a tabela permissoes na view        
-            $permissoes = $this->permissoes;
-            // pega o valor da role_id antiga
-            $permissao = Permissao::where('role_id', $idEditar)->first();
-
             $data = $request->all();
-            // insere os novos dados na tabela permissoes
-            $permissao->update($data);
-            Alert::alert('Permissão', 'Permissão editada com sucesso', 'success');
-            return redirect()->route('administrativo.permissoes', compact('permissao', 'permissoes'));
-        } catch (\Exception $e) {
+            DB::transaction(function () use ($data) {
+                $permissao = Permissao::find($data['role_id']);
 
-            Alert::alert('Erro', $e->getMessage(), 'error');
-            return redirect()->route('administrativo.permissoes', compact('permissoes'));
+                if ($permissao) {
+                    // Atualiza permissão existente
+                    $permissao->tipo_acesso = $data['tipo_acesso'];
+                    $permissao->descricao = $data['descricao'];
+                    $permissao->save();
+                } else {
+                    // Cria nova permissão caso não exista
+                    $permissao = new Permissao();
+                    $permissao->role_id = $data['role_id'];
+                    $permissao->tipo_acesso = $data['tipo_acesso'];
+                    $permissao->descricao = $data['descricao'];
+                    $permissao->save();
+                }
+            });
+
+            $this->enviarAlert('Permissão', 'Permissão editada com sucesso', 'success');
+            return redirect()->route('administrativo.permissoes');
+        } catch (\Exception $e) {
+            $this->enviarAlert('Erro', $e->getMessage(), 'error');
+            return redirect()->route('administrativo.permissoes');
         }
     }
+
+    /**
+     * Exibe a tela de permissões por usuário.
+     * 
+     * @return \Illuminate\View\View
+     */
     public function permissoesUsuarios()
     {
-        
         if (Auth::check()) {
             $permissoesUser = Permissao::where('role_id', Auth::user()->role_id)->get();
         } else {
-            $permissoesUser = collect(); 
+            $permissoesUser = collect();
         }
 
         $permissoes = $this->permissoes;
         $usuarios = $this->usuarios;
+
         return view('administrativo.permissoesUsuarios', compact('usuarios', 'permissoes', 'permissoesUser'));
     }
-    
+
+    /**
+     * Atualiza a permissão de um usuário específico.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function editarUsuarioPermissao(Request $request)
     {
         try {
-            // pega o valor antigo do id para atualizar
             $idEditar = $request->input('role_id_alter');
             $idUser = $request->input('user_id');
             $user = User::findOrFail($idUser);
+
             $user->update([
                 'role_id' => $idEditar,
             ]);
-            // insere os novos dados na tabela permissoes
-            Alert::alert('Permissão', 'Permissão editada com sucesso', 'success');
+
+            $this->enviarAlert('Permissão', 'Permissão editada com sucesso', 'success');
             return redirect()->route('administrativo.permissoes.usuarios');
         } catch (\Exception $e) {
-
-            Alert::alert('Erro', $e->getMessage(), 'error');
+            $this->enviarAlert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.permissoes.usuarios');
         }
+    }
+
+    /**
+     * Função utilitária para centralizar o envio de alerts ao frontend.
+     * 
+     * @param string $titulo  Título do alert
+     * @param string $mensagem Mensagem exibida
+     * @param string $tipo Tipo do alerta (success, error, warning, info)
+     * @return void
+     */
+    private function enviarAlert($titulo, $mensagem, $tipo = 'info')
+    {
+        Alert::alert($titulo, $mensagem, $tipo);
     }
 }

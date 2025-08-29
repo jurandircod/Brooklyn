@@ -28,7 +28,7 @@
                                         <td>{{ $users->role_id }} - max: 10</td>
                                         <td>
                                             <div class="row">
-                                                <form action="{{ route('administrativo.editarPermissao.usuario') }}"
+                                                <form action="{{ route('administrativo.permissao.editar.usuario') }}"
                                                     method="post">
                                                     <div class="col">
                                                         @csrf

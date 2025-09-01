@@ -39,13 +39,13 @@ Route::prefix('administrativo')->middleware(['auth'])->group(function () {
         ->name('administrativo.produtos.exportar');
 
     // Rotas existentes mantidas
-    Route::post('/produto/salvar', [ProdutosController::class, 'salvarProduto'])
+    Route::post('/produto/salvar', [ProdutosController::class, 'create'])
         ->name('administrativo.produto.salvar');
 
-    Route::post('/produto/atualizar', [ProdutosController::class, 'atualizar'])
+    Route::post('/produto/atualizar', [ProdutosController::class, 'edit'])
         ->name('administrativo.produto.atualizar');
 
-    Route::delete('/produto/excluir/{id}', [ProdutosController::class, 'excluir'])
+    Route::delete('/produto/excluir/{id}', [ProdutosController::class, 'destroy'])
         ->name('administrativo.produto.excluir');
 });
 
@@ -144,7 +144,7 @@ Route::group(['prefix' => 'administrativo', 'middleware' => ['auth', 'admin']], 
 
     //rotas de permissoes
     Route::group(['prefix' => 'permissoes', 'middleware' => ['auth', 'admin']], function () {
-        Route::get('/', [PermissoesController::class, 'permissoes'])->name('administrativo.permissoes');
+        Route::get('/', [PermissoesController::class, 'index'])->name('administrativo.permissoes');
         Route::get('/usuario', [PermissoesController::class, 'permissoesUsuarios'])->name('administrativo.permissoes.usuarios');
         Route::post('/salvarPermissao', [PermissoesController::class, 'salvar'])->name('administrativo.permissao.salvar');
         Route::post('/removerPermissao', [PermissoesController::class, 'remover'])->name('administrativo.permissao.remover');

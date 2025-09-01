@@ -12,13 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class PermissoesController extends Controller
 {
-    private $permissoes;
-    private $usuarios;
-
-    public function __construct()
-    {
-        $this->usuarios = User::all();
-    }
 
     /**
      * Valida os dados de entrada ao cadastrar/editar permissões.
@@ -53,10 +46,10 @@ class PermissoesController extends Controller
      * 
      * @return \Illuminate\View\View
      */
-    public function permissoes()
+    public function index()
     {
-        $permissoes = Permissao::paginate(8);
-        return view('administrativo.permissoes', compact('permissoes'));
+        $permissoes = Permissao::paginate(10);
+        return view('administrativo.permissoes', ['permissoes' => $permissoes]);
     }
 
     /**
@@ -96,22 +89,26 @@ class PermissoesController extends Controller
      */
     public function remover(Request $request)
     {
-        try {
-            $id = $request->input('role_id');
-            $usuarioAtivo = User::where('role_id', $id)->get();
-            $permissao = Permissao::find($id);
+        $id = intval($request->input('role_id'));
+        $usuarioAtivo = User::where('role_id', $id)->get();
+        $permissao = Permissao::find($id);
 
-            if ($usuarioAtivo->isEmpty()) {
-                $permissao->delete();
-                $this->enviarAlert('Exclusão', 'Permissão excluída com sucesso', 'success');
-            } else {
-                $this->enviarAlert('Erro', 'Não é possível excluir essa permissão, pois possui usuários associados', 'error');
+        try {
+            if ($permissao) {
+                if ($usuarioAtivo->isEmpty()) {
+                    $permissao->delete();
+                    $this->enviarAlert('Exclusão', 'Permissão excluída com sucesso', 'success');
+                } else {
+                    $this->enviarAlert('Erro', 'Não é possível excluir essa permissão, pois possui usuários associados', 'error');
+                }
+            }else{
+                $this->enviarAlert('Erro', 'Não é possível excluir essa permissão, pois não existe', 'error');
             }
 
-            return redirect()->route('administrativo.permissoes', compact('permissoes'));
+            return redirect()->route('administrativo.permissoes');
         } catch (\Exception $e) {
             $this->enviarAlert('Erro', $e->getMessage(), 'error');
-            return redirect()->route('administrativo.permissoes', compact('permissoes'));
+            return redirect()->route('administrativo.permissoes');
         }
     }
 
@@ -164,10 +161,10 @@ class PermissoesController extends Controller
             $permissoesUser = collect();
         }
 
-        $permissoes = $this->permissoes;
-        $usuarios = $this->usuarios;
+        $permissoes = Permissao::paginate(10);
+        $usuarios = User::paginate(10);
 
-        return view('administrativo.permissoesUsuarios', compact('usuarios', 'permissoes', 'permissoesUser'));
+        return view('administrativo.permissoesUsuarios', compact('usuarios', 'permissoes'));
     }
 
     /**

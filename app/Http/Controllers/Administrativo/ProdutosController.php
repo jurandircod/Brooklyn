@@ -321,7 +321,7 @@ class ProdutosController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function salvarProduto(Request $request)
+    public function create(Request $request)
     {
         $data = $request->all();
         $validator = $this->validarInput($data);
@@ -661,7 +661,7 @@ class ProdutosController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function excluir($id)
+    public function destroy($id)
     {
         try {
             // Remove esta linha pois o ID já vem pelo parâmetro da rota
@@ -751,7 +751,7 @@ class ProdutosController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function atualizar(Request $request)
+    public function edit(Request $request)
     {
         try {
             $data = $request->all();

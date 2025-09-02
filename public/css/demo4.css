@@ -1,114 +1,89 @@
 :root {
-  --theme-color: #0163d2; }
+  --theme-color: #1c2f45; /* Azul petróleo escuro */
+}
 
 .theme-color2 {
-  --theme-color: #e22454; }
+  --theme-color: #5a1f2d; /* Vinho queimado */
+}
 
 .theme-color3 {
-  --theme-color: #7520dd; }
+  --theme-color: #3a2661; /* Roxo fechado */
+}
 
 .theme-color4 {
-  --theme-color: #e87316; }
+  --theme-color: #6a3414; /* Laranja cobre queimado */
+}
 
 .theme-color5 {
-  --theme-color: #df4246; }
+  --theme-color: #4a1c1d; /* Vermelho terroso */
+}
 
 .theme-color6 {
-  --theme-color: #51983c; }
+  --theme-color: #2b4a29; /* Verde musgo */
+}
 
 .text-color {
-  color: #6d6d6d; }
+  color: #5c5c5c; /* Cinza médio sóbrio */
+}
 
 /**=====================
     common mixins css start
 ==========================**/
-/*======= position css starts  ======= */
-/*======= position css ends  ======= */
-/*======= display flex css starts  ======= */
-/*======= display flex css ends  ======= */
-/*======= Font-color css starts  ======= */
+
 .font-default {
-  color: #232323 !important; }
+  color: #1e1e1e !important; /* Preto suave */
+}
 
 .font-dark {
-  color: rgba(35, 35, 35, 0.65) !important; }
+  color: rgba(30, 30, 30, 0.65) !important; /* Preto esfumaçado */
+}
 
 .font-light {
-  color: #7e7e7e !important; }
+  color: #7a7a7a !important; /* Cinza urbano */
+}
 
 .font-dark-30 {
-  color: #232323 !important; }
+  color: #1e1e1e !important;
+}
 
-/*======= Font-color css end  ======= */
 /*======= buttons css starts  ======= */
 .btn-solid-dark {
   color: #fff;
   background-color: unset;
-  border: 1px solid #232323; }
-  .btn-solid-dark::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    background-color: #232323;
-    -webkit-transition: all 0.5s;
-    transition: all 0.5s; }
-  .btn-solid-dark:hover {
-    color: #232323; }
-    .btn-solid-dark:hover::before {
-      opacity: 0;
-      -webkit-transform: scale(0.5, 0.5);
-              transform: scale(0.5, 0.5); }
+  border: 1px solid #1e1e1e;
+}
+.btn-solid-dark::before {
+  background-color: #1e1e1e;
+}
+.btn-solid-dark:hover {
+  color: #1e1e1e;
+}
 
 .btn-solid-light {
   color: #fff;
   background-color: unset;
-  border: 1px solid #fefefe;
-  color: #fff; }
-  .btn-solid-light::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    background-color: #fefefe;
-    -webkit-transition: all 0.5s;
-    transition: all 0.5s; }
-  .btn-solid-light:hover {
-    color: #232323; }
-    .btn-solid-light:hover::before {
-      opacity: 0;
-      -webkit-transform: scale(0.5, 0.5);
-              transform: scale(0.5, 0.5); }
-  .btn-solid-light:hover, .btn-solid-light:focus, .btn-solid-light:active, .btn-solid-light.active {
-    color: #000; }
+  border: 1px solid #e6e6e6;
+}
+.btn-solid-light::before {
+  background-color: #e6e6e6;
+}
+.btn-solid-light:hover {
+  color: #1e1e1e;
+}
 
 .btn-solid-default {
   color: #fff;
   background-color: unset;
-  border: 1px solid var(--theme-color); }
-  .btn-solid-default::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    background-color: var(--theme-color);
-    -webkit-transition: all 0.5s;
-    transition: all 0.5s; }
-  .btn-solid-default:hover {
-    color: #232323; }
-    .btn-solid-default:hover::before {
-      opacity: 0;
-      -webkit-transform: scale(0.5, 0.5);
-              transform: scale(0.5, 0.5); }
+  border: 1px solid var(--theme-color);
+}
+.btn-solid-default::before {
+  background-color: var(--theme-color);
+}
+.btn-solid-default:hover {
+  color: #1e1e1e;
+}
+/*======= buttons css end  ======= */
+
 
 /*======= buttons css end  ======= */
 /*======= align css starts  ======= */

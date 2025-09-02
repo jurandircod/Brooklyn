@@ -8,27 +8,27 @@
  */
 
 :root {
-  --blue: #3490dc;
-  --indigo: #6574cd;
-  --purple: #9561e2;
-  --pink: #f66d9b;
-  --red: #e3342f;
-  --orange: #f6993f;
-  --yellow: #ffed4a;
-  --green: #38c172;
-  --teal: #4dc0b5;
-  --cyan: #6cb2eb;
-  --white: #fff;
-  --gray: #6c757d;
-  --gray-dark: #343a40;
-  --primary: #3490dc;
-  --secondary: #6c757d;
-  --success: #38c172;
-  --info: #6cb2eb;
-  --warning: #ffed4a;
-  --danger: #e3342f;
-  --light: #f8f9fa;
-  --dark: #343a40;
+  --blue: #1e3a5f;      /* Azul petróleo escuro */
+  --indigo: #2d2a4a;    /* Índigo bem fechado */
+  --purple: #3b2a4c;    /* Roxo uva queimado */
+  --pink: #6d2b3b;      /* Rosa queimado puxado pro vinho */
+  --red: #5c1a1a;       /* Vermelho vinho seco */
+  --orange: #7a3f1c;    /* Laranja queimado/cobre */
+  --yellow: #8a7520;    /* Amarelo mostarda queimado */
+  --green: #1f4d2b;     /* Verde musgo escuro */
+  --teal: #264c46;      /* Verde-água fechado */
+  --cyan: #2b4f5f;      /* Azul acinzentado */
+  --white: #f5f5f5;     /* Branco suave (off white) */
+  --gray: #5a5a5a;      /* Cinza médio urbano */
+  --gray-dark: #2a2a2a; /* Cinza carvão */
+  --primary: #1e3a5f;   /* Azul petróleo */
+  --secondary: #5a5a5a; /* Cinza urbano */
+  --success: #1f4d2b;   /* Verde musgo */
+  --info: #2b4f5f;      /* Azul acinzentado */
+  --warning: #8a7520;   /* Mostarda queimado */
+  --danger: #5c1a1a;    /* Vinho seco */
+  --light: #e9e9e9;     /* Cinza clarinho */
+  --dark: #1a1a1a;      /* Preto profundo */
   --breakpoint-xs: 0;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
@@ -43,6 +43,7 @@
 *::after {
   box-sizing: border-box;
 }
+
 
 html {
   font-family: sans-serif;

@@ -131,9 +131,7 @@
                 @endif
             @endforeach
         </div>
-        <div class="row mt-5">
-            {{ $produtos->links() }}
-        </div>
+
 
     </div>
 </section>

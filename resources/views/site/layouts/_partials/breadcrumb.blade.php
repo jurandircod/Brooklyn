@@ -23,7 +23,7 @@
                                 <i class="fas fa-home"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active text-white" aria-current="page">Brooklyn SkateShop</li>
+                        <li class="breadcrumb-item active" aria-current="page">Brooklyn SkateShop</li>
                     </ol>
                 </nav>
             </div>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\model\{Produto, Fotos, Carrinho, ItemCarrinho};
+use App\model\{Produto, Fotos, Carrinho, ItemCarrinho, Categoria};
 use Illuminate\Support\Facades\Auth;
 
 
@@ -24,9 +24,10 @@ class PrincipalController extends Controller
         $itens = ItemCarrinho::where('carrinho_id', $cart->id)->get();
 
         // Carrega todos os produtos COM suas fotos (eager loading)
-        $produtos = Produto::with('fotos')->paginate(12);
+        $produtos = Produto::with('fotos')->get();
+        $categorias = Categoria::take(4)->get();
         $itens = $itens;
         $cart = $request->query('cart') == 1 ? 1 : null;
-        return view('site.principal', compact('produtos', 'cart', 'itens'));
+        return view('site.principal', compact('produtos', 'cart', 'itens','categorias'));
     }
 }

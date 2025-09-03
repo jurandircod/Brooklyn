@@ -1,292 +1,619 @@
+<style>
+    :root {
+        --brand: #5A1F2D;
+        /* sua cor */
+        --accent: #5A1F2D;
+        /* já usado no template */
+        --muted: #6c757d;
+        --glass: rgba(255, 255, 255, 0.06);
+        --card-bg: rgba(255, 255, 255, 0.03);
+        --radius: 14px;
+        --soft-shadow: 0 6px 20px rgba(11, 15, 30, 0.25);
+        --glass-border: rgba(255, 255, 255, 0.06);
+        --surface: #0f0f10;
+        --text-dark: #111827;
+    }
 
+    /* Geral */
+    body,
+    .breadcrumb-section,
+    .section-b-space {
+        font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        color: var(--text-dark);
+    }
 
+    /* Seção com leve gradiente e padding */
+    .section-b-space {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.02));
+        padding: 36px 0;
+    }
 
-    <section class="section-b-space">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-8">
-                    <form class="needs-validation" method="POST"
-                        action="{{ route('site.carrinho.finalizarCarrinho') }}">
-                        @csrf
-                        <div class="save-details-box">
-                            <h3 class="mb-4 text-center" style="color: #333; font-weight: 600;">
-                                <i class="fas fa-map-marker-alt" style="color: #667eea; margin-right: 10px;"></i>
-                                Escolha um endereço para receber seu pedido
-                            </h3>
-                            <div class="row g-3" id="enderecos-container">
-                                <!-- Simulando endereços do backend -->
-                                @foreach ($enderecos as $endereco)
-                                    <div class="col-xl-4 col-md-6">
-                                        <div class="save-details" data-endereco="{{ $endereco->id }}">
-                                            <div class="save-name">
-                                                <h5>{{ $endereco->cidade }}</h5>
-                                            </div>
-                                            <div class="save-address">
-                                                <p><b>Bairro: </b>{{ $endereco->bairro }}</p>
-                                                <p><b>Número da casa: </b>{{ $endereco->numero }}</p>
-                                                <p><b>Cidade: </b>{{ $endereco->cidade }}</p>
-                                                <p><b>Estado: </b>{{ $endereco->estado }}</p>
-                                                <p><b>CEP: </b>{{ $endereco->cep }}</p>
-                                            </div>
-                                            <div class="mobile">
-                                                <p class="font-light"><b>Telefone: </b>{{ $endereco->telefone }}</p>
-                                            </div>
-                                            <div class="button mt-3">
-                                                <div class="address-checkbox">
-                                                    <input type="radio" id="endereco{{ $endereco->id }}"
-                                                        name="endereco_id" value="{{ $endereco->id }}">
-                                                    <label for="endereco{{ $endereco->id }}" class="checkbox-custom">
-                                                        Selecionar endereço
-                                                    </label>
-                                                </div>
+    /* Container do formulário - visual card */
+    .save-details-box {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.01));
+        border-radius: 14px;
+        padding: 26px;
+        box-shadow: var(--soft-shadow);
+        border: 1px solid var(--glass-border);
+    }
+
+    /* Títulos com icone destacado */
+    .save-details-box h3,
+    .payment-section h3 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.125rem;
+        letter-spacing: -0.2px;
+    }
+
+    /* Card de cada endereço */
+    .save-details {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid transparent;
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        position: relative;
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    /* Hover e seleção */
+    .save-details:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 30px rgba(16, 24, 40, 0.18);
+        border-color: rgba(102, 126, 234, 0.12);
+    }
+
+    .save-details.selected {
+        border: 2px solid var(--accent);
+        box-shadow: 0 14px 45px rgba(102, 126, 234, 0.14);
+        transform: translateY(-8px) scale(1.01);
+    }
+
+    /* Check visual no box selecionado (pseudo) */
+    .save-details.selected::after {
+        content: "✓";
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--accent);
+        color: white;
+        font-weight: 700;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(102, 126, 234, 0.18);
+    }
+
+    /* Texto */
+    .save-name h5 {
+        margin: 0 0 6px 0;
+        font-weight: 600;
+    }
+
+    .save-address p,
+    .mobile p {
+        margin: 2px 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+    }
+
+    /* Esconder rádio nativo e estilizar label */
+    .address-checkbox input[type="radio"] {
+        position: absolute;
+        left: -9999px;
+        opacity: 0;
+    }
+
+    .checkbox-custom {
+        display: inline-block;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        cursor: pointer;
+        transition: background .12s ease, transform .12s ease;
+    }
+
+    .address-checkbox input[type="radio"]:checked+.checkbox-custom,
+    .save-details.selected .checkbox-custom {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.12), rgba(90, 31, 45, 0.06));
+        transform: translateY(-2px);
+        border-color: var(--accent);
+    }
+
+    /* Payment boxes */
+    .custome-radio-box {
+        border-radius: 12px;
+        padding: 12px 14px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        margin-bottom: 12px;
+        transition: box-shadow .12s ease, transform .12s ease, border-color .12s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+    }
+
+    .custome-radio-box .payment-icon {
+        font-size: 1.25rem;
+    }
+
+    .custome-radio-box.active {
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.08);
+        border-color: var(--accent);
+        transform: translateY(-4px);
+    }
+
+    /* Inputs */
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        padding: 10px 12px;
+        box-shadow: none;
+        border: 1px solid rgba(20, 20, 20, 0.06);
+    }
+
+    /* card fields transição suave */
+    .card-fields {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height .36s cubic-bezier(.2, .9, .2, 1), opacity .28s ease;
+        opacity: 0;
+        margin-top: 8px;
+        border-radius: 10px;
+        padding: 0 0;
+    }
+
+    .card-fields.open {
+        max-height: 600px;
+        /* suficiente para o conteúdo */
+        opacity: 1;
+        padding: 16px 0 0 0;
+    }
+
+    /* Parcelas */
+    .parcelas-select select.form-select {
+        min-width: 100%;
+    }
+
+    /* Botões */
+    .btn-solid-default {
+        background: linear-gradient(90deg, var(--brand), var(--accent));
+        color: #fff;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 12px;
+        box-shadow: 0 10px 28px rgba(90, 31, 45, 0.18);
+    }
+
+    .btn-solid-default:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 40px rgba(90, 31, 45, 0.22);
+    }
+
+    /* Seu carrinho box */
+    .your-cart-box {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.01));
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--soft-shadow);
+    }
+
+    .your-cart-box h3 {
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .badge.new-badge {
+        background: linear-gradient(90deg, #f97316, #fb7185);
+        color: white;
+        font-weight: 600;
+    }
+
+    /* Lista do carrinho */
+    .list-group-item {
+        border: none;
+        border-bottom: 1px dashed rgba(0, 0, 0, 0.04);
+        padding: 12px 10px;
+    }
+
+    .list-group-item.active {
+        background: var(--accent);
+        border-radius: 8px;
+        color: white;
+    }
+
+    /* Responsividade */
+    @media (max-width: 991px) {
+        .save-details {
+            min-height: 140px;
+        }
+
+        .btn-solid-default {
+            width: 100%;
+        }
+    }
+</style>
+<section class="section-b-space">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <form class="needs-validation" method="POST" action="{{ route('site.carrinho.finalizarCarrinho') }}">
+                    @csrf
+                    <div class="save-details-box">
+                        <h3 class="mb-4 text-center" style="color: #333; font-weight: 600;">
+                            <i class="fas fa-map-marker-alt" style="color: #667eea; margin-right: 10px;"></i>
+                            Escolha um endereço para receber seu pedido
+                        </h3>
+                        <div class="row g-3" id="enderecos-container">
+                            <!-- Simulando endereços do backend -->
+                            @foreach ($enderecos as $endereco)
+                                <div class="col-xl-4 col-md-6">
+                                    <div class="save-details" data-endereco="{{ $endereco->id }}">
+                                        <div class="save-name">
+                                            <h5>{{ $endereco->cidade }}</h5>
+                                        </div>
+                                        <div class="save-address">
+                                            <p><b>Bairro: </b>{{ $endereco->bairro }}</p>
+                                            <p><b>Número da casa: </b>{{ $endereco->numero }}</p>
+                                            <p><b>Cidade: </b>{{ $endereco->cidade }}</p>
+                                            <p><b>Estado: </b>{{ $endereco->estado }}</p>
+                                            <p><b>CEP: </b>{{ $endereco->cep }}</p>
+                                        </div>
+                                        <div class="mobile">
+                                            <p class="font-light"><b>Telefone: </b>{{ $endereco->telefone }}</p>
+                                        </div>
+                                        <div class="button mt-3">
+                                            <div class="address-checkbox">
+                                                <input type="radio" id="endereco{{ $endereco->id }}"
+                                                    name="endereco_id" value="{{ $endereco->id }}">
+                                                <label for="endereco{{ $endereco->id }}" class="checkbox-custom">
+                                                    Selecionar endereço
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
-                                @error('endereco_id')
-                                    <div class="alert alert-danger">
-                                        <strong>Erro!</strong> {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <a href="{{ route('site.perfil.exibirEndereco') }}" target="_blank" class="btn btn-solid-default">
-                                    <i class="fas fa-plus me-2"></i>
-                                    Adicionar novo endereço
-                                </a>
-                            </div>
+                                </div>
+                            @endforeach
+                            @error('endereco_id')
+                                <div class="alert alert-danger">
+                                    <strong>Erro!</strong> {{ $message }}
+                                </div>
+                            @enderror
                         </div>
 
-                        <hr class="my-5" style="border-color: #e9ecef; border-width: 2px;">
-
-                        <div class="payment-section">
-                            <h3 class="mb-4" style="color: #333; font-weight: 600;">
-                                <i class="fas fa-credit-card" style="color: #667eea; margin-right: 10px;"></i>
-                                Tipo de pagamento
-                            </h3>
-
-                            <div class="d-block my-3">
-                                <div class="form-check custome-radio-box" data-payment="pix">
-                                    <input class="form-check-input" type="radio" name="metodo_pagamento"
-                                        value="pix" id="pix">
-                                    <label class="form-check-label" for="pix">
-                                        <i class="fab fa-pix payment-icon" style="color: #32BCAD;"></i>
-                                        PIX - Pagamento instantâneo
-                                    </label>
-                                </div>
-
-                                <div class="form-check custome-radio-box" data-payment="credit">
-                                    <input class="form-check-input" type="radio" name="metodo_pagamento"
-                                        value="credit" id="credit">
-                                    <label class="form-check-label" for="credit">
-                                        <i class="fas fa-credit-card payment-icon" style="color: #4A90E2;"></i>
-                                        Cartão de Crédito
-                                    </label>
-                                </div>
-
-                                <div class="form-check custome-radio-box" data-payment="debit">
-                                    <input class="form-check-input" type="radio" name="metodo_pagamento"
-                                        value="debit" id="debit">
-                                    <label class="form-check-label" for="debit">
-                                        <i class="fas fa-credit-card payment-icon" style="color: #E94B3C;"></i>
-                                        Cartão de Débito
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="card-fields fade-in" id="card-fields" style="display: none;">
-                                <h5 class="mb-3" style="color: #333;">
-                                    <i class="fas fa-lock me-2" style="color: #667eea;"></i>
-                                    Dados do Cartão
-                                </h5>
-
-                                <div class="row g-3">
-                                    <div class="col-md-12">
-                                        <label for="cc-name" class="form-label">Nome no cartão</label>
-                                        <input type="text" class="form-control" id="cc-name"
-                                            placeholder="Nome completo como está no cartão">
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label for="cc-number" class="form-label">Número do cartão</label>
-                                        <input type="text" class="form-control" id="cc-number"
-                                            placeholder="1234 5678 9012 3456">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="expiration" class="form-label">Validade</label>
-                                        <input type="text" class="form-control" id="expiration"
-                                            placeholder="MM/AA">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="cc-cvv" class="form-label">CVV</label>
-                                        <input type="text" class="form-control" id="cc-cvv" placeholder="123">
-                                    </div>
-                                </div>
-
-                                <div class="parcelas-select" id="parcelas-section" style="display: none;">
-                                    <label for="parcelas" class="form-label">
-                                        <i class="fas fa-calendar-alt me-2" style="color: #667eea;"></i>
-                                        Número de parcelas
-                                    </label>
-                                    <select class="form-select" id="parcelas" name="parcelas">
-                                        <option value="1">1x de R$ 150,00 (à vista)</option>
-                                        <option value="2">2x de R$ 75,00</option>
-                                        <option value="3">3x de R$ 50,00</option>
-                                        <option value="4">4x de R$ 37,50</option>
-                                        <option value="5">5x de R$ 30,00</option>
-                                        <option value="6">6x de R$ 25,00</option>
-                                        <option value="10">10x de R$ 15,00</option>
-                                        <option value="12">12x de R$ 12,50</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        @error('metodo_pagamento')
-                            <div class="alert alert-danger">
-                                <strong>Erro!</strong> {{ $message }}
-                            </div>
-                        @enderror
-
-                        <input type="hidden" name="valor" value="{{ $preco_total }}">
                         <div class="text-center mt-4">
-                            <button class="btn btn-solid-default btn-lg" type="submit" style="padding: 15px 40px;">
-                                <i class="fas fa-lock me-2"></i>
-                                Processar pagamento
-                            </button>
+                            <a href="{{ route('site.perfil.exibirEndereco') }}" target="_blank"
+                                class="btn btn-solid-default">
+                                <i class="fas fa-plus me-2"></i>
+                                Adicionar novo endereço
+                            </a>
+                        </div>
+                    </div>
+
+                    <hr class="my-5" style="border-color: #e9ecef; border-width: 2px;">
+
+                    <div class="payment-section">
+                        <h3 class="mb-4" style="color: #333; font-weight: 600;">
+                            <i class="fas fa-credit-card" style="color: #667eea; margin-right: 10px;"></i>
+                            Tipo de pagamento
+                        </h3>
+
+                        <div class="d-block my-3">
+                            <div class="form-check custome-radio-box" data-payment="pix">
+                                <input class="form-check-input" type="radio" name="metodo_pagamento" value="pix"
+                                    id="pix">
+                                <label class="form-check-label" for="pix">
+                                    <i class="fab fa-pix payment-icon" style="color: #32BCAD;"></i>
+                                    PIX - Pagamento instantâneo
+                                </label>
+                            </div>
+
+                            <div class="form-check custome-radio-box" data-payment="credit">
+                                <input class="form-check-input" type="radio" name="metodo_pagamento" value="credit"
+                                    id="credit">
+                                <label class="form-check-label" for="credit">
+                                    <i class="fas fa-credit-card payment-icon" style="color: #4A90E2;"></i>
+                                    Cartão de Crédito
+                                </label>
+                            </div>
+
+                            <div class="form-check custome-radio-box" data-payment="debit">
+                                <input class="form-check-input" type="radio" name="metodo_pagamento" value="debit"
+                                    id="debit">
+                                <label class="form-check-label" for="debit">
+                                    <i class="fas fa-credit-card payment-icon" style="color: #E94B3C;"></i>
+                                    Cartão de Débito
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="card-fields fade-in" id="card-fields" style="display: none;">
+                            <h5 class="mb-3" style="color: #333;">
+                                <i class="fas fa-lock me-2" style="color: #667eea;"></i>
+                                Dados do Cartão
+                            </h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="cc-name" class="form-label">Nome no cartão</label>
+                                    <input type="text" class="form-control" id="cc-name"
+                                        placeholder="Nome completo como está no cartão">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="cc-number" class="form-label">Número do cartão</label>
+                                    <input type="text" class="form-control" id="cc-number"
+                                        placeholder="1234 5678 9012 3456">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="expiration" class="form-label">Validade</label>
+                                    <input type="text" class="form-control" id="expiration" placeholder="MM/AA">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="cc-cvv" class="form-label">CVV</label>
+                                    <input type="text" class="form-control" id="cc-cvv" placeholder="123">
+                                </div>
+                            </div>
+
+                            <div class="parcelas-select" id="parcelas-section" style="display: none;">
+                                <label for="parcelas" class="form-label">
+                                    <i class="fas fa-calendar-alt me-2" style="color: #667eea;"></i>
+                                    Número de parcelas
+                                </label>
+                                <select class="form-select" id="parcelas" name="parcelas">
+                                    <option value="1">1x de R$ 150,00 (à vista)</option>
+                                    <option value="2">2x de R$ 75,00</option>
+                                    <option value="3">3x de R$ 50,00</option>
+                                    <option value="4">4x de R$ 37,50</option>
+                                    <option value="5">5x de R$ 30,00</option>
+                                    <option value="6">6x de R$ 25,00</option>
+                                    <option value="10">10x de R$ 15,00</option>
+                                    <option value="12">12x de R$ 12,50</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @error('metodo_pagamento')
+                        <div class="alert alert-danger">
+                            <strong>Erro!</strong> {{ $message }}
+                        </div>
+                    @enderror
+
+                    <input type="hidden" name="valor" value="{{ $preco_total }}">
+                    <div class="text-center mt-4">
+                        <button class="btn btn-solid-default btn-lg" type="submit" style="padding: 15px 40px;">
+                            <i class="fas fa-lock me-2"></i>
+                            Processar pagamento
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="your-cart-box">
+                    <h3 class="mb-3 d-flex text-capitalize">
+                        <i class="fas fa-shopping-cart me-2" style="color: #667eea;"></i>
+                        Seu carrinho
+                        <span class="badge new-badge rounded-pill ms-auto">3</span>
+                    </h3>
+
+                    <ul class="list-group mb-3">
+                        @foreach ($itens as $item)
+                            <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                <div class="text-dark">
+                                    <h6 class="my-0">{{ $item->produto_nome }}</h6>
+                                    <small class="text-muted">Quantidade: {{ $item->quantidade }} | Preço
+                                        unitário:
+                                        R$ {{ number_format($item->preco_unitario, 2, ',', '.') }}</small>
+                                </div>
+                                <span class="text-dark">R$
+                                    {{ number_format($item->preco_total, 2, ',', '.') }}</span>
+                            </li>
+                        @endforeach
+                        <li class="list-group-item d-flex justify-content-between lh-condensed active">
+                            <div class="text-white">
+                                <h6 class="my-0">Preço total</h6>
+                            </div>
+                            <span class="text-black">{{ number_format($preco_total, 2, ',', '.') }}</span>
+                        </li>
+                    </ul>
+
+                    <form class="card border-0 d-none">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Código promocional">
+                            <button type="submit" class="btn btn-solid-default">Aplicar</button>
                         </div>
                     </form>
                 </div>
-
-                <div class="col-lg-4">
-                    <div class="your-cart-box">
-                        <h3 class="mb-3 d-flex text-capitalize">
-                            <i class="fas fa-shopping-cart me-2" style="color: #667eea;"></i>
-                            Seu carrinho
-                            <span class="badge new-badge rounded-pill ms-auto">3</span>
-                        </h3>
-
-                        <ul class="list-group mb-3">
-                            @foreach ($itens as $item)
-                                <li class="list-group-item d-flex justify-content-between lh-condensed">
-                                    <div class="text-dark">
-                                        <h6 class="my-0">{{ $item->produto_nome }}</h6>
-                                        <small class="text-muted">Quantidade: {{ $item->quantidade }} | Preço
-                                            unitário:
-                                            R$ {{ number_format($item->preco_unitario, 2, ',', '.') }}</small>
-                                    </div>
-                                    <span class="text-dark">R$
-                                        {{ number_format($item->preco_total, 2, ',', '.') }}</span>
-                                </li>
-                            @endforeach
-                            <li class="list-group-item d-flex justify-content-between lh-condensed active">
-                                <div class="text-white">
-                                    <h6 class="my-0">Preço total</h6>
-                                </div>
-                                <span class="text-black">{{ number_format($preco_total, 2, ',', '.') }}</span>
-                            </li>
-                        </ul>
-
-                        <form class="card border-0 d-none">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Código promocional">
-                                <button type="submit" class="btn btn-solid-default">Aplicar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Lógica para seleção única de endereços
-            const enderecoRadios = document.querySelectorAll('input[name="endereco_id"]');
-            const enderecoBoxes = document.querySelectorAll('.save-details');
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Lógica para seleção única de endereços
+        const enderecoRadios = document.querySelectorAll('input[name="endereco_id"]');
+        const enderecoBoxes = document.querySelectorAll('.save-details');
 
-            enderecoRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    // Remove seleção anterior de todos os boxes
-                    enderecoBoxes.forEach(box => box.classList.remove('selected'));
+        enderecoRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remove seleção anterior de todos os boxes
+                enderecoBoxes.forEach(box => box.classList.remove('selected'));
 
-                    // Adiciona seleção ao endereço atual usando o value do radio
-                    if (this.checked) {
-                        const enderecoId = this.value;
-                        const selectedBox = document.querySelector(
-                            `.save-details[data-endereco="${enderecoId}"]`);
-                        if (selectedBox) {
-                            selectedBox.classList.add('selected');
-                        }
-                    }
-                });
-            });
-
-            // Lógica para métodos de pagamento
-            const paymentRadios = document.querySelectorAll('input[name="metodo_pagamento"]');
-            const paymentBoxes = document.querySelectorAll('.custome-radio-box');
-            const cardFields = document.getElementById('card-fields');
-            const parcelasSection = document.getElementById('parcelas-section');
-
-            paymentRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    // Remove classe active de todos os boxes
-                    paymentBoxes.forEach(box => box.classList.remove('active'));
-
-                    // Adiciona classe active ao box selecionado
-                    const selectedBox = this.closest('.custome-radio-box');
+                // Adiciona seleção ao endereço atual usando o value do radio
+                if (this.checked) {
+                    const enderecoId = this.value;
+                    const selectedBox = document.querySelector(
+                        `.save-details[data-endereco="${enderecoId}"]`);
                     if (selectedBox) {
-                        selectedBox.classList.add('active');
+                        selectedBox.classList.add('selected');
                     }
-
-                    // Controla exibição dos campos de cartão
-                    if (this.value === 'pix') {
-                        if (cardFields) cardFields.style.display = 'none';
-                        if (parcelasSection) parcelasSection.style.display = 'none';
-                    } else if (this.value === 'credit') {
-                        if (cardFields) {
-                            cardFields.style.display = 'block';
-                            cardFields.classList.add('fade-in');
-                        }
-                        if (parcelasSection) parcelasSection.style.display = 'block';
-                    } else if (this.value === 'debit') {
-                        if (cardFields) {
-                            cardFields.style.display = 'block';
-                            cardFields.classList.add('fade-in');
-                        }
-                        if (parcelasSection) parcelasSection.style.display = 'none';
-                    }
-                });
+                }
             });
+        });
 
-            // Máscara para número do cartão
-            const cardNumberInput = document.getElementById('cc-number');
-            if (cardNumberInput) {
-                cardNumberInput.addEventListener('input', function() {
-                    let value = this.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
-                    this.value = formattedValue;
-                });
-            }
+        // Lógica para métodos de pagamento
+        const paymentRadios = document.querySelectorAll('input[name="metodo_pagamento"]');
+        const paymentBoxes = document.querySelectorAll('.custome-radio-box');
+        const cardFields = document.getElementById('card-fields');
+        const parcelasSection = document.getElementById('parcelas-section');
 
-            // Máscara para data de validade
-            const expirationInput = document.getElementById('expiration');
-            if (expirationInput) {
-                expirationInput.addEventListener('input', function() {
-                    let value = this.value.replace(/\D/g, '');
-                    if (value.length >= 2) {
-                        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        paymentRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remove classe active de todos os boxes
+                paymentBoxes.forEach(box => box.classList.remove('active'));
+
+                // Adiciona classe active ao box selecionado
+                const selectedBox = this.closest('.custome-radio-box');
+                if (selectedBox) {
+                    selectedBox.classList.add('active');
+                }
+
+                // Controla exibição dos campos de cartão
+                if (this.value === 'pix') {
+                    if (cardFields) cardFields.style.display = 'none';
+                    if (parcelasSection) parcelasSection.style.display = 'none';
+                } else if (this.value === 'credit') {
+                    if (cardFields) {
+                        cardFields.style.display = 'block';
+                        cardFields.classList.add('fade-in');
                     }
-                    this.value = value;
-                });
-            }
+                    if (parcelasSection) parcelasSection.style.display = 'block';
+                } else if (this.value === 'debit') {
+                    if (cardFields) {
+                        cardFields.style.display = 'block';
+                        cardFields.classList.add('fade-in');
+                    }
+                    if (parcelasSection) parcelasSection.style.display = 'none';
+                }
+            });
+        });
 
-            // Máscara para CVV
-            const cvvInput = document.getElementById('cc-cvv');
-            if (cvvInput) {
-                cvvInput.addEventListener('input', function() {
-                    this.value = this.value.replace(/\D/g, '').substring(0, 4);
-                });
+        // Máscara para número do cartão
+        const cardNumberInput = document.getElementById('cc-number');
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', function() {
+                let value = this.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                this.value = formattedValue;
+            });
+        }
+
+        // Máscara para data de validade
+        const expirationInput = document.getElementById('expiration');
+        if (expirationInput) {
+            expirationInput.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                this.value = value;
+            });
+        }
+
+        // Máscara para CVV
+        const cvvInput = document.getElementById('cc-cvv');
+        if (cvvInput) {
+            cvvInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').substring(0, 4);
+            });
+        }
+    });
+
+
+    // -- código para colar ao final do DOMContentLoaded --
+    (function() {
+        // Animação suave do card-fields via classes
+        const cardFields = document.getElementById('card-fields');
+        const parcelasSection = document.getElementById('parcelas-section');
+
+        function openCardFields(open) {
+            if (!cardFields) return;
+            if (open) {
+                cardFields.classList.add('open');
+                cardFields.style.display = 'block';
+            } else {
+                cardFields.classList.remove('open');
+                // mantemos display block por animação; esconder após transição
+                setTimeout(() => {
+                    if (!cardFields.classList.contains('open')) cardFields.style.display = 'none';
+                }, 360);
+            }
+        }
+
+        // aplica estado inicial se algum radio já estiver marcado (útil quando volta com validação)
+        const paymentRadios = document.querySelectorAll('input[name="metodo_pagamento"]');
+        paymentRadios.forEach(radio => {
+            if (radio.checked) {
+                const box = radio.closest('.custome-radio-box');
+                if (box) box.classList.add('active');
+                if (radio.value === 'credit') {
+                    openCardFields(true);
+                    if (parcelasSection) parcelasSection.style.display = 'block';
+                } else if (radio.value === 'debit') {
+                    openCardFields(true);
+                    if (parcelasSection) parcelasSection.style.display = 'none';
+                } else {
+                    openCardFields(false);
+                    if (parcelasSection) parcelasSection.style.display = 'none';
+                }
             }
         });
-    </script>
+
+        // Quando alterar (comportamento já implementado por você), apenas chamamos openCardFields para animação
+        paymentRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'pix') {
+                    openCardFields(false);
+                    if (parcelasSection) parcelasSection.style.display = 'none';
+                } else if (this.value === 'credit') {
+                    openCardFields(true);
+                    if (parcelasSection) parcelasSection.style.display = 'block';
+                } else if (this.value === 'debit') {
+                    openCardFields(true);
+                    if (parcelasSection) parcelasSection.style.display = 'none';
+                }
+            });
+        });
+
+        // Permitir selecionar um endereço clicando no cartão inteiro (acessibilidade)
+        document.querySelectorAll('.save-details').forEach(box => {
+            box.setAttribute('tabindex', '0');
+            box.style.cursor = 'pointer';
+            box.addEventListener('click', function(e) {
+                // evita marcar quando clicar no próprio input por duplicidade
+                const enderecoId = this.getAttribute('data-endereco');
+                if (!enderecoId) return;
+                const radio = document.querySelector(
+                    `input[name="endereco_id"][value="${enderecoId}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change', {
+                        bubbles: true
+                    }));
+                }
+            });
+            // suporte teclado (Enter/Space)
+            box.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+    })();
+</script>

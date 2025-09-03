@@ -98,8 +98,8 @@
                         <div class="menu-left">
                             <div class="brand-logo">
                                 <a href="{{ route('site.principal') }}">
-                                    <img src="{{ asset('images/brooklyn_skateshop_logo.svg') }}"
-                                        class="h-logo img-fluid blur-up lazyload" alt="logo">
+                                    <img src="{{ asset('images/1.png') }}" class="h-logo img-fluid blur-up lazyload"
+                                        alt="logo" style="height:100px; width:auto;">
                                 </a>
                             </div>
 
@@ -166,9 +166,10 @@
                                                 </li>
 
                                                 @can('access-admin', 'access-fornecedor')
-                                                <li>
-                                                    <a href="{{ route('administrativo.principal') }}" class="d-block">Administração</a>
-                                                </li>
+                                                    <li>
+                                                        <a href="{{ route('administrativo.principal') }}"
+                                                            class="d-block">Administração</a>
+                                                    </li>
                                                 @endcan
                                                 <li>
                                                     <form id="logout-form" action="{{ route('logout') }}" method="POST"
@@ -241,8 +242,10 @@
                     },
                     success: function(response) {
                         // Verifica se houve mudança na última modificação ou se é a primeira carga
-                        if (!ultimaModificacaoConhecida || ultimaModificacaoConhecida !== response.ultima_modificacao) {
-                            console.log("Quantidade de itens atualizada:", response.quantidade);
+                        if (!ultimaModificacaoConhecida || ultimaModificacaoConhecida !==
+                            response.ultima_modificacao) {
+                            console.log("Quantidade de itens atualizada:", response
+                                .quantidade);
                             $('#contador').text(response.quantidade);
                             ultimaModificacaoConhecida = response.ultima_modificacao;
                         }
@@ -261,7 +264,8 @@
 
             // Opcional: Atualizar quando ocorrem eventos relevantes
             $(document).on('click', '.adicionar-ao-carrinho, .remover-do-carrinho', function() {
-                setTimeout(atualizarContadorCarrinho, 1000); // Espera 1s para dar tempo do backend processar
+                setTimeout(atualizarContadorCarrinho,
+                1000); // Espera 1s para dar tempo do backend processar
             });
         });
     });

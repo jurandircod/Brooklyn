@@ -3309,7 +3309,7 @@ span {
      Breadcrumb css start
 ==========================**/
 .breadcrumb-section {
-  background-color: #eff2f7;
+  background-color: var(--theme-color);
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -3319,7 +3319,7 @@ span {
   .breadcrumb-section h3 {
     font-size: calc(20px + (26 - 20) * ((100vw - 320px) / (1920 - 320))); }
   .breadcrumb-section-1 {
-    background-color: #e9e9e9; }
+    background-color: var(--theme-color); }
   .breadcrumb-section .breadcrumb-item.active {
     color: #7e7e7e; }
   .breadcrumb-section .breadcrumb {

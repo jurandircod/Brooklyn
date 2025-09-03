@@ -1,14 +1,14 @@
 <style>
     :root {
-        --primary-color: #6A70D6;
-        --primary-hover: #ffffff;
-        --secondary-color: #9bb0c5;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --dark-color: #E22454;
-        --light-gray: #f1f5f9;
-        --border-color: #e2e8f0;
+        --primary-color: #1c2f45;
+        --primary-hover: #70152c;
+        --secondary-color: #5a1f2d;
+        --success-color: #3a2661;
+        --warning-color: #6a3414;
+        --danger-color: #4a1c1d;
+        --dark-color: #70152c;
+        --light-gray: #1c2f45;
+        --border-color: #4a1c1d;
         --text-primary: #334155;
         --text-secondary: #64748b;
         --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -18,6 +18,19 @@
     }
 
 
+    #btn-delete-account {
+        background: linear-gradient(135deg, var(--danger-color), var(--dark-color));
+        border: none;
+        border-radius: 20px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    #btn-delete-account:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(168, 76, 61, 0.4);
+    }
 
     .h-logo {
         max-width: 185px !important;
@@ -156,7 +169,7 @@
     }
 
     .stats-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
         border-radius: 20px;
         padding: 2rem;
         color: white;
@@ -187,11 +200,11 @@
     }
 
     .stats-card:nth-child(2) {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        background: linear-gradient(135deg, var(--warning-color) 0%, var(--danger-color) 100%);
     }
 
     .stats-card:nth-child(3) {
-        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        background: linear-gradient(135deg, var(--success-color) 0%, var(--light-gray) 100%);
     }
 
     .stats-card-content {
@@ -285,7 +298,7 @@
     }
 
     .table thead th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
         color: white;
         font-weight: 600;
         padding: 1rem;
@@ -830,10 +843,11 @@
                                             ainda gostaria de deletar sua conta, clique no botão abaixo.</p>
                                     </div>
 
-                                    <button class="btn btn-danger mt-3" data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal">
+                                    <button id="btn-delete-account" class="btn btn-danger mt-3"
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal">
                                         <i class="fas fa-trash-alt"></i> Deletar Sua Conta
                                     </button>
+
                                 </div>
                             </div>
 

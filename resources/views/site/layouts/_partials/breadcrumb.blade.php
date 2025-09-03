@@ -15,15 +15,15 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h3>@yield('titulo')</h3>
+                <h3 class="text-white">@yield('titulo')</h3>
                 <nav>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                            <a href="../index.htm">
-                                <i class="fas fa-home"></i>
+                            <a href="/">
+                                <i class="fas fa-home text-white"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Brooklyn SkateShop</li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">Brooklyn SkateShop</li>
                     </ol>
                 </nav>
             </div>

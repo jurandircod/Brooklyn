@@ -27,15 +27,15 @@ Route::prefix('administrativo')->middleware(['auth'])->group(function () {
         ->name('administrativo.produtos');
 
     // API para DataTables (AJAX)
-    Route::get('/produtos/api', [ProdutosController::class, 'apiProdutos'])
+    Route::get('/produtos/api', [ProdutosController::class, 'filterProducts'])
         ->name('administrativo.produtos.api');
 
     // Busca rápida (autocomplete)
-    Route::get('/produtos/buscar', [ProdutosController::class, 'buscarProdutos'])
+    Route::get('/produtos/buscar', [ProdutosController::class, 'searchProducts'])
         ->name('administrativo.produtos.buscar');
 
     // Exportação
-    Route::get('/produtos/exportar', [ProdutosController::class, 'exportar'])
+    Route::get('/produtos/exportar', [ProdutosController::class, 'export'])
         ->name('administrativo.produtos.exportar');
 
     // Rotas existentes mantidas
@@ -124,6 +124,7 @@ Route::group(['prefix' => 'carrinho'], function () {
         Route::post('/atualizar-quantidade', [ItemCarrinhoController::class, 'atualizarQuantidade'])->name('carrinho.atualizar-quantidade');
         Route::post('/remover-item', [ItemCarrinhoController::class, 'removerItem'])->name('carrinho.remover-item');
         Route::get('/quantidade', [ItemCarrinhoController::class, 'quantidadeItensCarrinho'])->name('site.carrinho.quantidadeItensCarrinho');
+        Route::get('limpaCarrinho', [ItemCarrinhoController::class, 'limpaCarrinho'])->name('site.carrinho.limpaCarrinho');
     });
     Route::post('/finalizarCarrinho', [FazerPedidoController::class, 'finalizarCarrinho'])->name('site.carrinho.finalizarCarrinho');
 });

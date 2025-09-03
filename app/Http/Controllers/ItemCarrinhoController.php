@@ -7,6 +7,7 @@ use App\model\{Produto, User, Endereco, Carrinho, Estoque, ItemCarrinho, MapaTam
 use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\Auth;
 use PHPUnit\Util\Json;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ItemCarrinhoController extends Controller
 {
@@ -206,6 +207,19 @@ class ItemCarrinhoController extends Controller
     }
 
 
+    public function limpaCarrinho()
+    {
+        try {
+            $carrinho = Carrinho::where('user_id', auth()->id())->where('status', 'ativo')->first();
+            $carrinho->itens()->delete();
+            Alert::alert('Sucesso', 'Carrinho limpo com sucesso!', 'success');
+            return redirect()->route('site.carrinho');
+        } catch (\Exception $e) {
+            Alert::error('Erro ao limpar carrinho: ' . $e->getMessage());
+            return redirect()->route('site.carrinho');
+        }
+    }
+
     public function removerItem(Request $request)
     {
 
@@ -239,6 +253,4 @@ class ItemCarrinhoController extends Controller
             ], 500);
         }
     }
-
-    
 }

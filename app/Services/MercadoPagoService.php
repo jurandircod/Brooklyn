@@ -12,7 +12,6 @@ class MercadoPagoService
     {
         // 1. Configure o token
         SDK::setAccessToken(config('mercadopago.access_token'));
-
         // 2. Configuração SSL para ambiente local
     }
 

@@ -21,9 +21,7 @@
     <meta name="keywords" content="Surfside Media">
     <meta name="author" content="Surfside Media">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-   <script>
-       window.produtos = @json($produtos);
-   </script>
+
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link id="rtl-link" rel="stylesheet" type="text/css" href="{{ asset('css/vendors/bootstrap.css') }}">
@@ -202,6 +200,17 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
+    .breadcrumb-section {
+        background: var(--theme-color);
+    }
+
+    .breadcrumb-section .circles li:nth-child(odd) {
+    background-color: #F2C14E; /* amarelo vibrante */
+}
+.breadcrumb-section .circles li:nth-child(even) {
+    background-color: #2A9D8F; /* verde água */
+}
 
     /* Botão Social */
     .social-login {

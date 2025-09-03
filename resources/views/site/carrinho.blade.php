@@ -3,7 +3,8 @@
 
 
 @section('conteudo')
-        @include('site.layouts._pages.cart')   
-        @include('sweetalert::alert')
+    @include('site.layouts._partials.breadcrumb')
+    @yield('breadcrumb')
+    @include('site.layouts._pages.cart')
+    @include('sweetalert::alert')
 @endsection
-

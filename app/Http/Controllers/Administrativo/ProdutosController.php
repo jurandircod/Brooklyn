@@ -163,7 +163,7 @@ class ProdutosController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function apiProdutos(Request $request)
+    public function filterProducts(Request $request)
     {
         $produtos = Produto::with(['categoria', 'marca', 'estoque'])
             ->select('produtos.*');
@@ -217,7 +217,7 @@ class ProdutosController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function exportar(Request $request)
+    public function export(Request $request)
     {
         $formato = $request->get('formato', 'excel'); // excel, pdf, csv
         $produtos = $this->myProducts(); // Todos os produtos para exportação
@@ -240,7 +240,7 @@ class ProdutosController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function buscarProdutos(Request $request)
+    public function searchProducts(Request $request)
     {
         $term = $request->get('q', '');
         $limit = $request->get('limit', 10);
@@ -284,7 +284,7 @@ class ProdutosController extends Controller
      * @param array $request
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    public function validarInput($request)
+    public function validateInput($request)
     {
         return Validator::make($request, [
             'nome' => 'required|string|max:255',
@@ -324,7 +324,7 @@ class ProdutosController extends Controller
     public function create(Request $request)
     {
         $data = $request->all();
-        $validator = $this->validarInput($data);
+        $validator = $this->validateInput($data);
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)

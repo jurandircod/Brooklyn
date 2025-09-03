@@ -2,179 +2,19 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 <style>
     :root {
-        --primary-color: #6366f1;
-        --primary-dark: #4f46e5;
+        --primary-color: #1c2f45;
+        --primary-dark: #3a2661;
         --secondary-color: #f8fafc;
-        --accent-color: #10b981;
-        --danger-color: #ef4444;
+        --accent-color: #6a3414;
+        --danger-color: #4a1c1d;
         --text-primary: #1f2937;
         --text-secondary: #6b7280;
         --border-color: #e5e7eb;
         --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-        min-height: 100vh;
-        color: var(--text-primary);
-    }
-
-
-    .circles {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        z-index: 1;
-    }
-
-    .circles li {
-        position: absolute;
-        display: block;
-        list-style: none;
-        width: 20px;
-        height: 20px;
-        background: rgba(99, 102, 241, 0.1);
-        animation: animate 25s linear infinite;
-        bottom: -150px;
-        border-radius: 50%;
-    }
-
-    .circles li:nth-child(1) {
-        left: 25%;
-        width: 80px;
-        height: 80px;
-        animation-delay: 0s;
-    }
-
-    .circles li:nth-child(2) {
-        left: 10%;
-        width: 20px;
-        height: 20px;
-        animation-delay: 2s;
-        animation-duration: 12s;
-    }
-
-    .circles li:nth-child(3) {
-        left: 70%;
-        width: 20px;
-        height: 20px;
-        animation-delay: 4s;
-    }
-
-    .circles li:nth-child(4) {
-        left: 40%;
-        width: 60px;
-        height: 60px;
-        animation-delay: 0s;
-        animation-duration: 18s;
-    }
-
-    .circles li:nth-child(5) {
-        left: 65%;
-        width: 20px;
-        height: 20px;
-        animation-delay: 0s;
-    }
-
-    .circles li:nth-child(6) {
-        left: 75%;
-        width: 110px;
-        height: 110px;
-        animation-delay: 3s;
-    }
-
-    .circles li:nth-child(7) {
-        left: 35%;
-        width: 150px;
-        height: 150px;
-        animation-delay: 7s;
-    }
-
-    .circles li:nth-child(8) {
-        left: 50%;
-        width: 25px;
-        height: 25px;
-        animation-delay: 15s;
-        animation-duration: 45s;
-    }
-
-    .circles li:nth-child(9) {
-        left: 20%;
-        width: 15px;
-        height: 15px;
-        animation-delay: 2s;
-        animation-duration: 35s;
-    }
-
-    .circles li:nth-child(10) {
-        left: 85%;
-        width: 150px;
-        height: 150px;
-        animation-delay: 0s;
-        animation-duration: 11s;
-    }
-
-    @keyframes animate {
-        0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 1;
-            border-radius: 0;
-        }
-
-        100% {
-            transform: translateY(-1000px) rotate(720deg);
-            opacity: 0;
-            border-radius: 50%;
-        }
-    }
-
-    .breadcrumb-section h3 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        position: relative;
-        z-index: 2;
-    }
-
-    .breadcrumb {
-        background: transparent;
-        padding: 0;
-        margin: 0;
-        position: relative;
-        z-index: 2;
-    }
-
-    .breadcrumb-item+.breadcrumb-item::before {
-        content: "→";
-        color: var(--primary-color);
-        font-weight: 600;
-    }
-
-    .breadcrumb-item a {
-        color: var(--primary-color);
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-
-    .breadcrumb-item a:hover {
-        color: var(--primary-dark);
-    }
-
-    .breadcrumb-item.active {
-        color: var(--text-secondary);
-        font-weight: 500;
+        --gradient-primary: linear-gradient(135deg, #4a1c1d 0%, #4a1c1d 100%);
+        --gradient-success: linear-gradient(135deg, #1f2937 0%, #4a1c1d 100%);
     }
 
     /* Container principal */
@@ -656,38 +496,6 @@
         margin-bottom: 1rem;
     }
 </style>
-<section class="breadcrumb-section section-b-space" style="padding-top:20px;padding-bottom:20px;">
-    <ul class="circles">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h3 class="text-white">Carrinho</h3>
-                <nav>
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="/">
-                                <i class="fas fa-home"></i>
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active text-white" aria-current="page">Carrinho</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Cart Section Start -->
 <section class="cart-section section-b-space">
     <div class="container">
@@ -802,7 +610,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-6 order-md-2 mb-3 mb-md-0">
                             <div class="text-md-end">
-                                <a href="javascript:void(0)" class="btn-clear-all">
+                                <a href="{{route('site.carrinho.limpaCarrinho')}}" class="btn-clear-all">
                                     <i class="fas fa-trash-alt me-2"></i>
                                     Limpar todos os itens
                                 </a>

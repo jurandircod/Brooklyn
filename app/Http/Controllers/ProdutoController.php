@@ -8,16 +8,6 @@ use App\model\{Produto, Estoque, Avaliacao};
 class ProdutoController extends Controller
 {
 
-    private $produtos;
-    private $estoque;
-    private $produtosDaMesmaCategoria;
-    public function __construct()
-    {
-        $this->produtos = Produto::all();
-        $this->estoque = Estoque::all();
-    }
-
-
     public function index(Request $request, $id)  // Adicione Request $request como parâmetro
     {
         $produto = Produto::find($id);

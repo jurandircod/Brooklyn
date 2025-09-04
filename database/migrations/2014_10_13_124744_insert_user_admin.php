@@ -18,6 +18,7 @@ class InsertUserAdmin extends Migration
             'name' => 'Administrador',
             'email' => 'jurandiradmin@gmail.com',
             'password' => bcrypt('mudar123'),
+            'email_verified_at' => now(),
             'remember_token' => null,
             'role_id' => 10,
             'created_at' => now(),

@@ -9,26 +9,25 @@
         </div>
 
         {{-- Slides do Carrossel --}}
-        @foreach ($produtos as $produto)
-            @php $imgIndex = (($loop->index) % 6) + 1; @endphp
-            <div class="slide active" style="background-image: url('{{ asset("images/carousel/{$imgIndex}.jpeg") }}');">
+        @for ($i = 1; $i <= 6; $i++)
+            <div class="slide active" style="background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwowslider.com%2Fpt-br%2Fcarousel-slider-showy-carousel-demo.html&psig=AOvVaw0tVulNk8-uI0rhOynxtyOy&ust=1757077496784000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCNjDnPKVv48DFQAAAAAdAAAAABAE');">
                 <div class="slide-overlay"></div>
                 <div class="slide-content">
-                    <div class="slide-badge">{{ $produto->material }}</div>
-                    <h2 class="slide-title">{{ $produto->nome }}</h2>
-                    <p class="slide-description">{{ $produto->descricao }}</p>
-                    <button class="slide-cta" onclick="openProductModal()">Ver Produto →</button>
+                    <div class="slide-badge">Melhores Materias</div>
+                    <h2 class="slide-title">Marfim, Maple e outros materiais</h2>
+                    <p class="slide-description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum, quia.</p>
+                    <button class="slide-cta" onclick="openProductModal()">Confira nossos Produtos →</button>
                 </div>
                 <div class="slide-info">
-                    <div class="info-price">R$ {{ number_format($produto->valor, 2, ',', '.') }}</div>
+                    <div class="info-price">R$ 100</div>
                     <ul class="info-features">
-                        <li>{{ $produto->categoria->nome }}</li>
-                        <li>{{ $produto->marca->nome }}</li>
-                        <li>Quantidade: {{ $produto->quantidade }}</li>
+                        <li>Produtos de todas as categorias</li>
+                        <li>Todos os produtos em uma única página</li>
+                        <li>Uma experiência de compra única</li>
                     </ul>
                 </div>
             </div>
-        @endforeach
+        @endfor
 
 
         {{-- Navegação --}}
@@ -107,7 +106,7 @@
         right: 0;
         padding: 60px;
         color: white;
-        z-index: 10;
+        z-index: 1;
     }
 
     .slide-badge {
@@ -175,7 +174,7 @@
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        z-index: 30;
+        z-index: 1;
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -208,7 +207,7 @@
         position: absolute;
         top: 40px;
         right: 60px;
-        z-index: 20;
+        z-index: 1;
         display: flex;
         align-items: center;
         gap: 20px;
@@ -242,7 +241,7 @@
         right: 60px;
         display: flex;
         gap: 10px;
-        z-index: 20;
+        z-index: 1;
     }
 
     .dot {
@@ -263,7 +262,7 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
-        z-index: 5;
+        z-index: 1
     }
 
     .floating-circle {
@@ -321,7 +320,7 @@
         padding: 30px;
         max-width: 300px;
         color: white;
-        z-index: 15;
+        z-index: 1;
     }
 
     .info-price {

@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\model\{Produto, Avaliacao, User};
-use App\ItemCarrinho;
+use App\model\{Produto, Avaliacao};
 
 class AvaliacaoController extends Controller
 {
-    public function CreateAvaliacao(Request $request)
+    public function createAvaliacao(Request $request)
     {
         if (!$request->has('produto_id') || !$request->has('estrela') || !$request->has('comentario')) {
             Alert::error('Por favor, preencha todos os campos.');

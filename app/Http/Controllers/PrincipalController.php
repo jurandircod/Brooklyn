@@ -24,7 +24,7 @@ class PrincipalController extends Controller
         $itens = ItemCarrinho::where('carrinho_id', $cart->id)->get();
 
         // Carrega todos os produtos COM suas fotos (eager loading)
-        $produtos = Produto::with('fotos')->get();
+        $produtos = Produto::with('fotos')->take(20)->get();
         $categorias = Categoria::take(4)->get();
         $itens = $itens;
         $cart = $request->query('cart') == 1 ? 1 : null;

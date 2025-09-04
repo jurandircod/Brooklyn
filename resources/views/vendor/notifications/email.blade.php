@@ -1,88 +1,51 @@
 @component('mail::message')
-{{-- Header com Logo --}}
-<div style="text-align: center; margin-bottom: 30px;">
-    <img src="https://via.placeholder.com/200x80/000000/FFFFFF?text=BROOKLYN+SKATESHOP" alt="Brooklyn Skateshop" style="max-width: 200px; height: auto;">
+{{-- Logo (usa embed se disponível, senão asset) --}}
+<div style="text-align:center; margin-bottom:18px;">
+    <img src="{{ isset($message) ? $message->embed(public_path('images/1.png')) : asset('images/1.png') }}"
+         alt="Brooklyn Skateshop" width="160" style="border-radius:14px; display:block; margin: 0 auto;">
 </div>
 
-{{-- Greeting --}}
-@if (! empty($greeting))
-# {{ $greeting }}
-@else
-@if ($level === 'error')
-# 🛹 Ops! Algo deu errado...
-@else
-# 🛹 E aí, skater!
-@endif
-@endif
+{{-- Título --}}
+# E aí, skater! 🛹
 
-{{-- Intro Lines --}}
-@foreach ($introLines as $line)
-{{ $line }}
+{{-- Intro --}}
+<p style="font-size:15px; line-height:1.4; margin-top:8px;">
+    Valeu por se cadastrar na <strong>Brooklyn Skateshop</strong> — a quebrada dos shapes, tênis e rolês.
+    Antes de começar a comprar e tirar onda, confirma seu e-mail pra gente saber que é você mesmo.
+</p>
 
-@endforeach
+{{-- Botão de ação --}}
+@component('mail::button', ['url' => $actionUrl ?? $displayableActionUrl, 'color' => 'primary'])
+🔥 CONFIRMAR MEU E-MAIL
+@endcomponent
 
-{{-- Action Button --}}
-@isset($actionText)
-<?php
-    switch ($level) {
-        case 'success':
-            $color = 'success';
-            break;
-        case 'error':
-            $color = 'error';
-            break;
-        default:
-            $color = 'primary';
-    }
-?>
-<div style="text-align: center; margin: 25px 0;">
-    @component('mail::button', ['url' => $actionUrl, 'color' => $color])
-    🔥 {{ $actionText }}
-    @endcomponent
-</div>
-@endisset
+{{-- Mensagem extra / tom jovem --}}
+<p style="margin-top:14px; font-size:14px;">
+    Se não foi você que pediu, relaxa — ignora esse e-mail. Se tiver problema no clique, usa o link abaixo.
+</p>
 
-{{-- Outro Lines --}}
-@foreach ($outroLines as $line)
-{{ $line }}
-
-@endforeach
-
-{{-- Divider Style --}}
-<hr style="border: none; border-top: 2px solid #333; margin: 30px 0;">
-
-{{-- Salutation --}}
-@if (! empty($salutation))
-{{ $salutation }}
-@else
-**Keep skating!** 🛹<br>
-**Equipe Brooklyn Skateshop**<br>
-<small style="color: #666;">Sua loja de skate de confiança</small>
-@endif
-
-{{-- Footer com informações da loja --}}
-<div style="text-align: center; margin-top: 40px; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
-    <p style="margin: 5px 0; color: #666; font-size: 14px;">
-        <strong>Brooklyn Skateshop</strong><br>
-        📍 Endereço da loja • 📞 (XX) XXXX-XXXX<br>
-        🌐 www.brooklynskateshop.com • 📧 contato@brooklynskateshop.com
-    </p>
-    <p style="margin: 10px 0 0 0; color: #888; font-size: 12px;">
-        Siga-nos nas redes sociais: @brooklynskateshop
-    </p>
-</div>
-
-{{-- Subcopy --}}
+{{-- Subcopy com link direto --}}
 @isset($actionText)
 @slot('subcopy')
-<div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin-top: 20px;">
-    <p style="font-size: 12px; color: #666; margin: 0;">
-        Se você está tendo problemas para clicar no botão "{{ $actionText }}", copie e cole o link abaixo no seu navegador:
-    </p>
-    <p style="font-size: 12px; margin: 10px 0 0 0;">
-        <span class="break-all" style="color: #007bff;">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
-    </p>
+<div style="background:#f7f7f8; padding:12px; border-radius:6px; margin-top:12px;">
+    <small style="color:#555;">
+        Não consegue usar o botão? Copia e cola este link no navegador:
+        <br>
+        <a href="{{ $actionUrl ?? $displayableActionUrl }}" target="_blank" style="word-break:break-all;">
+            {{ $actionUrl ?? $displayableActionUrl }}
+        </a>
+    </small>
 </div>
 @endslot
 @endisset
+
+{{-- Saudações --}}
+<p style="margin-top:18px; font-weight:600;">Keep skating! ✌️<br>Equipe Brooklyn Skateshop</p>
+
+{{-- Footer --}}
+<div style="text-align:center; margin-top:22px; padding:14px; background:#fafafa; border-radius:8px; font-size:12px; color:#666;">
+    📍 Rua Exemplo, 123 — Sua Cidade • 📞 (XX) XXXX-XXXX<br>
+    Siga: <strong>@brooklynskateshop</strong>
+</div>
+
 @endcomponent

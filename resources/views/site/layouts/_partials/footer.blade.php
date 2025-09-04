@@ -148,25 +148,4 @@
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{{ asset('js/jquery-3.5.1.min.js') }}"></script>
-<script src="{{ asset('js/bootstrap/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('js/feather/feather.min.js') }}"></script>
-<script src="{{ asset('js/lazysizes.min.js') }}"></script>
-<script src="{{ asset('js/slick/slick.js') }}"></script>
-<script src="{{ asset('js/slick/slick-animation.min.js') }}"></script>
-<script src="{{ asset('js/slick/custom_slick.js') }}"></script>
-<script src="{{ asset('js/price-filter.js') }}"></script>
-<script src="{{ asset('js/ion.rangeSlider.min.js') }}"></script>
-<script src="{{ asset('js/filter.js') }}"></script>
-<script src="{{ asset('js/newsletter.js') }}"></script>
-<script src="{{ asset('js/cart_modal_resize.js') }}"></script>
-<script src="{{ asset('js/bootstrap/bootstrap-notify.min.js') }}"></script>
-<script src="{{ asset('js/theme-setting.js') }}"></script>
-<script src="{{ asset('js/script.js') }}"></script>
-<script>
-    $(function() {
-        $('[data-bs-toggle="tooltip"]').tooltip()
-    });
-</script>
+

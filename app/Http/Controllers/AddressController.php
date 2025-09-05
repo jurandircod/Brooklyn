@@ -12,6 +12,7 @@ use App\Http\Controllers\Perfil;
 
 class AddressController extends Controller
 {
+    private $activeTab = 6;
 
     public function __construct()
     {
@@ -101,8 +102,6 @@ class AddressController extends Controller
 
     public function salvar(Request $request)
     {
-
-        $activeTab = 3;
         $cepTratado = preg_replace('/[^0-9]/', '', $request->cep);
         $data = $request->all();
         $data['cep'] = $cepTratado;
@@ -114,7 +113,7 @@ class AddressController extends Controller
         if ($validator->fails()) {
             Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
             return redirect()
-                ->route('site.perfil', compact('activeTab'))
+                ->route('site.perfil', ['activeTab' => $this->activeTab])
                 ->withErrors($validator)
                 ->withInput();
         }
@@ -122,21 +121,20 @@ class AddressController extends Controller
         try {
             Endereco::create($data);
             Alert::alert('Endereço', 'Salvo com sucesso', 'success');
-            return redirect()->route('site.perfil', compact('activeTab'));
+            return redirect()->route('site.perfil', ['activeTab' => $this->activeTab]);
         } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
-            return redirect()->route('site.perfil', compact('activeTab'));
+            return redirect()->route('site.perfil', ['activeTab' => $this->activeTab]);
         }
     }
 
     public function editar(Request $request, $id)
     {
-        $activeTab = 3;
         $validator = $this->validarInput($request->all());
         if ($validator->fails()) {
             Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
             return redirect()
-                ->route('site.perfil', compact('activeTab'))
+                ->route('site.perfil', ['activeTab' => $this->activeTab])
                 ->withErrors($validator)
                 ->withInput();
         }
@@ -146,7 +144,7 @@ class AddressController extends Controller
             $endereco->update($request->all());
 
             Alert::alert('Endereço', 'Atualizado com sucesso', 'success');
-            return redirect()->route('site.perfil', ['id' => null, 'activeTab' => 3]);
+            return redirect()->route('site.perfil', ['id' => null, 'activeTab' => 6]);
         } catch (\Exception $e) {
             Alert::alert('Erro', $e->getMessage(), 'error');
             return view('site.perfil');
@@ -164,7 +162,6 @@ class AddressController extends Controller
 
     public function remover($id)
     {
-        $activeTab = 6;
         $pedidos = Pedido::where('endereco_id', $id)->orWhere('status', 'pago')->orWhere('status', 'enviado')->orWhere('status', 'entregue')->orWhere('status', 'aguardando')->get();
         if ($pedidos->count() > 0) {
             Alert::alert('Erro', 'Não é possível excluir o endereço pois existem pedidos ativos associados a ele', 'error');
@@ -174,6 +171,6 @@ class AddressController extends Controller
         $endereco = Endereco::findOrFail($id);
         $endereco->delete();
         Alert::alert('Endereço', 'Removido com sucesso', 'success');
-        return redirect()->route('site.perfil', compact('activeTab'));
+        return redirect()->route('site.perfil', ['activeTab' => 6]);
     }
 }

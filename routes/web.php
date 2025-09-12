@@ -75,7 +75,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     Route::prefix('produto')->group(function () {
         Route::get('/{id}', 'ProdutoController@index')->name('site.produto');
-        Route::post('/avaliacao', [AvaliacaoController::class, 'avaliar'])->name('site.produto.avaliacao');
         Route::post('/avaliacao', 'AvaliacaoController@CreateAvaliacao')->name('site.produto.avaliacao');
     });
 

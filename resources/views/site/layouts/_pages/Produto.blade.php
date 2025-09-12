@@ -400,29 +400,4 @@
         });
     });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const stars = document.querySelectorAll('#rating li');
-        const avaliacaoInput = document.getElementById('avaliacaoInput');
 
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                const value = parseInt(this.getAttribute('data-value'));
-                avaliacaoInput.value = value;
-
-                // Atualiza a aparência visual das estrelas
-                stars.forEach((s, index) => {
-                    if (index < value) {
-                        s.querySelector('i').classList.add(
-                            'theme-color'
-                        ); // Adicione uma classe 'active' para estrelas selecionadas
-                    } else {
-                        s.querySelector('i').classList.remove(
-                            'theme-color'
-                        ); // Remove a classe 'active' das estrelas não selecionadas
-                    }
-                });
-            });
-        });
-    });
-</script>

@@ -5,15 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\model\{Produto, Avaliacao};
+use Illuminate\Support\Facades\DB;
 
 class AvaliacaoController extends Controller
 {
     public function createAvaliacao(Request $request)
     {
         if (!$request->has('produto_id') || !$request->has('estrela') || !$request->has('comentario')) {
-            Alert::error('Por favor, preencha todos os campos.');
-            return redirect()->back();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erro ao salvar avaliação!'
+            ]);
         }
+
+        DB::beginTransaction();
         $produto = Produto::findOrFail($request->produto_id);
         $user = auth()->user();
         $estrela =  intVal($request->estrela);
@@ -28,12 +33,11 @@ class AvaliacaoController extends Controller
         $avaliacao->estrela = $estrela;
         $avaliacao->comentario = $request->comentario;
         $avaliacao->save();
-
-        // Calcula a nova média arredondada
-
-
-        Alert::success('Avaliação salva com sucesso!');
-        return redirect()->route('site.produto', ['id' => $produto->id]);
+        DB::commit();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Avaliação salva com sucesso!'
+        ]);
     }
 
     public function getAvaliacoes(Request $request)

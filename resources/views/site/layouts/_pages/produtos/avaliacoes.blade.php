@@ -27,59 +27,108 @@
 @endif
 
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
+    document.addEventListener("DOMContentLoaded", function() {
         // Configuração das estrelas (seu código existente)
-        $('#rating li').on('click', function() {
-            // Seu código para selecionar estrelas
-        });
+        const stars = document.querySelectorAll('#rating li');
+        const avaliacaoInput = document.getElementById('avaliacaoInput');
 
-        // Paginação via AJAX
-        $(document).on('click', '#pagination a', function(e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                avaliacaoInput.value = value;
 
-            $.ajax({
-                url: url,
-                type: 'GET',
-                dataType: 'html',
-                success: function(data) {
-                    $('#avaliacoes-container').html(data);
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                    alert('Erro ao carregar mais avaliações.');
-                }
+                // Atualiza a aparência visual das estrelas
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.querySelector('i').classList.add(
+                            'theme-color'
+                        ); // Adicione uma classe 'active' para estrelas selecionadas
+                    } else {
+                        s.querySelector('i').classList.remove(
+                            'theme-color'
+                        ); // Remove a classe 'active' das estrelas não selecionadas
+                    }
+                });
             });
+        });
+        // Paginação via AJAX
+        document.addEventListener("click", function(e) {
+            if (e.target.closest("#pagination a")) {
+                e.preventDefault();
+                const url = e.target.closest("#pagination a").getAttribute("href");
+
+                fetch(url, {
+                        method: "GET"
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        document.querySelector("#avaliacoes-container").innerHTML = data;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert("Erro ao carregar mais avaliações.");
+                    });
+            }
         });
 
         // Formulário de avaliação via AJAX
-        $('form').on('submit', function(e) {
-            e.preventDefault();
+        document.querySelectorAll("form").forEach(function(form) {
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
 
-            $.ajax({
-                url: $(this).attr('action'),
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    // Recarrega as avaliações após enviar
-                    $.ajax({
-                        url: window.location.pathname,
-                        type: 'GET',
-                        success: function(data) {
-                            $('#avaliacoes-container').html($(data).find(
-                                '#avaliacoes-container').html());
-                            // Limpa o formulário
-                            $('textarea#comments').val('');
-                            $('#rating li i').removeClass('active');
-                            $('#avaliacaoInput').val('0');
+                const url = form.getAttribute("action");
+                const formData = new FormData(form);
+
+                fetch(url, {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
+                    .then(() => {
+                        // Recarrega as avaliações após enviar
+                        fetch(window.location.pathname, {
+                                method: "GET"
+                            })
+                            .then(response => response.text())
+                            .then(data => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(data, "text/html");
+                                document.querySelector("#avaliacoes-container")
+                                    .innerHTML =
+                                    doc.querySelector("#avaliacoes-container")
+                                    .innerHTML;
+
+                                // Limpa o formulário
+                                document.querySelector("textarea#comments").value = "";
+                                document.querySelectorAll("#rating li i").forEach(i => i
+                                    .classList.remove("active"));
+                                document.querySelector("#avaliacaoInput").value = "0";
+                            });
+                        swal.fire({
+                            title: 'Sucesso!',
+                            text: 'Avaliação enviada com sucesso!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+
+                        stars.forEach((s, index) => {
+                            s.querySelector('i').classList.remove(
+                                'theme-color'
+                            ); // Remove a classe 'active' das estrelas não selecionadas
+                        });
+                    })
+                    .catch(async (error) => {
+                        try {
+                            const err = await error.json();
+                            alert(err.message || "Erro ao enviar avaliação.");
+                        } catch {
+                            alert("Erro ao enviar avaliação.");
                         }
                     });
-                },
-                error: function(xhr) {
-                    alert(xhr.responseJSON.message || 'Erro ao enviar avaliação.');
-                }
             });
         });
     });

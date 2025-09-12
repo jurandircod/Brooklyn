@@ -10,7 +10,7 @@
 
         {{-- Slides do Carrossel --}}
         @for ($i = 1; $i <= 6; $i++)
-            <div class="slide active" style="background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwowslider.com%2Fpt-br%2Fcarousel-slider-showy-carousel-demo.html&psig=AOvVaw0tVulNk8-uI0rhOynxtyOy&ust=1757077496784000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCNjDnPKVv48DFQAAAAAdAAAAABAE');">
+            <div class="slide active" style="background-image: url('');">
                 <div class="slide-overlay"></div>
                 <div class="slide-content">
                     <div class="slide-badge">Melhores Materias</div>

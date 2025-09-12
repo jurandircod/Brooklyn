@@ -160,6 +160,13 @@ class ItemCarrinhoController extends Controller
 
             $tamanhoTratado = $this->mapaTamanho->getTamanhoDisponiveis($request->categoria_id, $tamanho);
             $estoque = Estoque::where('produto_id', $item->produto_id)->where('tamanho', $tamanhoTratado)->firstOrFail();
+            if (!$estoque) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Contate o suporte para mais informações"
+                ]);
+                exit;
+            }
             // Se estiver aumentando a quantidade no carrinho
             if ($estoque->quantidade < $nova_quantidade) {
                 return response()->json([
@@ -222,8 +229,6 @@ class ItemCarrinhoController extends Controller
 
     public function removerItem(Request $request)
     {
-
-
         try {
             $user_id = auth()->id(); // Fallback para teste
             $item_id = $request->item_id;

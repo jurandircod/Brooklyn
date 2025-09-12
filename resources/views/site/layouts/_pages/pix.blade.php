@@ -134,7 +134,7 @@
 </style>
 
 <script>
-// Simular dados do PIX (substitua pelos dados reais da sua aplicação)
+// Simular dados do PIX
 const pixData = {
   amount: "{{ $valor }}",
   pixKey: "{{ $qr_code }}",

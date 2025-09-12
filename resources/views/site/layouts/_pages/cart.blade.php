@@ -92,7 +92,7 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <input type="hidden" name="categoria_id" id="categoria_id" value="{{ $item->produto->categoria->id }}">
+                                        <input type="hidden" data-categoria-id="{{ $item->produto->categoria->id }}" name="categoria_id" id="categoria_id" value="{{ $item->produto->categoria->id }}">
 
                                         <!-- Preço total -->
                                         <td data-label="Total">
@@ -122,7 +122,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 order-md-1">
-                            <a href="../shop.html" class="btn-continue">
+                            <a href="/" class="btn-continue">
                                 <i class="fas fa-arrow-left"></i>
                                 Continue No shop
                             </a>
@@ -166,16 +166,16 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Seleciona todos os inputs de quantidade
-        const quantityInputs = document.querySelectorAll('input[name="quantity"]');
-        const categoriaId = document.getElementById('categoria_id').value;
-
+        const quantityInputs = document.querySelectorAll('input[name="quantity"]');        
         // Adiciona evento de change a cada input
         quantityInputs.forEach(input => {
             input.addEventListener('change', function() {
                 const row = this.closest('tr');
                 const itemId = this.getAttribute('data-item-id');
                 const newQuantity = this.value;
-
+                const input = row.querySelector('[name="categoria_id"]');
+                const categoriaId = input.value;
+                console.log(categoriaId);
                 // Validação básica
                 if (newQuantity < 1) {
                     this.value = 1;
@@ -186,7 +186,7 @@
                 row.classList.add('updating');
 
                 // Chama a função de atualização
-                updateQuantity(itemId, newQuantity, row, this);
+                updateQuantity(itemId, newQuantity, row, this, categoriaId);
             });
         });
 
@@ -202,7 +202,7 @@
         });
 
         // Função para atualizar quantidade via AJAX
-        function updateQuantity(itemId, quantity, row, inputElement) {
+        function updateQuantity(itemId, quantity, row, inputElement, categoriaId) {
             // Obtém o token CSRF de forma segura
             const csrfToken = getCsrfToken();
             const sizeSelected = row.querySelector('[data-size-selected]').textContent.trim();

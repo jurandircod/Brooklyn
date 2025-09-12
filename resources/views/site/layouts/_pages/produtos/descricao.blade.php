@@ -1,4 +1,29 @@
      @section('produto-descricao')
+         <style>
+             .btn {
+                 border-radius: 12px;
+                 padding: 0.75rem 1.5rem;
+                 font-weight: 600;
+                 transition: all 0.3s ease;
+                 border: none;
+                 cursor: pointer;
+                 text-decoration: none;
+                 display: inline-flex;
+                 align-items: center;
+                 gap: 0.5rem;
+             }
+
+             .btn-solid-default {
+                 background: linear-gradient(135deg, var(--theme-color), var(--theme-color));
+                 color: white;
+             }
+
+             .btn-solid-default:hover {
+                 transform: translateY(-2px);
+                 box-shadow: var(--shadow-lg);
+                 color: white;
+             }
+         </style>
          <div class="col-12">
              <div class="cloth-review">
                  <nav>
@@ -93,7 +118,7 @@
                                          </div>
 
                                          <div class="col-12">
-                                             <button type="submit" class="btn btn-solid-default text-white">Enviar
+                                             <button type="submit" class="btn btn-solid-default">Enviar
                                                  Comentario</button>
                                          </div>
                                      </form>

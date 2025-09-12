@@ -25,9 +25,10 @@ class PrincipalController extends Controller
 
         // Carrega todos os produtos COM suas fotos (eager loading)
         $produtos = Produto::with('fotos')->take(20)->get();
-        $categorias = Categoria::take(4)->get();
+        $categorias = Categoria::whereIn('nome', ['camisas', 'skates', 'tenis'])->get();
         $itens = $itens;
+        $i = 0;
         $cart = $request->query('cart') == 1 ? 1 : null;
-        return view('site.principal', compact('produtos', 'cart', 'itens','categorias'));
+        return view('site.principal', compact('produtos', 'cart', 'itens','categorias', 'i'));
     }
 }

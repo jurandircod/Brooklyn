@@ -14,7 +14,8 @@ class MapaTamanho extends Model
         '42' => '42',
     ];
 
-    protected $tamanhoCamisetas = [
+    protected $tamanhoRoupas = [
+        'pp' => 'pp',
         'p' => 'p',
         'm' => 'm',
         'g' => 'g',
@@ -30,8 +31,8 @@ class MapaTamanho extends Model
 
 public function getTamanhoDisponiveis($categoriaId, $tamanho)
 {
-    if ($categoriaId == 1) {
-        return $this->tamanhoCamisetas[$tamanho] ?? null;
+    if ($categoriaId == 1 || $categoriaId == 4) {
+        return $this->tamanhoRoupas[$tamanho] ?? null;
     } elseif ($categoriaId == 2) {
         return $this->tamanhoSkates[$tamanho] ?? null;
     } elseif ($categoriaId == 3) {

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use App\model\Tamanho;
 
 
 /**
@@ -43,6 +44,7 @@ class ProdutosController extends Controller
         '41' => '41',
         '42' => '42',
     ];
+    private $tamanhos;
 
     /**
      * ProdutosController constructor.
@@ -93,7 +95,8 @@ class ProdutosController extends Controller
             'currentSearch' => $search,
             'currentCategoria' => $categoria,
             'currentMarca' => $marca,
-            'perPage' => $perPage
+            'perPage' => $perPage,
+            'tamanhos' => $this->tamanhos
         ]);
     }
 

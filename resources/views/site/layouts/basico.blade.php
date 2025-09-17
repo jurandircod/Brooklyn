@@ -60,7 +60,6 @@
     </style>
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <title>Brooklyn SkateShop - @yield('titulo')</title>
-
 </head>
 <style>
     * {

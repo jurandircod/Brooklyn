@@ -54,7 +54,7 @@ class AddressController extends Controller
             $uf = $data['uf'] ?? 'UF não disponível para este CEP';
             return response()->json(['city' => $city, 'uf' => $uf]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao buscar o CEP Informar o Jurandir o erro', $e->getMessage()], 500);
+            return response()->json(['error' => 'Erro ao buscar o CEP', $e->getMessage()], 500);
         }
     }
 
@@ -153,8 +153,12 @@ class AddressController extends Controller
 
     public static function enviaParaformEnderecos($id)
     {
-        $enderecoEditar = Endereco::where('id', $id)->first();
-        return $enderecoEditar;
+
+        $enderecoEditar = Endereco::where('id', $id)->where('user_id', auth()->id())->first();
+        if (!$enderecoEditar) {
+            $enderecoEditar = null;
+            return $enderecoEditar;
+        }
     }
 
 

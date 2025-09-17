@@ -11,38 +11,46 @@ class AvaliacaoController extends Controller
 {
     public function createAvaliacao(Request $request)
     {
-        if (!$request->has('produto_id') || !$request->has('estrela') || !$request->has('comentario')) {
+        try {
+            if (!$request->has('produto_id') || !$request->has('estrela') || !$request->has('comentario')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Erro ao salvar avaliação!'
+                ]);
+            }
+
+            DB::beginTransaction();
+            $produto = Produto::findOrFail($request->produto_id);
+            $user = auth()->user();
+            $estrela =  intVal($request->estrela);
+            if ($estrela == null || $estrela < 1) {
+                $estrela = 1;
+            } elseif ($estrela > 5) {
+                $estrela = 5;
+            }
+            $avaliacao = new Avaliacao;
+            $avaliacao->user_id = $user->id;
+            $avaliacao->produto_id = $produto->id;
+            $avaliacao->estrela = $estrela;
+            $avaliacao->comentario = $request->comentario;
+            $avaliacao->save();
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Avaliação salva com sucesso!'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
             return response()->json([
                 'status' => 'error',
-                'message' => 'Erro ao salvar avaliação!'
+                'message' => 'Erro ao salvar avaliação: ' . $e->getMessage()
             ]);
         }
-
-        DB::beginTransaction();
-        $produto = Produto::findOrFail($request->produto_id);
-        $user = auth()->user();
-        $estrela =  intVal($request->estrela);
-        if ($estrela == null || $estrela < 1) {
-            $estrela = 1;
-        } elseif ($estrela > 5) {
-            $estrela = 5;
-        }
-        $avaliacao = new Avaliacao;
-        $avaliacao->user_id = $user->id;
-        $avaliacao->produto_id = $produto->id;
-        $avaliacao->estrela = $estrela;
-        $avaliacao->comentario = $request->comentario;
-        $avaliacao->save();
-        DB::commit();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Avaliação salva com sucesso!'
-        ]);
     }
 
     public function getAvaliacoes(Request $request)
     {
-        $avaliacao = avaliacao::paginate(10);
+        $avaliacao = Avaliacao::paginate(10);
 
         if (request()->ajax()) {
             return response()->json([

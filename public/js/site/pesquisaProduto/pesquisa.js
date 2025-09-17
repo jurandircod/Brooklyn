@@ -18,99 +18,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Função para lidar com o clique em "Adicionar ao Carrinho"
-    function handleAddToCart(event) {
-        const botao = event.target.closest('.addtocart-btn');
-        if (!botao) return;
-
-        const produtoId = botao.getAttribute('data-id');
-        const produtoElement = botao.closest('.product-box');
-        const produtoNome = produtoElement.querySelector('h5').textContent;
-        const produtoPreco = produtoElement.querySelector('.theme-color').textContent;
-        const produtoImagem = produtoElement.querySelector('img').src;
-        const tamanho = "quantidade";
-
-        // Mostrar toast de carregamento
-        const loadingToast = Toastify({
-            text: "Adicionando ao carrinho...",
-            duration: -1,
-            gravity: "bottom",
-            position: "right",
-            backgroundColor: "#4CAF50",
-            stopOnFocus: true
-        }).showToast();
-
-        fetch("/carrinho/adicionar", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({
-                produto_id: produtoId,
-                quantidade: 1,
-                tamanho: tamanho
-            })
-        })
-            .then(async (res) => {
-                const contentType = res.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    return res.json();
-                } else {
-                    const text = await res.text();
-                    throw new Error(text);
-                }
-            })
-            .then(data => {
-                loadingToast.hideToast();
-
-                if (data.status === "error") {
-                    Toastify({
-                        text: data.message,
-                        duration: 4000,
-                        gravity: "bottom",
-                        position: "right",
-                        backgroundColor: "#f44336",
-                        stopOnFocus: true
-                    }).showToast();
-                    return;
-                }
-
-                Swal.fire({
-                    title: 'Adicionado ao carrinho!',
-                    html: `
-                        <div style="display: flex; align-items: center; gap: 15px; margin: 10px 0;">
-                            <img src="${produtoImagem}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
-                            <div>
-                                <h6 style="margin: 0 0 5px 0;">${produtoNome}</h6>
-                                <p style="margin: 0; color: #4CAF50; font-weight: bold;">${produtoPreco}</p>
-                            </div>
-                        </div>
-                    `,
-                    icon: 'success',
-                    showConfirmButton: true,
-                    confirmButtonText: 'OK',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            })
-            .catch(err => {
-                loadingToast.hideToast();
-                Toastify({
-                    text: "Erro inesperado. Tente novamente.",
-                    duration: 4000,
-                    gravity: "bottom",
-                    position: "right",
-                    backgroundColor: "#f44336",
-                    stopOnFocus: true
-                }).showToast();
-                console.error("Erro na requisição:", err);
-            });
-    }
-
-    // Delegação de eventos para .addtocart-btn
-    productGrid.addEventListener('click', handleAddToCart);
 
     // Variável global para armazenar filtros ativos
     let activeFilters = null;
@@ -173,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (page > 1) {
             url += (url.includes('?') ? '&' : '?') + 'page=' + page;
         }
-
+        
         fetch(url, {
             method: 'POST',
             headers: {

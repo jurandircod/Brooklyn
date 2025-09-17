@@ -3,7 +3,7 @@
 namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 
-class avaliacao extends Model
+class Avaliacao extends Model
 {
     protected $table = 'avaliacoes';
     protected $fillable = ['user_id', 'produto_id', 'estrela', 'comentario'];

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\model\{Produto, Categoria};
+use App\model\{Produto, Categoria, Tamanho};
 
 class CategoriaController extends Controller
 {
@@ -26,6 +26,7 @@ class CategoriaController extends Controller
 
     public function salvarCategoria(Request $request)
     {
+
         $rotaCategoria = $request->all();
         if ($rotaCategoria['rotaCategoria'] == 1) {
             $data['nome'] = $rotaCategoria['nomeCategoria'];
@@ -51,7 +52,6 @@ class CategoriaController extends Controller
         } else {
             $data = $request->all();
             $validator = $this->validarInput($data);
-            Alert::alert('Categoria', 'Salva com sucesso', 'success');
             if ($validator->fails()) {
                 Alert::alert('Categoria', 'Preencha os campos obrigatórios', 'error');
                 return redirect()

@@ -6,7 +6,7 @@
                 <div class="col-lg-4 col-md-6">
                     <article class="collection-banner card-banner" role="button" tabindex="0"
                         aria-label="Categoria {{ $categoria->nome }}">
-                        <a href="shop-left-sidebar.html" class="banner-img" aria-hidden="true">
+                        <a href="{{route('')}}" class="banner-img" aria-hidden="true">
                             <img src="{{ asset('images/fashion/banner/' . $i . '.jpg') }}"
                                 data-src="{{ asset('images/fashion/banner/' . $i . '.jpg') }}"
                                 alt="{{ $categoria->nome }} - Banner" class="bg-img blur-up lazyload" loading="lazy"
@@ -23,7 +23,7 @@
                             </button>
                         </div>
 
-                        <a href="shop-left-sidebar.html" class="contain-banner"
+                        <a href="{{route('')}}" class="contain-banner"
                             aria-label="Ver produtos de {{ $categoria->nome }}">
                             <div class="banner-content with-big">
                                 <h2 class="mb-2">{{ $categoria->nome }}</h2>

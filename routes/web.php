@@ -65,9 +65,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROTAS DE PESQUISA
     // ==========================================
     Route::prefix('pesquisa')->group(function () {
-        Route::get('/pesquisa', 'ShopController@index')->name('site.shop');
+        Route::get('/pesquisa/{id}', 'ShopController@index')->name('site.shop')->where('id', '[0-9]+');
+        Route::post('/pesquisa/{id}', 'ShopController@index')->name('site.shop')->where('id', '[0-9]+');
         Route::post('/filter', 'ShopController@filtrar')->name('site.pesquisa.filtrar');
         Route::post('/pesquisa', 'ShopController@index')->name('site.shop');
+        Route::get('/produtos/categoria/{id}', 'ShopController@index')->name('site.shop.categoria')->where('id', '[0-9]+');
+        Route::post('/produtos/categoria/{id}', 'ShopController@index')->name('site.shop.categoria')->where('id', '[0-9]+');
     });
 
     // ==========================================

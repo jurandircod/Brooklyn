@@ -17,7 +17,7 @@ class ShopController extends Controller
     {
         $this->mapaTamanho = new MapaTamanho;
     }
-    public function index(Request $request)
+    public function index(Request $request, $id = null)
     {
         $this->categorias = Categoria::all();
         $this->marcas = Marca::all();
@@ -61,8 +61,13 @@ class ShopController extends Controller
         }
 
         // Requisição normal (não AJAX)
-        $produtos = $query->paginate(8);
-        return view('site.shop', compact('produtos', 'categorias', 'marcas'));
+        if (!$id) {
+            $produtos = $query->paginate(8);
+            return view('site.shop', compact('produtos', 'categorias', 'marcas'));
+        }else{
+            $produtos = $query->where('produtos.categoria_id', $id)->paginate(8);
+            return view('site.shop', compact('produtos', 'categorias', 'marcas'));
+        }
     }
 
     private function buildQuery(Request $request)

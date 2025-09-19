@@ -135,6 +135,8 @@
 
 <script>
 // Simular dados do PIX
+
+
 const pixData = {
   amount: "{{ $valor }}",
   pixKey: "{{ $qr_code }}",

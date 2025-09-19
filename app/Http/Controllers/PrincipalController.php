@@ -22,13 +22,14 @@ class PrincipalController extends Controller
             ]);
         }
         $itens = ItemCarrinho::where('carrinho_id', $cart->id)->get();
-
+        
         // Carrega todos os produtos COM suas fotos (eager loading)
         $produtos = Produto::with('fotos')->take(20)->get();
+        $produtoDestaque = $produtos->first();
         $categorias = Categoria::whereIn('nome', ['camisas', 'skates', 'tenis'])->get();
         $itens = $itens;
         $i = 0;
         $cart = $request->query('cart') == 1 ? 1 : null;
-        return view('site.principal', compact('produtos', 'cart', 'itens','categorias', 'i'));
+        return view('site.principal', compact('produtos', 'cart', 'itens','categorias', 'i', 'produtoDestaque'));
     }
 }

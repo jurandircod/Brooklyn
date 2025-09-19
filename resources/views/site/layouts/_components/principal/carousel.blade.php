@@ -1,15 +1,9 @@
 {{-- Seção do Carrossel --}}
 <section class="carousel-section">
     <div class="carousel-container">
-        <div class="progress-container">
-            <span class="slide-counter">1 / 6</span>
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
-        </div>
 
         {{-- Slides do Carrossel --}}
-        @for ($i = 1; $i <= 6; $i++)
+        
             <div class="slide active" style="background-image: url('');">
                 <div class="slide-overlay"></div>
                 <div class="slide-content">
@@ -18,38 +12,7 @@
                     <p class="slide-description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum, quia.</p>
                     <button class="slide-cta" onclick="openProductModal()">Confira nossos Produtos →</button>
                 </div>
-                <div class="slide-info">
-                    <div class="info-price">R$ 100</div>
-                    <ul class="info-features">
-                        <li>Produtos de todas as categorias</li>
-                        <li>Todos os produtos em uma única página</li>
-                        <li>Uma experiência de compra única</li>
-                    </ul>
-                </div>
             </div>
-        @endfor
-
-
-        {{-- Navegação --}}
-        <button class="navigation nav-prev" onclick="changeSlide(-1)">‹</button>
-        <button class="navigation nav-next" onclick="changeSlide(1)">›</button>
-
-        {{-- Dots --}}
-        <div class="dots-container">
-            <span class="dot active" onclick="goToSlide(0)"></span>
-            <span class="dot" onclick="goToSlide(1)"></span>
-            <span class="dot" onclick="goToSlide(2)"></span>
-            <span class="dot" onclick="goToSlide(3)"></span>
-            <span class="dot" onclick="goToSlide(4)"></span>
-            <span class="dot" onclick="goToSlide(5)"></span>
-        </div>
-
-        {{-- Elementos Flutuantes --}}
-        <div class="floating-elements">
-            <div class="floating-circle"></div>
-            <div class="floating-circle"></div>
-            <div class="floating-circle"></div>
-        </div>
     </div>
 </section>
 {{-- CSS Styles --}}

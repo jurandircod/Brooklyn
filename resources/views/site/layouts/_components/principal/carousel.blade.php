@@ -1,6 +1,6 @@
 {{-- Seção do Carrossel --}}
 <section class="carousel-section">
-    <div class="carousel-container">
+    <div class="carousel-container"> 
 
         {{-- Slides do Carrossel --}}
         

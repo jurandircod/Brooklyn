@@ -3,29 +3,30 @@
 use App\Model\{Fotos, Produto, Estoque};
 use Faker\Generator as Faker;
 use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
 
 $factory->define(Fotos::class, function (Faker $faker) {
     // Cria o produto
     $produto = factory(Produto::class)->create();
 
     if ($produto->categoria_id == 1) {
-        $tamanho = [ 'p', 'm', 'g', 'gg'];
-    }elseif ($produto->categoria_id == 2) {
-        $tamanho = [ '775', '8', '825', '85'];
-    }elseif ($produto->categoria_id == 3) {
-        $tamanho = [ '38', '39', '40', '41', '42'];
+        $tamanho = ['p', 'm', 'g', 'gg'];
+    } elseif ($produto->categoria_id == 2) {
+        $tamanho = ['775', '8', '825', '85'];
+    } elseif ($produto->categoria_id == 3) {
+        $tamanho = ['38', '39', '40', '41', '42'];
     }
 
     // Cria o estoque para o produto
     foreach ($tamanho as $tamanhoValue) {
         factory(Estoque::class)->create([
             'produto_id' => $produto->id,
-            'tamanho' => $tamanhoValue,        
+            'tamanho' => $tamanhoValue,
         ]);
     }
 
     // Define o caminho base de downloads e destino
-    $caminhoDownloads = "C:\Users\User\Documents\skate";
+    $caminhoDownloads = "C:/Users/User/Documents/skate"; // usa barra normal no PHP
     $caminhoDestino = public_path("uploads/produtos/{$produto->id}");
 
     // Cria o diretório se não existir
@@ -39,14 +40,15 @@ $factory->define(Fotos::class, function (Faker $faker) {
     // Seleciona 5 imagens aleatórias (ou menos se não houver 5)
     $imagensSelecionadas = array_rand(array_flip($imagens), min(5, count($imagens)));
     $i = 1;
-    // Copia as imagens para o novo diretório
+
+    // Copia/converte as imagens para o novo diretório
     $urlsImagens = [];
-    foreach ((array)$imagensSelecionadas as $imagem) {
-        $extensao = pathinfo($imagem, PATHINFO_EXTENSION);
-        $novoNome = $i++ . '.' . $extensao; // Gera um nome único
+    foreach ((array) $imagensSelecionadas as $imagem) {
+        $novoNome = $i++ . '.webp'; // agora sempre webp
         $novoCaminho = "{$caminhoDestino}/{$novoNome}";
 
-        File::copy($imagem, $novoCaminho);
+        convertToWebp($imagem, $novoCaminho, 80);
+
         $urlsImagens[] = "/uploads/produtos/{$produto->id}/";
     }
 
@@ -58,3 +60,36 @@ $factory->define(Fotos::class, function (Faker $faker) {
         'updated_at' => now(),
     ];
 });
+
+
+/**
+ * Converte uma imagem em WebP otimizando
+ */
+function convertToWebp(string $originalPath, string $webpPath, int $quality = 80)
+{
+    try {
+        ini_set('memory_limit', '512M');
+        $image = Image::make($originalPath);
+        $image->orientate(); // corrige rotação
+
+        // redimensiona se quiser limitar tamanho
+        $image->resize(1200, 1200, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+
+        // cria diretório se não existir
+        $dir = dirname($webpPath);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        // encode webp
+        $image->encode('webp', $quality)->save($webpPath);
+        $image->destroy();
+
+        return file_exists($webpPath);
+    } catch (\Exception $e) {
+        return false;
+    }
+}

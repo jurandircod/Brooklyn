@@ -8,7 +8,7 @@ class Carrinho extends Model
     protected $fillable = ['user_id', 'status'];
 
 
-    public function users()
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
@@ -16,4 +16,8 @@ class Carrinho extends Model
     {
         return $this->hasMany(ItemCarrinho::class);
     }
+
+
+
+
 }

@@ -40,7 +40,7 @@ class ItemCarrinho extends Model
 
     public function itemCarrinho($item_id, $user_id)
     {
-       return $item = ItemCarrinho::whereHas('carrinho', function ($query) use ($user_id) {
+        return $item = ItemCarrinho::whereHas('carrinho', function ($query) use ($user_id) {
             $query->where('user_id', $user_id)->where('status', 'ativo');
         })->where('id', $item_id)->firstOrFail();
     }

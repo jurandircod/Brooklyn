@@ -17,4 +17,5 @@ class pedido extends Model
     {
         return $this->belongsTo(endereco::class, 'endereco_id');
     }
+
 }

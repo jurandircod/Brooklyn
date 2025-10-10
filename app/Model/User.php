@@ -25,6 +25,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsTo(Permissao::class);
     }
+
+    public function pedido()
+    {
+        return $this->hasMany(Pedido::class);
+    }
+    public function carrinhos()
+    {
+        return $this->hasMany(Carrinho::class);
+    }
     /**
      * The attributes that are mass assignable.
      *

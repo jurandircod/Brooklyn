@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use App\Model\User;
 use App\Services\MercadoPagoService;
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image; // <- certifique-se de ter instalado intervention/image
+use Intervention\Image\Facades\Image;
 
 class PaymentController extends Controller
 {

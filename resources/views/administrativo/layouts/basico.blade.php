@@ -39,6 +39,7 @@
         window.defaultImage = "{{ asset('uploads/produtos/padrao/1.gif') }}";
     </script>
     <link rel="stylesheet" href="{{ asset('css/site/produtos/customize.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
 
 
     <!-- Bootstrap 5 (mantenha ou remova dependendo da necessidade de compatibilidade) -->

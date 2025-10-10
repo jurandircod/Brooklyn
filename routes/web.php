@@ -31,6 +31,16 @@ Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('
 Auth::routes(['reset' => true]);
 Auth::routes(['verify' => true]);
 
+Route::prefix('site')->group(function () {
+    // Verificar email
+    Route::get('/email/verificar', [User::class, 'verificarEmail'])->name('site.email.verificar');
+    // Mostrar formulário de reset (quando chega pelo email)
+    Route::get('resetar-senha/{token}', 'PasswordResetController@showResetForm')
+        ->name('site.password.reset');
+    // Processar o reset
+    Route::post('resetar-senha', 'PasswordResetController@reset')
+        ->name('site.password.update');
+});
 // ==========================================
 // ROTAS COM AUTENTICAÇÃO E VERIFICAÇÃO
 // ==========================================
@@ -50,16 +60,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // ROTAS DE REDEFINIÇÃO DE SENHA
     // ==========================================
-    Route::prefix('site')->group(function () {
-        // Verificar email
-        Route::get('/email/verificar', [User::class, 'verificarEmail'])->name('site.email.verificar');
-        // Mostrar formulário de reset (quando chega pelo email)
-        Route::get('resetar-senha/{token}', 'PasswordResetController@showResetForm')
-            ->name('site.password.reset');
-        // Processar o reset
-        Route::post('resetar-senha', 'PasswordResetController@reset')
-            ->name('site.password.update');
-    });
 
     // ==========================================
     // ROTAS DE PESQUISA
@@ -200,6 +200,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // PRODUTOS RESTFUL (Estrutura Alternativa)
     // ==========================================
     Route::prefix('admin')->middleware(['admin'])->group(function () {
+        // Produtos (RESTFUL) - CRUD Básico (com paginação)
         Route::resource('produtos', ProdutosController::class, [
             'names' => [
                 'index' => 'admin.produtos.index',

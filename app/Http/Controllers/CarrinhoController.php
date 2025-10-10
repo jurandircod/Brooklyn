@@ -16,6 +16,8 @@ class CarrinhoController extends Controller
         $this->middleware('auth');
         $this->produto = Produto::all();
     }
+
+    
     public function index()
     {
         // pego o carrinho do usuario

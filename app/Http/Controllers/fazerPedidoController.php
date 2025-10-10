@@ -58,28 +58,14 @@ class FazerPedidoController extends Controller
         }
 
         
-        $request->merge([
-            'cpf' => '11117634965',
-            'descricao' => 'teste'
-        ]);
+
 
         $validator = $this->validateInput($request->all());
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
+//**
 
-        if ($request->metodo_pagamento == 'pix') {
-            $payment = new PaymentController(new MercadoPagoService());
-            $qrcode = $payment->createPixPayment($request);
-            $data = $qrcode->getData();
-            $status = $data->status;
-            $qr_code = $data->qr_code;
-            $qr_code_base64 = $data->qr_code_base64;
-            $expiration = $data->expiration;
-            $valor = $request->valor;
-            return view('site.pix', compact('status', 'qr_code', 'qr_code_base64', 'expiration', 'valor'));
-            exit;
-        }
 
 
         return DB::transaction(function () use ($request, $user) {

@@ -13,7 +13,8 @@ class PerfilController extends Controller
 
     public function index($id = null, $activeTab = null)
     {
-        $enderecosMostrar = Endereco::where('user_id', Auth::id())->get();
+
+        $enderecosMostrar = Endereco::where('user_id', Auth::id())->where('status', 'ativo')->get();
         $pedidos = Pedido::where('user_id', Auth::id())->paginate(7);
         $isAjax = request()->ajax();
         if ($isAjax) {
@@ -21,7 +22,15 @@ class PerfilController extends Controller
         }
 
         if (isset($id)) {
-            $enderecosEditar = AddressController::enviaParaformEnderecos($id);
+            $enderecosEditar = Endereco::where('id', $id)->where('user_id', Auth::id())->first();
+            if (!$enderecosEditar) {
+                $enderecosEditar = null;
+
+
+
+
+
+            }
             $activeTab = 3;
             return view('site.perfil', ['enderecoEditar' => $enderecosEditar, 'enderecosMostrar' => $enderecosMostrar, 'pedidos' => $pedidos, 'activeTab' => $activeTab]);
         } else if ($activeTab == 3) {

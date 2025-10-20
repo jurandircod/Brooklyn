@@ -104,39 +104,68 @@
                                         please select size</h6>
 
                                     <div class="size-box">
-                                        <ul>
-                                            @if ($produto->categoria_id == 1)
-                                                @foreach ($tamanhosComQuantidade as $tamanho => $estoque)
-                                                    <li><a href="javascript:void(0)" class="size-option"
-                                                            data-size="{{ $estoque['tamanho'] }}">{{ $estoque['tamanho'] }}</a>
-                                                        <a href="javascript:void(0)">{{ $estoque['quantidade'] }}</a>
-                                                    </li>
-                                                @endforeach
-                                            @elseif ($produto->categoria_id == 2)
-                                                <h6 class="product-title size-text">Tamanhos</h6>
-                                                @foreach ($tamanhosComQuantidade as $tamanho => $estoque)
-                                                    <li><a href="javascript:void(0)" class="size-option"
-                                                            data-size="{{ $estoque['tamanho'] }}">{{ $estoque['tamanho'] }}</a>
-                                                        <a href="javascript:void(0)">{{ $estoque['quantidade'] }}</a>
-                                                    </li>
-                                                @endforeach
-                                            @elseif ($produto->categoria_id == 3)
-                                                <h6 class="product-title size-text">Tamanhos</h6>
-                                                @foreach ($tamanhosComQuantidade as $tamanho => $estoque)
-                                                    <li><a href="javascript:void(0)" class="size-option"
-                                                            data-size="{{ $estoque['tamanho'] }}">{{ $estoque['tamanho'] }}</a>
-                                                        <a href="javascript:void(0)">{{ $estoque['quantidade'] }}</a>
-                                                    </li>
-                                                @endforeach
-                                            @endif
-                                            <h6 class="product-title size-text">Quantidade</h6>
+                                        <h6 class="product-title size-text mb-3">Tamanhos e Estoque</h6>
 
-                                            <input type="number" id="quantidade" name="quantidade" class="form-control"
-                                                min="1" value="1" style="width: 100px;" /> <a
-                                                href=""></a>
-                                            <small id="quantidade-error" style="color: red; display: none;">Quantidade
-                                                indisponível para o estoque selecionado</small>
-                                        </ul>
+                                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3" role="list"
+                                            aria-label="Tamanhos disponíveis">
+                                            @foreach ($tamanhosComQuantidade as $tamanho => $estoque)
+                                                @php
+                                                    $qtd = (int) $estoque['quantidade'];
+                                                    $stockClass =
+                                                        $qtd === 0
+                                                            ? 'out-of-stock'
+                                                            : ($qtd <= 5
+                                                                ? 'low-stock'
+                                                                : 'in-stock');
+                                                @endphp
+
+                                                <a href="javascript:void(0)"
+                                                    class="size-option flex flex-col items-center justify-center gap-1 p-3 rounded-lg border transition select-none text-center shadow-sm
+                hover:shadow-md hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#4A1C1D]/40
+                {{ $stockClass }}"
+                                                    data-size="{{ $estoque['tamanho'] }}" aria-pressed="false"
+                                                    role="button"
+                                                    title="Tamanho {{ $estoque['tamanho'] }} - {{ $qtd }} em estoque">
+
+                                                    <span
+                                                        class="text-sm font-semibold text-gray-800">{{ $estoque['tamanho'] }}</span>
+
+                                                    <span class="text-xs tracking-tight">
+                                                        <span
+                                                            class="stock-pill inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium">
+                                                            <svg class="w-3 h-3 shrink-0" viewBox="0 0 8 8"
+                                                                fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                                <circle cx="4" cy="4" r="4"></circle>
+                                                            </svg>
+                                                            <span class="stock-count">{{ $qtd }}</span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+                                            @endforeach
+                                        </div>
+
+                                        <div class="mt-4 flex items-center gap-4">
+                                            <div>
+                                                <label for="quantidade"
+                                                    class="block text-sm font-medium text-gray-700">Quantidade</label>
+                                                <input type="number" id="quantidade" name="quantidade"
+                                                    class="form-control rounded-md border border-gray-300 px-3 py-2 w-28"
+                                                    min="1" value="1" />
+                                                <small id="quantidade-error" class="block mt-1 text-sm text-red-600"
+                                                    style="display: none;">Quantidade indisponível para o estoque
+                                                    selecionado</small>
+                                            </div>
+
+                                            <div class="ml-auto">
+                                                <input type="hidden" id="selected-size" name="selected_size">
+                                                <button type="button"
+                                                    class="addtocart-btn inline-flex items-center gap-2 bg-[#4A1C1D] text-white px-4 py-2 rounded-md hover:bg-[#6f2e2f] transition"
+                                                    data-id="{{ $produto->id }}">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                    <span>Adicionar</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <input type="hidden" id="selected-size" name="selected_size">
@@ -400,4 +429,60 @@
         });
     });
 </script>
+<style>
+  /* Visual básico para estados de estoque */
+  .size-option.in-stock {
+    border-color: rgba(74,28,29,0.12);
+  }
+  .size-option.in-stock .stock-pill {
+    color: #065f46; /* verde-700 */
+    background-color: rgba(6,95,70,0.08);
+  }
 
+  .size-option.low-stock {
+    border-color: rgba(234,88,12,0.12);
+  }
+  .size-option.low-stock .stock-pill {
+    color: #92400e; /* amber-800 */
+    background-color: rgba(146,64,14,0.06);
+  }
+
+  .size-option.out-of-stock {
+    opacity: 0.55;
+    pointer-events: auto; /* mantém clique (JS mostra mensagem), mas visual indica indisponível */
+    border-color: rgba(220,38,38,0.12);
+  }
+  .size-option.out-of-stock .stock-pill {
+    color: #b91c1c; /* red-700 */
+    background-color: rgba(185,28,28,0.06);
+  }
+
+  /* estado selecionado — seu JS faz `classList.add('selected')` */
+  .size-option.selected {
+    background: linear-gradient(180deg, rgba(74,28,29,1) 0%, rgba(111,46,47,1) 100%);
+    color: #fff !important;
+    border-color: rgba(74,28,29,0.9) !important;
+    box-shadow: 0 6px 20px rgba(74,28,29,0.12);
+    transform: translateY(-2px);
+  }
+  .size-option.selected .stock-pill {
+    background-color: rgba(255,255,255,0.12) !important;
+    color: #fff !important;
+  }
+
+  /* acessibilidade (focus) */
+  .size-option:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(74,28,29,0.12);
+  }
+
+  /* pequenas correções para o .stock-pill */
+  .stock-pill svg { color: inherit; }
+  .stock-pill .stock-count { display:inline-block; min-width: 18px; text-align:center; }
+
+  /* responsividade: em telas muito pequenas, diminuímos padding */
+  @media (max-width: 420px) {
+    .size-option { padding: 10px 8px; }
+    .stock-pill { padding: 2px 6px; }
+  }
+</style>

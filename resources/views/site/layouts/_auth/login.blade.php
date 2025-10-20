@@ -33,11 +33,6 @@
                 
                 <a href="{{ route('site.email.verificar') }}" class="pass-forgot">Esqueceu sua senha?</a>
 
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Manter logado</label>
-                </div>
-
                 <div class="button login">
                     <button type="submit">
                         <span>Logar</span>

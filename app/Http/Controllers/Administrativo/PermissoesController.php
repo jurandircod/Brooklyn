@@ -1,18 +1,23 @@
 <?php
-
 namespace App\Http\Controllers\Administrativo;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\Model\{Permissao, User};
+use App\Model\{Permissao, User, Notificacao};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PermissoesController extends Controller
 {
 
+    private $notificacaoContador;
+    private $notificacao;
+    public function __construct()
+    {
+        $this->notificacaoContador = notificacao::NotificacaoContador();
+        $this->notificacao = notificacao::notificacaoPedido();
+    }
     /**
      * Valida os dados de entrada ao cadastrar/editar permissões.
      * 
@@ -49,7 +54,9 @@ class PermissoesController extends Controller
     public function index()
     {
         $permissoes = Permissao::paginate(10);
-        return view('administrativo.permissoes', ['permissoes' => $permissoes]);
+        $notificacaoContador = $this->notificacaoContador;
+        $notificacao = $this->notificacao;
+        return view('administrativo.permissoes', ['permissoes' => $permissoes, 'notificacaoContador' => $notificacaoContador, 'notificacao' => $notificacao]);
     }
 
     /**
@@ -101,7 +108,7 @@ class PermissoesController extends Controller
                 } else {
                     $this->enviarAlert('Erro', 'Não é possível excluir essa permissão, pois possui usuários associados', 'error');
                 }
-            }else{
+            } else {
                 $this->enviarAlert('Erro', 'Não é possível excluir essa permissão, pois não existe', 'error');
             }
 
@@ -161,10 +168,13 @@ class PermissoesController extends Controller
             $permissoesUser = collect();
         }
 
-        $permissoes = Permissao::paginate(10);
-        $usuarios = User::paginate(10);
+        $notificacaoContador = $this->notificacaoContador;
+        $notificacao = $this->notificacao;
+        $permissoes = Permissao::all();
+        $usuarios = User::with('permissoes')->paginate(10);
+        dd($usuarios);
 
-        return view('administrativo.permissoesUsuarios', compact('usuarios', 'permissoes'));
+        return view('administrativo.permissoesUsuarios', compact('usuarios', 'permissoes', 'notificacaoContador', 'notificacao'));
     }
 
     /**

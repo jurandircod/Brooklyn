@@ -12,7 +12,7 @@ $factory->define(Pedido::class, function (Faker $faker) {
         'user_id' => 1,
         'endereco_id' => null,
         'status' => 'aguardando',
-        'preco_total' => 100,
+        'preco_total' => $faker->randomFloat(2, 10, 1000),
         'metodo_pagamento' => 'cartao',
         'data_pagamento' => now(),
         'status_pagamento' => 'pendente',

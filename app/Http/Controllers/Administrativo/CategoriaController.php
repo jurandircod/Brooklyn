@@ -6,22 +6,28 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\model\{Produto, Categoria, Tamanho};
+use App\model\{Produto, Categoria, Tamanho, Notificacao};
 
 class CategoriaController extends Controller
 {
 
     private $categorias;
+    private $notificacaoContador;
+    private $notificacao;
 
     public function __construct()
     {
         $this->categorias = Categoria::all();
+        $this->notificacaoContador = notificacao::NotificacaoContador();
+        $this->notificacao = notificacao::notificacaoPedido();
     }
 
     public function index()
     {
+        $notificacaoContador = $this->notificacaoContador;
+        $notificacao = $this->notificacao;
         $categorias = $this->categorias;
-        return view('administrativo.categoria', compact('categorias'));
+        return view('administrativo.categoria', compact('categorias', 'notificacaoContador', 'notificacao'));
     }
 
     public function salvarCategoria(Request $request)

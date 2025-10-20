@@ -28,26 +28,3 @@
         margin-right: 10px;
     }
 
-    @media (max-width:600px) {
-        .h-logo {
-            max-width: 150px !important;
-        }
-
-        i.sidebar-bar {
-            font-size: 22px;
-        }
-
-        .mobile-menu ul li a svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .mobile-menu ul li a span {
-            margin-top: 0px;
-            font-size: 12px;
-        }
-
-        .name-usr {
-            padding: 5px 12px;
-        }
-    }

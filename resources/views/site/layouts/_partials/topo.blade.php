@@ -1,40 +1,6 @@
 
 
 <link rel="stylesheet" href="{{ asset('css/site/topo/customize.css') }}">
-<div class="mobile-menu d-sm-none">
-    <ul>
-        <li>
-            <a href="demo3.php" class="active">
-                <i data-feather="home"></i>
-                <span>Home</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)">
-                <i data-feather="align-justify"></i>
-                <span>Category</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)">
-                <i data-feather="shopping-bag"></i>
-                <span>Cart</span>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:void(0)">
-                <i data-feather="heart"></i>
-                <span>Wishlist</span>
-            </a>
-        </li>
-        <li>
-            <a href="user-dashboard.php">
-                <i data-feather="user"></i>
-                <span>Account</span>
-            </a>
-        </li>
-    </ul>
-</div>
 
 <header class="header-style-2" id="home">
     <div class="main-header navbar-searchbar" data-bs-theme="dark">
@@ -67,7 +33,7 @@
                                         </li>
                                         <li><a href="{{ route('site.principal') }}"
                                                 class="nav-link menu-title">Inicio</a></li>
-                                        <li><a href="{{ route('site.shop') }}" class="nav-link menu-title">Produtos</a>
+                                        <li><a href="{{ route('site.shop.produto') }}" class="nav-link menu-title">Produtos</a>
                                         </li>
                                         <li><a href="{{ route('site.carrinho') }}"
                                                 class="nav-link menu-title">Carrinho</a></li>
@@ -103,7 +69,7 @@
                                 <li class="onhover-dropdown">
                                     @auth
                                         <div class="cart-media ">
-                                            <i>Jurandir Aparecido </i>
+                                            <i>{{ Auth::user()->name }} </i>
                                         </div>
 
                                         <div class="onhover-div profile-dropdown">
@@ -155,7 +121,7 @@
                             </ul>
                         </div>
                         <div class="search-full">
-                            <form method="GET" class="search-full" action="http://localhost:8000/search">
+                            <form method="GET" class="search-full" action="https://localhost:8000/search">
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i data-feather="search" class="font-light"></i>

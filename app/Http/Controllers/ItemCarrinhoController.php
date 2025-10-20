@@ -218,6 +218,10 @@ class ItemCarrinhoController extends Controller
     {
         try {
             $carrinho = Carrinho::where('user_id', auth()->id())->where('status', 'ativo')->first();
+            if(!$carrinho){
+                Alert::warning('Carrinho vazio', 'Não há itens para limpar');
+                return redirect()->route('site.carrinho');
+            }
             $carrinho->itens()->delete();
             Alert::alert('Sucesso', 'Carrinho limpo com sucesso!', 'success');
             return redirect()->route('site.carrinho');

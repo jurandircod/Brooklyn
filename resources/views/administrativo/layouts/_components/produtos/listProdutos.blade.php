@@ -260,28 +260,28 @@
                                     <div class="form-group">
                                         <label for="">Tamanho 7.75</label>
                                         <input type="number" id="quanti775" class="form-control"
-                                            name="quantidade775">
+                                            name="775">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade8">Tamanho 8</label>
                                         <input type="number" class="form-control" id="quanti8"
-                                            name="quantidade8">
+                                            name="8">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade825">Tamanho 8.25</label>
                                         <input type="number" class="form-control" id="quanti825"
-                                            name="quantidade825">
+                                            name="825">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade85">Tamanho 8.5</label>
                                         <input type="number" class="form-control" id="quanti85"
-                                            name="quantidade85">
+                                            name="85">
                                     </div>
                                 </div>
 
@@ -342,28 +342,28 @@
                                     <div class="form-group">
                                         <label for="quantidadeP">Tamanho P</label>
                                         <input type="number" id="quantidadePC" class="form-control"
-                                            name="quantidadeP">
+                                            name="p">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidadeM">Tamanho M</label>
                                         <input type="number" class="form-control" id="quantidadeMC"
-                                            name="quantidadeM">
+                                            name="m">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidadeG">Tamanho G</label>
                                         <input type="number" class="form-control" id="quantidadeGC"
-                                            name="quantidadeG">
+                                            name="g">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidadeGG">Tamanho GG</label>
                                         <input type="number" class="form-control" id="quantidadeGGC"
-                                            name="quantidadeGG">
+                                            name="gg">
                                     </div>
                                 </div>
                             </div>

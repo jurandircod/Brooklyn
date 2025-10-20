@@ -5,23 +5,31 @@ namespace App\Http\Controllers\Administrativo;
 use App\Http\Controllers\Controller;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\model\{Marca};
+use App\model\{Marca, Notificacao};
 use Illuminate\Http\Request;
 
 class marcaController extends Controller
 {
+
+    private $notificacaoContador;
+    private $notificacao;
+
 
     private $marca;
 
     public function __construct()
     {
         $this->marca = marca::all();
+        $this->notificacaoContador = notificacao::NotificacaoContador();
+        $this->notificacao = notificacao::notificacaoPedido();
     }
 
     public function index()
     {
         $marcas = $this->marca;
-        return view('administrativo.marca', compact('marcas'));
+        $notificacaoContador = $this->notificacaoContador;
+        $notificacao = $this->notificacao;
+        return view('administrativo.marca', compact('marcas', 'notificacaoContador', 'notificacao'));
     }
 
     public function marcaSalvar(Request $request)

@@ -7,16 +7,28 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use App\model\{Contato};
+use App\model\{Contato, Notificacao};
 
 class SuporteContato extends Controller
 {
+
+    private $notificacaoContador;
+    private $notificacao;
+
+    public function __construct()
+    {
+        $this->notificacaoContador = notificacao::NotificacaoContador();
+        $this->notificacao = notificacao::notificacaoPedido();
+    }
     /**
      * Exibe a view do dashboard de suporte
      */
     public function viewContato(Request $request)
     {
-        return view('administrativo.suporteContato');
+
+        $notificacaoContador = $this->notificacaoContador;
+        $notificacao = $this->notificacao;
+        return view('administrativo.suporteContato', compact('notificacaoContador', 'notificacao'));
     }
 
     /**
@@ -37,10 +49,10 @@ class SuporteContato extends Controller
             if (!empty($search)) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nome', 'like', "%{$search}%")
-                      ->orWhere('sobrenome', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('telefone', 'like', "%{$search}%")
-                      ->orWhere('mensagem', 'like', "%{$search}%");
+                        ->orWhere('sobrenome', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('telefone', 'like', "%{$search}%")
+                        ->orWhere('mensagem', 'like', "%{$search}%");
                 });
             }
 
@@ -51,7 +63,7 @@ class SuporteContato extends Controller
 
             // Ordenação e paginação
             $contatos = $query->orderBy('created_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
-            
+
             // Formatar dados para o frontend
             $contatosFormatados = $contatos->map(function ($contato) {
                 return [
@@ -81,7 +93,6 @@ class SuporteContato extends Controller
                     'next_page_url' => $contatos->nextPageUrl()
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -111,7 +122,7 @@ class SuporteContato extends Controller
 
         try {
             $contato = Contato::findOrFail($request->contato_id);
-            
+
             // Dados do email
             $dadosEmail = [
                 'assunto' => $request->assunto,
@@ -123,8 +134,8 @@ class SuporteContato extends Controller
             // Enviar email (você pode personalizar o template)
             Mail::send('emails.resposta-contato', $dadosEmail, function ($message) use ($contato, $request) {
                 $message->to($contato->email, $contato->nome . ' ' . $contato->sobrenome)
-                        ->subject($request->assunto)
-                        ->from(config('mail.from.address'), config('mail.from.name'));
+                    ->subject($request->assunto)
+                    ->from(config('mail.from.address'), config('mail.from.name'));
             });
 
             // Marcar como resolvido
@@ -134,7 +145,6 @@ class SuporteContato extends Controller
                 'success' => true,
                 'message' => 'Resposta enviada com sucesso!'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -169,7 +179,6 @@ class SuporteContato extends Controller
                 'success' => true,
                 'message' => 'Status atualizado com sucesso!'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -208,7 +217,6 @@ class SuporteContato extends Controller
                     'urgentes' => $urgentes
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -241,12 +249,12 @@ class SuporteContato extends Controller
                     'Content-Disposition' => 'attachment; filename="contatos_' . date('Y-m-d_H-i-s') . '.csv"',
                 ];
 
-                $callback = function() use ($contatos) {
+                $callback = function () use ($contatos) {
                     $file = fopen('php://output', 'w');
-                    
+
                     // Cabeçalhos CSV
                     fputcsv($file, ['ID', 'Nome', 'Email', 'Telefone', 'Status', 'Mensagem', 'Data de Criação']);
-                    
+
                     // Dados
                     foreach ($contatos as $contato) {
                         fputcsv($file, [
@@ -259,7 +267,7 @@ class SuporteContato extends Controller
                             $contato->created_at->format('d/m/Y H:i:s')
                         ]);
                     }
-                    
+
                     fclose($file);
                 };
 
@@ -270,7 +278,6 @@ class SuporteContato extends Controller
                 'success' => false,
                 'message' => 'Formato de exportação não suportado'
             ], 400);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -300,13 +307,12 @@ class SuporteContato extends Controller
 
         try {
             $atualizados = Contato::whereIn('id', $request->contato_ids)
-                                 ->update(['status' => $request->status]);
+                ->update(['status' => $request->status]);
 
             return response()->json([
                 'success' => true,
                 'message' => "{$atualizados} contato(s) atualizado(s) com sucesso!"
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -338,7 +344,6 @@ class SuporteContato extends Controller
                     'updated_at' => $contato->updated_at->toISOString()
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

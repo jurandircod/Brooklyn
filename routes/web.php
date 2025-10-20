@@ -5,9 +5,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Administrativo\SuporteContato;
 use App\Http\Controllers\PaymentController;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\{LoginController, RegisterController};
 use App\Http\Controllers\{AvaliacaoController, PerfilController, User, ItemCarrinhoController, FazerPedidoController};
 use App\Http\Controllers\Administrativo\{PrincipalController, VendasController, TabelasControllers, PermissoesController, ProdutosController, CategoriaController, MarcaController};
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +22,85 @@ use App\Http\Controllers\Administrativo\{PrincipalController, VendasController, 
 |
 */
 
+// Em routes/web.php
+// Em routes/web.php - TESTE ESTA ROTA PRIMEIRO
+// Em routes/web.php
+Route::get('/test-pix-debug', function () {
+    try {
+        Log::info('=== TESTE PIX DEBUG INICIADO ===');
+
+        $mpService = app(App\Services\MercadoPagoService::class);
+
+        // Dados de teste MUITO simples
+        $testData = [
+            'amount' => 1.00,
+            'description' => 'Teste Debug PIX',
+            'customer' => [
+                'email' => 'test@test.com',
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'cpf' => '12345678900'
+            ]
+        ];
+
+        Log::info('Chamando createPixPayment com dados:', $testData);
+
+        $testPayment = $mpService->createPixPayment(
+            $testData['amount'],
+            $testData['description'],
+            $testData['customer']
+        );
+
+        Log::info('=== TESTE PIX DEBUG SUCESSO ===', $testPayment);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'PIX criado com sucesso!',
+            'data' => $testPayment
+        ]);
+    } catch (\Exception $e) {
+        Log::error('=== TESTE PIX DEBUG FALHOU ===', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString() // Log completo do trace
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'debug' => 'Verifique os logs para detalhes completos'
+        ], 500);
+    }
+});
+Route::get('/debug-mp-credentials', function () {
+    try {
+        $accessToken = env('MERCADOPAGO_ACCESS_TOKEN');
+
+        if (!$accessToken) {
+            return response()->json([
+                'success' => false,
+                'error' => 'MERCADOPAGO_ACCESS_TOKEN não encontrado no .env'
+            ]);
+        }
+
+        \MercadoPago\SDK::setAccessToken($accessToken);
+
+        // Teste de autenticação simples
+        $preference = new \MercadoPago\Preference();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Credenciais carregadas com sucesso',
+            'access_token' => substr($accessToken, 0, 10) . '...', // Mostra apenas parte por segurança
+            'token_length' => strlen($accessToken)
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'access_token' => env('MERCADOPAGO_ACCESS_TOKEN') ? 'Configurado' : 'Não configurado'
+        ], 500);
+    }
+});
 // ==========================================
 // ROTAS PÚBLICAS (SEM AUTENTICAÇÃO)
 // ==========================================
@@ -67,7 +148,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('pesquisa')->group(function () {
         Route::get('/pesquisa/{id}', 'ShopController@index')->name('site.shop')->where('id', '[0-9]+');
         Route::post('/pesquisa/{id}', 'ShopController@index')->name('site.shop')->where('id', '[0-9]+');
-        Route::post('/filter', 'ShopController@filtrar')->name('site.pesquisa.filtrar');
+        Route::post('/produtos', 'ShopController@index')->name('site.shop.produto');
+        Route::get('/produtos', 'ShopController@index')->name('site.shop.produto');
+        Route::post('/filter', 'ShopController@index')->name('site.pesquisa.filtrar');
         Route::post('/pesquisa', 'ShopController@index')->name('site.shop');
         Route::get('/produtos/categoria/{id}', 'ShopController@index')->name('site.shop.categoria')->where('id', '[0-9]+');
         Route::post('/produtos/categoria/{id}', 'ShopController@index')->name('site.shop.categoria')->where('id', '[0-9]+');
@@ -103,7 +186,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     Route::prefix('carrinho')->group(function () {
         Route::get('/principal', 'CarrinhoController@index')->name('site.carrinho');
-        
+
         Route::prefix('itemCarrinho')->group(function () {
             Route::post('/adicionar', [ItemCarrinhoController::class, 'adicionar'])->name('site.carrinho.itemCarrinho.adicionar');
             Route::post('/remover/{id}', 'CarrinhoController@remover')->name('site.carrinho.remover');
@@ -112,18 +195,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/quantidade', [ItemCarrinhoController::class, 'quantidadeItensCarrinho'])->name('site.carrinho.quantidadeItensCarrinho');
             Route::get('limpaCarrinho', [ItemCarrinhoController::class, 'limpaCarrinho'])->name('site.carrinho.limpaCarrinho');
         });
-        
+
         Route::post('/finalizarCarrinho', [FazerPedidoController::class, 'finalizarCarrinho'])->name('site.carrinho.finalizarCarrinho');
     });
+
+
+
 
     // ==========================================
     // ÁREA ADMINISTRATIVA
     // ==========================================
     Route::prefix('administrativo')->middleware(['admin'])->group(function () {
-        
+
         // Dashboard Principal
         Route::get('/', [PrincipalController::class, 'index'])->name('administrativo.principal');
-        
+
         // ==========================================
         // VENDAS
         // ==========================================
@@ -148,16 +234,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // ==========================================
         // Rota principal com suporte a paginação
         Route::get('/produtos', [ProdutosController::class, 'index'])->name('administrativo.produtos');
-        
+
         // API para DataTables (AJAX)
         Route::get('/produtos/api', [ProdutosController::class, 'filterProducts'])->name('administrativo.produtos.api');
-        
+
         // Busca rápida (autocomplete)
         Route::get('/produtos/buscar', [ProdutosController::class, 'searchProducts'])->name('administrativo.produtos.buscar');
-        
+
         // Exportação
         Route::get('/produtos/exportar', [ProdutosController::class, 'export'])->name('administrativo.produtos.exportar');
-        
+
         // CRUD Básico
         Route::post('/produto/salvar', [ProdutosController::class, 'create'])->name('administrativo.produto.salvar');
         Route::post('/produto/atualizar', [ProdutosController::class, 'edit'])->name('administrativo.produto.atualizar');
@@ -168,17 +254,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // ==========================================
         Route::prefix('produtos')->group(function () {
             Route::get('/', [ProdutosController::class, 'index'])->name('administrativo.produtos');
-            
+
             // AJAX - Buscar dados do produto
             Route::get('/{id}/dados', [ProdutosController::class, 'obterDadosProduto'])->name('administrativo.produto.dados');
-            
+
             // Categorias
             Route::get('/categoria', [CategoriaController::class, 'index'])->name('administrativo.produto.categoria');
             Route::post('/salvar/categoria', [CategoriaController::class, 'salvarCategoria'])->name('administrativo.produto.categoria.salvar');
             Route::post('/enviaFormAlterar/categoria', [CategoriaController::class, 'enviaFormAlterar'])->name('administrativo.produto.categoria.enviaFormAlterar');
             Route::post('/alterar/categoria', [CategoriaController::class, 'alterarCategoria'])->name('administrativo.produto.categoria.alterar');
             Route::post('/excluir/categoria', [CategoriaController::class, 'excluirCategoria'])->name('administrativo.produto.categoria.excluir');
-            
+
             // Rota duplicada (mantida conforme solicitado)
             Route::get('/administrativo/produtos/{id}/dados', [ProdutosController::class, 'obterDadosProduto'])
                 ->name('administrativo.produto.dados');
@@ -227,19 +313,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('suporte/api')->group(function () {
             // Rota principal para buscar contatos (agora com paginação)
             Route::get('/contatos', [SuporteContato::class, 'getContatos'])->name('admin.suporte.api.contatos');
-            
+
             // Rota para buscar contatos (mantida para compatibilidade)
             Route::get('/buscar', [SuporteContato::class, 'buscarContatos'])->name('admin.suporte.api.buscar');
-            
+
             // Rota para enviar resposta
             Route::post('/resposta', [SuporteContato::class, 'enviarResposta'])->name('admin.suporte.api.resposta');
-            
+
             // Rota para atualizar status
             Route::post('/status', [SuporteContato::class, 'atualizarStatus'])->name('admin.suporte.api.status');
-            
+
             // Rota para estatísticas
             Route::get('/estatisticas', [SuporteContato::class, 'getEstatisticas'])->name('admin.suporte.api.estatisticas');
-            
+
             // Rotas opcionais
             Route::get('/exportar', [SuporteContato::class, 'exportarContatos'])->name('admin.suporte.api.exportar');
             Route::post('/status-multiplos', [SuporteContato::class, 'marcarMultiplosStatus'])->name('admin.suporte.api.status-multiplos');

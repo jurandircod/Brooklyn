@@ -1,421 +1,182 @@
 {{-- Seção do Carrossel --}}
-<section class="carousel-section">
-    <div class="carousel-container"> 
-
-        {{-- Slides do Carrossel --}}
+<section id='carousel' class="relative w-full h-[70vh] min-h-[600px] overflow-hidden bg-gray-50">
+    <div class="carousel-container relative w-full h-full">
         
-            <div class="slide active" style="background-image: url('');">
-                <div class="slide-overlay"></div>
-                <div class="slide-content">
-                    <div class="slide-badge">Melhores Materias</div>
-                    <h2 class="slide-title">Marfim, Maple e outros materiais</h2>
-                    <p class="slide-description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum, quia.</p>
-                    <button class="slide-cta" onclick="openProductModal()">Confira nossos Produtos →</button>
+        {{-- Slide 1 --}}
+        <div class="slide active absolute inset-0 opacity-0 transition-opacity duration-700" 
+             style="background-image: url('https://wallpapers.com/images/hd/skateboarding-2560-x-1440-picture-4d9oqpgsac0sntqw.jpg');">
+            <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+            
+            <div class="relative h-full max-w-7xl mx-auto px-8 md:px-16 flex items-center">
+                <div class="max-w-xl space-y-6">
+                    <span class="inline-block text-xs font-medium tracking-widest uppercase text-white">
+                        Coleção Premium
+                    </span>
+                    
+                    <h2 class="text-5xl md:text-6xl text-white leading-tight">
+                        Marfim & Maple
+                    </h2>
+                    
+                    <p class="text-lg text-white leading-relaxed">
+                        Materiais nobres cuidadosamente selecionados para criar peças atemporais e sofisticadas.
+                    </p>
+                    
+                    <button onclick="openProductModal()" 
+                            class="inline-flex items-center gap-2 px-8 py-3 bg-[#5A1F2D] text-white text-sm font-medium hover:bg-[#7A2F3D] transition-colors duration-300">
+                        Explorar Coleção
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
+        </div>
+
+        {{-- Slide 2 --}}
+        <div class="slide absolute inset-0 opacity-0 transition-opacity duration-700" 
+             style="background-image: url('https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=1600');">
+            <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+            
+            <div class="relative h-full max-w-7xl mx-auto px-8 md:px-16 flex items-center">
+                <div class="max-w-xl space-y-6">
+                    <span class="inline-block text-xs font-medium tracking-widest uppercase text-white/90">
+                        Novidades
+                    </span>
+                    
+                    <h2 class="text-5xl md:text-6xl text-white leading-tight">
+                        Design Atemporal
+                    </h2>
+                    
+                    <p class="text-lg text-white/80 leading-relaxed">
+                        Cada peça é pensada para durar gerações, combinando beleza e funcionalidade.
+                    </p>
+                    
+                    <button onclick="openProductModal()" 
+                            class="inline-flex items-center gap-2 px-8 py-3 bg-[#5A1F2D] text-white text-sm font-medium hover:bg-[#7A2F3D] transition-colors duration-300">
+                        Ver Produtos
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Slide 3 --}}
+        <div class="slide absolute inset-0 opacity-0 transition-opacity duration-700" 
+             style="background-image: url('https://i0.wp.com/www.hawaiisurfpoint.com.br/wp-content/uploads/2017/05/5-dicas-para-come%C3%A7ar-a-andar-de-skate.jpg?fit=960%2C600&ssl=1');">
+            <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+            
+            <div class="relative h-full max-w-7xl mx-auto px-8 md:px-16 flex items-center">
+                <div class="max-w-xl space-y-6">
+                    <span class="inline-block text-xs font-medium tracking-widest uppercase text-white">
+                        Craftsmanship
+                    </span>
+                    
+                    <h2 class="text-white text-5xl md:text-6xl leading-tight">
+                        Feito à Mão
+                    </h2>
+                    
+                    <p class="text-lg text-white leading-relaxed">
+                        Artesanato tradicional encontra técnicas modernas em cada detalhe cuidadosamente executado.
+                    </p>
+                    
+                    <button onclick="openProductModal()" 
+                            class="inline-flex items-center gap-2 px-8 py-3 bg-[#5A1F2D] text-white text-sm font-medium hover:bg-[#7A2F3D] transition-colors duration-300">
+                        Descobrir Mais
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Controles de Navegação Minimalistas --}}
+        <button onclick="changeSlide(-1)" 
+                class="nav-prev absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-10">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+
+        <button onclick="changeSlide(1)" 
+                class="nav-next absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300 z-10">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+
+        {{-- Indicadores (Dots) --}}
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+            <button onclick="goToSlide(0)" class="dot w-8 h-0.5 bg-white/30 hover:bg-white/50 transition-all duration-300"></button>
+            <button onclick="goToSlide(1)" class="dot w-8 h-0.5 bg-white/30 hover:bg-white/50 transition-all duration-300"></button>
+            <button onclick="goToSlide(2)" class="dot w-8 h-0.5 bg-white/30 hover:bg-white/50 transition-all duration-300"></button>
+        </div>
+
+        {{-- Contador Minimalista --}}
+        <div class="absolute top-8 right-8 text-white/80 text-sm font-light tracking-wider z-10">
+            <span class="slide-counter">1 / 3</span>
+        </div>
     </div>
 </section>
-{{-- CSS Styles --}}
-<style>
-    .carousel-section {
-        position: relative;
-        width: 100%;
-        height: 40vh;
-        min-height: 500px;
-        overflow: hidden;
-        margin: 0;
-        margin-top: 0px !important;
-        padding-top: 0 !important;
-    }
 
-    .carousel-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
+<style>
+    /* Slide transitions */
+    .slide.active {
+        opacity: 1;
     }
 
     .slide {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        transition: opacity 1s ease-in-out, transform 1s ease-in-out;
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
     }
 
-    .slide.active {
-        opacity: 1;
-    }
-
-    .slide-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg,
-                rgba(0, 0, 0, 0.7) 0%,
-                rgba(0, 0, 0, 0.4) 30%,
-                rgba(0, 0, 0, 0.1) 60%,
-                rgba(0, 0, 0, 0.6) 100%);
-    }
-
-    .slide-content {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 60px;
-        color: white;
-        z-index: 1;
-    }
-
-    .slide-badge {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 12px 24px;
-        border-radius: 50px;
-        font-size: 14px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 20px;
-    }
-
-    .slide-title {
-        font-size: 4rem;
-        font-weight: 800;
-        line-height: 0.9;
-        margin-bottom: 20px;
-        background: linear-gradient(135deg, #fff, #ccc);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-        font-family: 'Inter', sans-serif;
-    }
-
-    .slide-description {
-        font-size: 1.2rem;
-        font-weight: 400;
-        margin-bottom: 40px;
-        opacity: 0.9;
-        max-width: 600px;
-        line-height: 1.6;
-    }
-
-    .slide-info {
-        opacity: 0.8;
-        box-shadow: var(--shadow-md);
-    }
-
-    .slide-cta {
-        background: linear-gradient(135deg, #a84c3d, #8c3a2d);
-        border: none;
-        color: white;
-        padding: 18px 40px;
-        border-radius: 50px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 15px 35px rgba(168, 76, 61, 0.4);
-    }
-
-    .slide-cta:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 20px 50px rgba(168, 76, 61, 0.6);
-    }
-
-    .navigation {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        color: white;
-        font-size: 24px;
-    }
-
-    .navigation:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-50%) scale(1.1);
-    }
-
-    .nav-prev {
-        left: 40px;
-    }
-
-    .nav-next {
-        right: 40px;
-    }
-
-    .progress-container {
-        position: absolute;
-        top: 40px;
-        right: 60px;
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .slide-counter {
-        font-size: 18px;
-        font-weight: 600;
-        color: white;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    }
-
-    .progress-bar {
-        width: 120px;
-        height: 4px;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 2px;
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #a84c3d, #8c3a2d);
-        border-radius: 2px;
-        transition: width 0.3s ease;
-    }
-
-    .dots-container {
-        position: absolute;
-        bottom: 40px;
-        right: 60px;
-        display: flex;
-        gap: 10px;
-        z-index: 1;
-    }
-
-    .dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
+    /* Dot active state */
     .dot.active {
-        background: linear-gradient(135deg, #a84c3d, #8c3a2d);
-        transform: scale(1.2);
+        background-color: #5A1F2D !important;
+        width: 2rem;
     }
 
-    .floating-elements {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 1
+    /* Smooth font rendering */
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+ 
+    #carousel{
+        padding-top: 0px !important;
+    }
+    /* Focus states */
+    button:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 2px;
     }
 
-    .floating-circle {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(168, 76, 61, 0.1);
-        animation: float 6s ease-in-out infinite;
-    }
-
-    .floating-circle:nth-child(1) {
-        width: 100px;
-        height: 100px;
-        top: 20%;
-        right: 10%;
-        animation-delay: 0s;
-    }
-
-    .floating-circle:nth-child(2) {
-        width: 60px;
-        height: 60px;
-        top: 60%;
-        right: 30%;
-        animation-delay: 2s;
-    }
-
-    .floating-circle:nth-child(3) {
-        width: 80px;
-        height: 80px;
-        top: 80%;
-        left: 20%;
-        animation-delay: 4s;
-    }
-
-    @keyframes float {
-
-        0%,
-        100% {
-            transform: translateY(0px) rotate(0deg);
-        }
-
-        50% {
-            transform: translateY(-20px) rotate(180deg);
-        }
-    }
-
-    .slide-info {
-        position: absolute;
-        top: 50%;
-        right: 60px;
-        transform: translateY(-50%);
-        background: var(--surface);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 30px;
-        max-width: 300px;
-        color: white;
-        z-index: 1;
-    }
-
-    .info-price {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 10px;
-    }
-
-    .info-features {
-        list-style: none;
-        margin-bottom: 20px;
-        padding: 0;
-    }
-
-    .info-features li {
-        padding: 5px 0;
-        opacity: 0.8;
-        font-size: 14px;
-    }
-
-    .info-features li::before {
-        content: "✓ ";
-        color: var(--primary-color);
-        font-weight: bold;
-    }
-
-    /* Info Section */
-    .info-section {
-        padding: 80px 0;
-        background: #f8f9fa;
-    }
-
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 20px;
-        font-family: 'Inter', sans-serif;
-    }
-
-    .section-subtitle {
-        font-size: 1.2rem;
-        color: #666;
-        max-width: 800px;
-        margin: 0 auto;
-        line-height: 1.6;
-    }
-
-    .info-card {
-        background: white;
-        padding: 40px 30px;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        height: 100%;
-    }
-
-    .info-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-    }
-
-    .info-icon {
-        font-size: 3rem;
-        margin-bottom: 20px;
-    }
-
-    .info-card h3 {
-        color: #a84c3d;
-        margin-bottom: 15px;
-        font-size: 1.5rem;
-        font-weight: 600;
-    }
-
-    .info-card p {
-        color: #666;
-        line-height: 1.6;
-        margin: 0;
-    }
-
+    /* Responsive adjustments */
     @media (max-width: 768px) {
-        .carousel-section {
-            height: 50vh;
-            min-height: 400px;
+        section {
+            height: 60vh;
+            min-height: 500px;
         }
 
-        .slide-content {
-            padding: 30px;
-        }
-
-        .slide-title {
+        h2 {
             font-size: 2.5rem;
         }
 
-        .brand-logo {
-            top: 20px;
-            left: 30px;
-            width: 60px;
-            height: 60px;
-            font-size: 20px;
-        }
-
-        .progress-container {
-            top: 20px;
-            right: 30px;
-        }
-
-        .navigation {
-            width: 50px;
-            height: 50px;
+        .nav-prev,
+        .nav-next {
+            width: 40px;
+            height: 40px;
         }
 
         .nav-prev {
-            left: 20px;
+            left: 1rem;
         }
 
         .nav-next {
-            right: 20px;
-        }
-
-        .slide-info {
-            display: none;
-        }
-
-        .info-section {
-            padding: 60px 0;
-        }
-
-        .section-title {
-            font-size: 2rem;
+            right: 1rem;
         }
     }
 </style>
@@ -424,13 +185,13 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let currentSlide = 0;
-        const totalSlides = 6;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = slides.length;
         let autoplayInterval;
 
         function updateSlide() {
-            const slides = document.querySelectorAll('.slide');
-            const dots = document.querySelectorAll('.dot');
-
+            // Update slides
             slides.forEach((slide, index) => {
                 slide.classList.remove('active');
                 if (index === currentSlide) {
@@ -438,6 +199,7 @@
                 }
             });
 
+            // Update dots
             dots.forEach((dot, index) => {
                 dot.classList.remove('active');
                 if (index === currentSlide) {
@@ -445,11 +207,8 @@
                 }
             });
 
-            // Update counter and progress
+            // Update counter
             document.querySelector('.slide-counter').textContent = `${currentSlide + 1} / ${totalSlides}`;
-            const progressFill = document.querySelector('.progress-fill');
-            const percentage = ((currentSlide + 1) / totalSlides) * 100;
-            progressFill.style.width = `${percentage}%`;
         }
 
         window.changeSlide = function(direction) {
@@ -478,14 +237,9 @@
         }
 
         window.openProductModal = function() {
-            // Aqui você pode integrar com seu sistema de produtos Laravel
-            Swal.fire({
-                title: 'Produto em Destaque',
-                text: 'Redirecionando para a página do produto...',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            });
+            // Integração com Laravel
+            console.log('Abrindo produtos...');
+            // Swal.fire ou redirecionamento
         };
 
         // Keyboard navigation
@@ -498,11 +252,11 @@
         let startX = 0;
         let endX = 0;
 
-        document.addEventListener('touchstart', (e) => {
+        document.querySelector('.carousel-container').addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
         });
 
-        document.addEventListener('touchend', (e) => {
+        document.querySelector('.carousel-container').addEventListener('touchend', (e) => {
             endX = e.changedTouches[0].clientX;
             const diff = startX - endX;
 
@@ -519,13 +273,9 @@
         updateSlide();
         startAutoplay();
 
-        // Pause autoplay on hover
-        document.querySelector('.carousel-container').addEventListener('mouseenter', () => {
-            clearInterval(autoplayInterval);
-        });
-
-        document.querySelector('.carousel-container').addEventListener('mouseleave', () => {
-            startAutoplay();
-        });
+        // Pause on hover
+        const container = document.querySelector('.carousel-container');
+        container.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
+        container.addEventListener('mouseleave', () => startAutoplay());
     });
 </script>

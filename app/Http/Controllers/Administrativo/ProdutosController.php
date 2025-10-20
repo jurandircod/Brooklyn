@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\model\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho};
+use App\model\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho, Notificacao};
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -24,6 +24,9 @@ use App\model\Tamanho;
  */
 class ProdutosController extends Controller
 {
+
+    private $notificacaoContador;
+    private $notificacao;
     protected $produtos;    // Lista de produtos
     protected $categorias;   // Lista de categorias
     protected $marcas;       // Lista de marcas
@@ -43,6 +46,15 @@ class ProdutosController extends Controller
         '40' => '40',
         '41' => '41',
         '42' => '42',
+        775 => '775',
+        8 => '8',
+        825 => '825',
+        85 => '85',
+        38 => '38',
+        39 => '39',
+        40 => '40',
+        41 => '41',
+        42 => '42',
     ];
     private $tamanhos;
 
@@ -54,6 +66,8 @@ class ProdutosController extends Controller
     {
         $this->marcas = Marca::all();
         $this->categorias = Categoria::all();
+        $this->notificacaoContador = notificacao::NotificacaoContador();
+        $this->notificacao = notificacao::notificacaoPedido();
     }
 
     /**
@@ -86,6 +100,8 @@ class ProdutosController extends Controller
         }
 
 
+        $notificacaoContador = $this->notificacaoContador;
+        $notificacao = $this->notificacao;
         // Retornar view normal
         return view('administrativo.produto', [
             'produtos' => $produtos,
@@ -96,7 +112,9 @@ class ProdutosController extends Controller
             'currentCategoria' => $categoria,
             'currentMarca' => $marca,
             'perPage' => $perPage,
-            'tamanhos' => $this->tamanhos
+            'tamanhos' => $this->tamanhos,
+            'notificacaoContador' => $notificacaoContador,
+            'notificacao' => $notificacao
         ]);
     }
 
@@ -406,12 +424,19 @@ class ProdutosController extends Controller
      */
     protected function createStockObject(array $data, int $produtoId)
     {
-        foreach ($data as $key => $value) {
+
+        $dadosFiltrados = array_filter($data, function ($valor, $chave) {
+            // Remove campos nulos
+            return $valor !== null && $valor !== '' && $valor !== '0';
+        }, ARRAY_FILTER_USE_BOTH);
+        
+        foreach ($dadosFiltrados as $key => $value) {
             if (!isset($this->mapaTamanho[$key])) {
                 continue;
             }
-
             $tamanho = strval($this->mapaTamanho[$key]) ?? 'padrao';
+            if (isset($this->mapaTamanho[$value])) {
+            }
             $quantidade = intVal($value) ?? 0;
             if (intVal($quantidade) > 0) {
                 Estoque::updateOrCreate(
@@ -426,6 +451,7 @@ class ProdutosController extends Controller
                 );
             }
         }
+        
     }
 
     /**

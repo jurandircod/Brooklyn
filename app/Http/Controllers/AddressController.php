@@ -19,10 +19,7 @@ class AddressController extends Controller
         $this->middleware('auth');
     }
 
-    static function index()
-    {
-
-    }
+    static function index() {}
 
     public function getCityByCep($cep)
     {
@@ -141,8 +138,17 @@ class AddressController extends Controller
 
         try {
             $endereco = Endereco::findOrFail($id);
-            $endereco->update($request->all());
-
+            $data = $request->all();
+            $endereco['estado'] = $data['estado'];
+            $endereco['cidade'] = $data['cidade'];
+            $endereco['logradouro'] = $data['logradouro'];
+            $endereco['numero'] = $data['numero'];
+            $endereco['bairro'] = $data['bairro'];
+            $endereco['cep'] = $data['cep'];
+            $endereco['telefone'] = $data['telefone'];
+            $endereco['complemento'] = $data['complemento'];
+            $endereco->save($data);
+            $endereco = Endereco::findOrFail($id);
             Alert::alert('Endereço', 'Atualizado com sucesso', 'success');
             return redirect()->route('site.perfil', ['id' => null, 'activeTab' => 6]);
         } catch (\Exception $e) {
@@ -151,25 +157,17 @@ class AddressController extends Controller
         }
     }
 
-    public static function enviaParaformEnderecos($id)
-    {
-
-        $enderecoEditar = Endereco::where('id', $id)->where('user_id', auth()->id())->first();
-        if (!$enderecoEditar) {
-            $enderecoEditar = null;
-            return $enderecoEditar;
-        }
-    }
-
-
-
 
     public function remover($id)
     {
+        $activeTab = $this->activeTab;
         $pedidos = Pedido::where('endereco_id', $id)->orWhere('status', 'pago')->orWhere('status', 'enviado')->orWhere('status', 'entregue')->orWhere('status', 'aguardando')->get();
         if ($pedidos->count() > 0) {
-            Alert::alert('Erro', 'Não é possível excluir o endereço pois existem pedidos ativos associados a ele', 'error');
-            return redirect()->route('site.perfil', compact('activeTab'));
+            Alert::alert('Destivado', 'Endereco foi desativado', 'sucess');
+            $endereco = Endereco::findOrFail($id);
+            $endereco->status = 'inativo';
+            $endereco->save();
+            return redirect()->route('site.perfil', ['activeTab' => $this->activeTab]);
             exit;
         }
         $endereco = Endereco::findOrFail($id);

@@ -11,13 +11,14 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PaymentController;
 use App\Services\MercadoPagoService;
+use Faker\Provider\ar_EG\Payment;
 
 class FazerPedidoController extends Controller
 {
 
     public function index()
     {
-        $enderecos = Endereco::where('user_id', auth()->id())->get();
+        $enderecos = Endereco::where('user_id', auth()->id())->where('status', 'ativo')->get();
         $itens = $this->queryBuilderItensCarrinho();
 
         $preco_total = $itens->sum('preco_total');
@@ -49,25 +50,46 @@ class FazerPedidoController extends Controller
             });
     }
 
+    function normalizarValor($valor)
+    {
+        // troca vírgula por ponto e remove espaços
+        $valor = str_replace(',', '.', trim($valor));
+
+        // converte pra float
+        $valor = (float) $valor;
+
+        // formata com duas casas decimais e ponto como separador
+        return number_format($valor, 2, '.', '');
+    }
     public function finalizarCarrinho(Request $request)
     {
-        $user = Auth::user();
-        if (!$user) {
-            Alert::error('Erro', 'Usuário não autenticado.');
-            return back();
-        }
-
-        
-
-
         $validator = $this->validateInput($request->all());
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
-//**
 
+        $user = auth()->user();
 
+        $valor = $this->normalizarValor($request->input('valor'));
+        // Exemplo rápido: montando payload de pagamento (substitua pela lógica real)
+        $amount = $valor; // ou calcule $preco_total
+        $description = 'Pagamento Brooklyn - pedido do usuário ' . ($user->id ?? 'anon');
 
+        // Cria o service via container (respeita DI)
+        $mpService = app(\App\Services\MercadoPagoService::class);
+        $customer = [
+            'email' => $user->email,
+            'first_name' => $user->name,
+            'last_name' => $user->name,
+            // CPF real se tiver — atenção em produção
+            'cpf' => '11117634965' // CPF do usuário
+        ];
+
+        $pixData = $mpService->createPixPayment($amount, $description, $customer);
+
+        return view('site.pix', compact('pixData'));
+
+        exit;
         return DB::transaction(function () use ($request, $user) {
             $carrinho = Carrinho::where('user_id', $user->id)->where('status', 'ativo')->first();
             if (!$carrinho) {

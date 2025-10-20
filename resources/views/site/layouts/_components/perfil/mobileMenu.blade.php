@@ -1,33 +1,33 @@
 <div class="mobile-menu d-sm-none">
     <ul>
         <li>
-            <a href="demo3.php" class="active">
+            <a href="/" class="active">
                 <i data-feather="home"></i>
-                <span>Home</span>
+                <span>Inicio</span>
             </a>
         </li>
         <li>
-            <a href="javascript:void(0)" class="toggle-category">
+            <a href="{{route('site.shop.produto')}}">
                 <i data-feather="align-justify"></i>
-                <span>Category</span>
+                <span>Produtos</span>
             </a>
         </li>
         <li>
-            <a href="javascript:void(0)">
+            <a href="{{route('site.carrinho')}}">
                 <i data-feather="shopping-bag"></i>
-                <span>Cart</span>
+                <span>Carrinho</span>
             </a>
         </li>
         <li>
-            <a href="javascript:void(0)">
+            <a href="{{route('site.contato')}}">
                 <i data-feather="heart"></i>
-                <span>Wishlist</span>
+                <span>Contato</span>
             </a>
         </li>
         <li>
-            <a href="user-dashboard.php">
+            <a href="{{route('site.perfil')}}">
                 <i data-feather="user"></i>
-                <span>Account</span>
+                <span>Conta</span>
             </a>
         </li>
     </ul>

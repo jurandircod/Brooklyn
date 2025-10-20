@@ -1,161 +1,118 @@
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/site/cart/customize.css') }}">
 <!-- Cart Section Start -->
-<section class="cart-section section-b-space">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="cart-card">
-                    <div class="cart-header">
-                        <h2>
-                            <span class="cart-icon">
-                                <i class="fas fa-shopping-cart"></i>
-                            </span>
-                            Seus Produtos
-                        </h2>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<section class="py-10 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-lg rounded-2xl overflow-hidden border border-[#4A1C1D]/20">
+
+            <!-- Cabeçalho -->
+            <div class="bg-[#4A1C1D] text-white py-4 px-6 flex items-center space-x-3">
+                <i class="fas fa-shopping-cart text-lg"></i>
+                <h2 class="text-xl font-semibold">Seus Produtos</h2>
+            </div>
+
+            <!-- Tabela responsiva -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left border-collapse">
+                    <thead class="bg-[#4A1C1D]/90 text-white text-sm uppercase">
+                        <tr>
+                            <th class="py-3 px-4">Imagem</th>
+                            <th class="py-3 px-4">Produto</th>
+                            <th class="py-3 px-4">Preço</th>
+                            <th class="py-3 px-4">Tamanho</th>
+                            <th class="py-3 px-4">Quantidade</th>
+                            <th class="py-3 px-4">Total</th>
+                            <th class="py-3 px-4 text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach ($itens as $item)
+                            <tr class="hover:bg-gray-100 transition-colors">
+                                <td class="py-3 px-4">
+                                    <a href="{{ route('site.produto', ['id' => $item->produto->id]) }}">
+                                        <img src="{{ $item->produto->imagem_url }}" alt=""
+                                            class="w-16 h-16 object-cover rounded-lg shadow-sm">
+                                    </a>
+                                </td>
+
+                                <td class="py-3 px-4">
+                                    <a href="../product/details.html"
+                                        class="text-[#4A1C1D] font-semibold hover:underline">
+                                        {{ $item->produto->nome }}
+                                    </a>
+                                </td>
+
+                                <td class="py-3 px-4">
+                                    <span class="font-semibold text-gray-800">R${{ $item->preco_unitario }}</span>
+                                </td>
+
+                                <td class="py-3 px-4">
+                                    <span data-size-selected="{{ $item->tamanho }}"
+                                        class="inline-block bg-[#4A1C1D]/10 text-[#4A1C1D] text-sm font-medium px-3 py-1 rounded-md">
+                                        {{ $item->tamanho }}
+                                    </span>
+                                </td>
+
+                                <td class="py-3 px-4">
+                                    <input type="number" name="quantity" data-item-id="{{ $item->id }}"
+                                        value="{{ $item->quantidade }}" min="1"
+                                        class="w-20 border border-gray-300 rounded-md text-center focus:ring-2 focus:ring-[#4A1C1D] focus:border-[#4A1C1D]">
+                                </td>
+
+                                <input type="hidden" data-categoria-id="{{ $item->produto->categoria->id }}"
+                                    name="categoria_id" id="categoria_id" value="{{ $item->produto->categoria->id }}">
+
+                                <td class="py-3 px-4 font-semibold text-gray-800">
+                                    R${{ $item->preco_total }}
+                                </td>
+
+                                <td class="py-3 px-4 text-center">
+                                    <button class="text-red-600 hover:text-red-800 remove-item"
+                                        data-item-id="{{ $item->id }}">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Ações -->
+            <div class="flex flex-col sm:flex-row justify-between items-center p-6 gap-4 border-t">
+                <a href="/" class="flex items-center text-[#4A1C1D] hover:text-[#6f2e2f] font-medium">
+                    <i class="fas fa-arrow-left mr-2"></i> Continuar comprando
+                </a>
+
+                <a href="{{ route('site.carrinho.limpaCarrinho') }}"
+                    class="bg-[#4A1C1D] text-white px-4 py-2 rounded-md shadow hover:bg-[#6f2e2f] transition">
+                    <i class="fas fa-trash-alt mr-2"></i> Limpar todos os itens
+                </a>
+            </div>
+        </div>
+
+        <!-- Resumo do pedido -->
+        <div class="mt-8 flex justify-end">
+            <div class="bg-white shadow-lg rounded-2xl p-6 w-full sm:w-96 border border-[#4A1C1D]/20">
+                <h3 class="text-lg font-semibold text-[#4A1C1D] mb-4 flex items-center">
+                    <i class="fas fa-calculator mr-2"></i> Resumo do Pedido
+                </h3>
+                <div class="space-y-2 text-gray-700">
+                    <div class="flex justify-between"><span>Subtotal</span><span id="subtotal">R$
+                            {{ number_format($preco_total, 2, ',', '.') }}</span></div>
+                    <div class="flex justify-between"><span>Taxa de Entrega</span><span id="taxaFrete">R$ 0,00</span>
                     </div>
-
-                    <div class="table-responsive">
-                        <table class="table cart-table">
-                            <thead>
-                                <tr class="table-head">
-                                    <th scope="col">Imagem</th>
-                                    <th scope="col">Produto</th>
-                                    <th scope="col">Preço</th>
-                                    <th scope="col">Tamanho</th>
-                                    <th scope="col">Quantidade</th>
-                                    <th scope="col">Total</th>
-                                    <th scope="col">Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($itens as $item)
-                                    <tr>
-                                        <!-- Imagem do produto -->
-                                        <td data-label="Imagem">
-                                            <a href="{{ route('site.produto', ['id' => $item->produto->id]) }}">
-                                                <img src="{{ $item->produto->imagem_url }}"
-                                                    class="product-image blur-up lazyloaded" alt="">
-                                            </a>
-                                        </td>
-                                        <!-- Nome do produto -->
-                                        <td data-label="Produto">
-                                            <a href="../product/details.html"
-                                                class="product-name">{{ $item->produto->nome }}</a>
-                                            <div class="mobile-cart-content row d-md-none">
-                                                <div class="col">
-                                                    <span class="mobile-badge">Quantidade</span>
-                                                    <div class="qty-box">
-                                                        <div class="input-group">
-                                                            <input type="text" name="quantity"
-                                                                class="form-control input-number" value="1">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <span class="mobile-badge">Preço</span>
-                                                    <h2 class="price">R$18</h2>
-                                                </div>
-                                                <div class="col">
-                                                    <span class="mobile-badge">Remover</span>
-                                                    <a href="javascript:void(0)" class="remove-item">
-                                                        <i class="fas fa-times"></i>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <!-- Preço -->
-                                        <td data-label="Preço">
-                                            <h2 class="price">R${{ $item->preco_unitario }}</h2>
-                                        </td>
-                                        <!-- Tamanho -->
-                                        <td data-label="Tamanho">
-                                            <!-- pega o tamnho e envia pro backend-->
-
-
-
-                                            <span class="size-badge"
-                                                data-size-selected="{{ $item->tamanho }}">{{ $item->tamanho }}</span>
-
-
-
-                                        </td>
-                                        <!-- Quantidade -->
-                                        <td data-label="Quantidade">
-                                            <div class="qty-box">
-                                                <div class="input-group">
-                                                    <input type="number" name="quantity"
-                                                        data-item-id="{{ $item->id }}"
-                                                        class="form-control input-number"
-                                                        value="{{ $item->quantidade }}" min="1">
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <input type="hidden" data-categoria-id="{{ $item->produto->categoria->id }}" name="categoria_id" id="categoria_id" value="{{ $item->produto->categoria->id }}">
-
-                                        <!-- Preço total -->
-                                        <td data-label="Total">
-                                            <h2 class="price td-color">{{ $item->preco_total }}</h2>
-                                        </td>
-                                        <td data-label="Ação">
-                                            <a href="javascript:void(0)" class="remove-item"
-                                                data-item-id="{{ $item->id }}">
-                                                <i class="fas fa-times"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                    <div class="flex justify-between font-semibold text-[#4A1C1D]"><span>Total</span><span
+                            id="preco_total">R$ {{ number_format($preco_total, 2, ',', '.') }}</span></div>
                 </div>
-
-                <div class="action-buttons">
-                    <div class="row align-items-center">
-                        <div class="col-md-6 order-md-2 mb-3 mb-md-0">
-                            <div class="text-md-end">
-                                <a href="{{route('site.carrinho.limpaCarrinho')}}" class="btn-clear-all">
-                                    <i class="fas fa-trash-alt me-2"></i>
-                                    Limpar todos os itens
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-md-6 order-md-1">
-                            <a href="/" class="btn-continue">
-                                <i class="fas fa-arrow-left"></i>
-                                Continue No shop
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="cart-checkout-section">
-                    <div class="row justify-content-end">
-                        <div class="col-lg-5 col-xl-4">
-                            <div class="cart-box">
-                                <div class="cart-box-details">
-                                    <div class="total-details">
-                                        <h3>
-                                            <i class="fas fa-calculator me-2"></i>
-                                            Resumo do Pedido
-                                        </h3>
-                                        <h6>Subtotal <span id="subtotal">R$
-                                                {{ number_format($preco_total, 2, ',', '.') }}</span></h6>
-                                        <h6>Taxa de Entrega <span id="taxaFrete">R$ 0,00</span></h6>
-                                        <h6>Total <span id="preco_total">R$
-                                                {{ number_format($preco_total, 2, ',', '.') }}</span></h6>
-                                        <div class="bottom-details">
-                                            <a href="{{ route('site.fazerPedido') }}">
-                                                <i class="fas fa-credit-card me-2"></i>
-                                                Processar pagamento
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mt-6">
+                    <a href="{{ route('site.fazerPedido') }}"
+                        class="block w-full text-center bg-[#4A1C1D] text-white py-3 rounded-md hover:bg-[#6f2e2f] transition">
+                        <i class="fas fa-credit-card mr-2"></i> Processar pagamento
+                    </a>
                 </div>
             </div>
         </div>
@@ -166,7 +123,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Seleciona todos os inputs de quantidade
-        const quantityInputs = document.querySelectorAll('input[name="quantity"]');        
+        const quantityInputs = document.querySelectorAll('input[name="quantity"]');
         // Adiciona evento de change a cada input
         quantityInputs.forEach(input => {
             input.addEventListener('change', function() {

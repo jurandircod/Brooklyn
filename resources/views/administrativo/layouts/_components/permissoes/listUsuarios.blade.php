@@ -66,6 +66,9 @@
                                 </tr>
                             </tfoot>
                         </table>
+                        <div class="mt-3">
+                            {{$usuarios->links()}}
+                        </div>
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -73,6 +76,7 @@
             </div>
             <!-- /.col -->
         </div>
+
     </div>
     <!-- iCheck -->
 

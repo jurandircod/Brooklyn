@@ -190,6 +190,32 @@
                                     @endforeach
                                 </div>
                             </div>
+
+                            <!-- Tamanhos calcas-->
+                            <div class="row mb-3" id="calcaSection" style="display: none;">
+                                <div class="col-md-12 mb-3">
+                                    <div class="row">
+                                        @foreach (['p', 'm', 'g', 'gg'] as $size)
+                                            <div class="col-md-3">
+                                                <label for="quantidade{{ $size }}"
+                                                    class="form-label">Quantidade em Estoque Tamanho
+                                                    {{ $size }}</label>
+                                                <input type="number" class="form-control"
+                                                    id="quantidade{{ $size }}" name="{{ $size }}"
+                                                    value="{{ old($size) }}" placeholder="Digite a quantidade"
+                                                    min="0" disabled>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="mb-2"><b>Selecione os tamanhos</b></div>
+                                    @foreach (['P', 'M', 'G', 'GG'] as $size)
+                                        <label class="size-option"
+                                            data-size="{{ $size }}">{{ $size }}</label>
+                                    @endforeach
+                                </div>
+                            </div>
                             <!-- Tamanhos skates-->
                             <div class="row mb-3" id="skateSection" style="display: none;">
                                 <div class="col-md-12 mb-3">
@@ -361,42 +387,31 @@
 
 
 <script>
-    setInterval(() => {
-        const categoria = document.getElementById('categoria');
-        if (!categoria) return;
+    const categoria = document.getElementById('categoria');
+    const camisaSection = document.getElementById('camisaSection');
+    const tenisSection = document.getElementById('tenisSection');
+    const skateSection = document.getElementById('skateSection');
+    const calcaSection = document.getElementById('calcaSection');
+    const quantidadeSection = document.getElementById('quantidadeSection');
 
-        const selectedText = categoria.options[categoria.selectedIndex]?.text || '';
-        const camisaSection = document.getElementById('camisaSection');
-        const tenisSection = document.getElementById('tenisSection');
-        const skateSection = document.getElementById('skateSection');
-        const quantidadeSection = document.getElementById('quantidadeSection');
+    if (categoria) {
+        categoria.addEventListener('change', () => {
+            const selectedText = categoria.options[categoria.selectedIndex]?.text || '';
 
-
-        if (!camisaSection || !skateSection || !quantidadeSection) return;
-
-        if (selectedText === 'Camisas') {
-            camisaSection.style.display = 'block';
-            skateSection.style.display = 'none';
-            quantidadeSection.style.display = 'none';
-            tenisSection.style.display = 'none';
-        } else if (selectedText === 'Skates') {
-            camisaSection.style.display = 'none';
-            skateSection.style.display = 'block';
-            quantidadeSection.style.display = 'none';
-            tenisSection.style.display = 'none';
-        } else if (selectedText === 'Tênis') {
             camisaSection.style.display = 'none';
             skateSection.style.display = 'none';
-            quantidadeSection.style.display = 'none';
-            tenisSection.style.display = 'block';
-        } else {
-            // Outras categorias
-            skateSection.style.display = 'none';
-            camisaSection.style.display = 'none';
-            quantidadeSection.style.display = 'block';
             tenisSection.style.display = 'none';
-        }
-    }, 100);
+            calcaSection.style.display = 'none';
+            quantidadeSection.style.display = 'none';
+
+            if (selectedText === 'Camisas') camisaSection.style.display = 'block';
+            else if (selectedText === 'Skates') skateSection.style.display = 'block';
+            else if (selectedText === 'Tênis') tenisSection.style.display = 'block';
+            else if (selectedText === 'Calças') calcaSection.style.display = 'block';
+            else quantidadeSection.style.display = 'block';
+        });
+    }
+
 
     document.querySelectorAll('.size-option').forEach(option => {
         option.addEventListener('click', function() {

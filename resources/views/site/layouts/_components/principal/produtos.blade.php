@@ -1,396 +1,181 @@
-<section class="ratio_asos overflow-hidden produtos-grid">
-    <div class="container p-sm-0">
-        <div class="row m-0">
-            <div class="col-12 p-0">
-                <div class="title-3 text-center">
-                    <h2>Novos Produtos</h2>
-                    <h5 class="theme-color">Nossa coleção</h5>
-                </div>
-            </div>
+<section class="py-20 px-4 bg-white">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <div class="text-center mb-16 space-y-2">
+            <p class="text-sm font-medium text-[#5A1F2D] tracking-wide uppercase">Nossa Coleção</p>
+            <h2 class="text-4xl md:text-5xl font-light text-gray-900 tracking-tight">
+                Novos Produtos
+            </h2>
         </div>
 
-        <div class="row g-sm-4 g-3">
+        <!-- Products Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 md:gap-8">
             @foreach ($produtos as $index => $produto)
-                <div class="col-xl-2 col-lg-3 col-md-4 col-6">
-                    <article class="product-card @if (!$produto->estoque) out-of-stock @endif"
-                        aria-label="{{ $produto->nome }}">
-                        <div class="img-wrapper">
-                            <a href="{{ route('site.produto', ['id' => $produto->id]) }}" class="img-link"
-                                tabindex="-1">
-                                <img src="{{ $produto->imagem_url }}" alt="{{ $produto->nome }}"
-                                    class="product-img blur-up lazyload" loading="lazy" width="600" height="600">
-                            </a>
+            <article class="group relative bg-white flex flex-col {{ !$produto->estoque ? 'opacity-60' : '' }}">
+                
+                <!-- Image Container -->
+                <div class="relative aspect-square overflow-hidden bg-gray-50 mb-4">
+                    <a href="{{ route('site.produto', ['id' => $produto->id]) }}" 
+                       class="block w-full h-full">
+                        <img src="{{ $produto->imagem_url }}" 
+                             alt="{{ $produto->nome }}"
+                             class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-90"
+                             loading="lazy">
+                    </a>
 
-                            {{-- background decor --}}
-                            <div class="card-deco"></div>
+                    <!-- Badge Minimalista -->
+                    @if ($produto->estoque)
+                    <div class="absolute top-3 left-3 z-10">
+                        <span class="inline-block px-2.5 py-1 bg-[#5A1F2D] text-white text-xs font-medium">
+                            -30%
+                        </span>
+                    </div>
+                    @endif
 
-                            {{-- badge (dinâmico) --}}
-                            <div class="label-block">
-                                <span class="label label-theme">30% Off</span>
-                            </div>
+                    <!-- Quick Actions - Clean -->
+                    <div class="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button class="w-9 h-9 bg-white border border-gray-200 flex items-center justify-center hover:border-[#5A1F2D] hover:bg-[#5A1F2D] hover:text-white transition-all duration-300 {{ !$produto->estoque ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                data-id="{{ $produto->id }}"
+                                title="Adicionar ao carrinho"
+                                {{ !$produto->estoque ? 'disabled' : '' }}>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                            </svg>
+                        </button>
+                        
+                        <a href="{{ route('site.produto', ['id' => $produto->id]) }}" 
+                           class="w-9 h-9 bg-white border border-gray-200 flex items-center justify-center hover:border-[#5A1F2D] hover:bg-[#5A1F2D] hover:text-white transition-all duration-300"
+                           title="Ver detalhes">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </a>
+                    </div>
 
-                            {{-- quick actions (aparecem no hover) --}}
-                            <div class="card-actions" role="group" aria-hidden="true">
-                                <button class="action-btn add-cart" data-id="{{ $produto->id }}"
-                                    title="Adicionar ao carrinho"
-                                    @if (!$produto->estoque) disabled aria-disabled="true" @endif>
-                                    <i data-feather="shopping-cart"></i>
-                                </button>
-
-                                <a href="{{ route('site.produto', ['id' => $produto->id]) }}" class="action-btn view"
-                                    title="Ver produto">
-                                    <i data-feather="eye"></i>
-                                </a>
-                            </div>
-
-                            @if (!$produto->estoque)
-                                <div class="stock-overlay" aria-hidden="true">
-                                    <span>Sem estoque</span>
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="product-info">
-                            <div class="price-row">
-                                <div class="price">R$ {{ number_format($produto->valor, 2, ',', '.') }}</div>
-                                <div class="rating">
-                                    <ul class="rating-list" aria-hidden="true">
-                                        @if ($produto->avaliacao->count() > 0)
-                                            @for ($i = 1; $i <= $produto->avaliacao->first()->estrela; $i++)
-                                                <li><i class="fas fa-star theme-color"></i></li>
-                                            @endfor
-                                        @else
-                                            <li><i class="fas fa-star theme-color"></i></li>
-                                            <li><i class="fas fa-star theme-color"></i></li>
-                                            <li><i class="fas fa-star theme-color"></i></li>
-                                            <li><i class="fas fa-star theme-color"></i></li>
-                                            <li><i class="fas fa-star theme-color"></i></li>
-                                        @endif
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <p class="material text-muted mb-1">{{ $produto->material }}</p>
-
-                            <a href="{{ route('site.produto', ['id' => $produto->id]) }}" class="product-name">
-                                <h5>{{ $produto->nome }}</h5>
-                            </a>
-
-                            @if (!$produto->estoque)
-                                <div class="alert alert-warning mt-2 d-flex align-items-center stock-note"
-                                    role="alert">
-                                    <i data-feather="alert-circle" class="me-2"></i>
-                                    <span>Produto sem estoque</span>
-                                </div>
-                            @endif
-                        </div>
-                    </article>
+                    <!-- Out of Stock Overlay -->
+                    @if (!$produto->estoque)
+                    <div class="absolute inset-0 bg-white/80 flex items-center justify-center z-20">
+                        <span class="text-xs font-medium text-gray-900 tracking-wider uppercase">
+                            Esgotado
+                        </span>
+                    </div>
+                    @endif
                 </div>
+
+                <!-- Product Info -->
+                <div class="flex-1 flex flex-col space-y-2">
+                    <!-- Category/Material -->
+                    <span class="text-xs text-gray-500 tracking-wide uppercase">
+                        {{ $produto->material }}
+                    </span>
+
+                    <!-- Product Name -->
+                    <a href="{{ route('site.produto', ['id' => $produto->id]) }}" 
+                       class="block">
+                        <h3 class="text-sm font-normal text-gray-900 line-clamp-2 group-hover:text-[#5A1F2D] transition-colors duration-200">
+                            {{ $produto->nome }}
+                        </h3>
+                    </a>
+
+                    <!-- Spacer -->
+                    <div class="flex-1"></div>
+
+                    <!-- Price & Rating -->
+                    <div class="pt-2 space-y-2">
+                        <!-- Price -->
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-lg font-medium text-gray-900">
+                                R$ {{ number_format($produto->valor, 2, ',', '.') }}
+                            </span>
+                            <span class="text-xs text-gray-400 line-through">
+                                R$ {{ number_format($produto->valor * 1.3, 2, ',', '.') }}
+                            </span>
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="flex items-center gap-1">
+                            @php
+                                $rating = $produto->avaliacao->count() > 0 ? $produto->avaliacao->first()->estrela : 5;
+                            @endphp
+                            @for ($i = 1; $i <= 5; $i++)
+                                @if ($i <= $rating)
+                                    <svg class="w-3 h-3 text-[#5A1F2D] fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                @else
+                                    <svg class="w-3 h-3 text-gray-200 fill-current" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                @endif
+                            @endfor
+                        </div>
+                    </div>
+
+                    <!-- Add to Cart Button - Clean -->
+                    @if ($produto->estoque)
+                    <button class="mt-3 w-full py-2.5 bg-[#5A1F2D] text-white text-sm font-medium hover:bg-[#7A2F3D] transition-colors duration-300 flex items-center justify-center gap-2"
+                            data-id="{{ $produto->id }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                        Adicionar
+                    </button>
+                    @else
+                    <button class="mt-3 w-full py-2.5 bg-gray-100 text-gray-400 text-sm font-medium cursor-not-allowed flex items-center justify-center gap-2"
+                            disabled>
+                        Indisponível
+                    </button>
+                    @endif
+                </div>
+            </article>
             @endforeach
         </div>
 
+        <!-- View All Button -->
+        <div class="text-center mt-16">
+            <a href="#" class="inline-flex items-center gap-3 px-8 py-3 border-2 border-[#5A1F2D] text-[#5A1F2D] font-medium hover:bg-[#5A1F2D] hover:text-white transition-all duration-300">
+                Ver Toda Coleção
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
+        </div>
     </div>
 </section>
 
 <style>
-    :root {
-        --brand: #5A1F2D;
-        --accent: #667eea;
-        --muted: #6c757d;
-        --card-radius: 12px;
-        --soft-shadow: 0 10px 30px rgba(11, 15, 30, 0.12);
-    }
-
-    /* Product grid container */
-    .produtos-grid .product-card {
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.01));
-        border-radius: var(--card-radius);
+    /* Line clamp utility */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
-        transition: transform .22s ease, box-shadow .22s ease;
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        display: flex;
-        flex-direction: column;
     }
 
-    /* hover elevation */
-    .product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--soft-shadow);
+    /* Smooth transitions */
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Image area with fixed aspect ratio */
-    .product-card .img-wrapper {
-        position: relative;
-        width: 100%;
-        padding-top: 100%;
-        /* 1:1 square — mantém grid alinhado */
-        overflow: hidden;
-        background: #f6f6f6;
+    /* Focus states for accessibility */
+    button:focus-visible,
+    a:focus-visible {
+        outline: 2px solid #5A1F2D;
+        outline-offset: 2px;
     }
 
-    /* Actual image positioned absolutely for perfect crop */
-    .product-card .img-wrapper .product-img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform .6s cubic-bezier(.2, .9, .2, 1), filter .25s ease;
-        will-change: transform;
+    /* Prevent layout shift */
+    img {
+        content-visibility: auto;
     }
 
-    /* subtle zoom on hover */
-    .product-card:hover .product-img {
-        transform: scale(1.06);
-        filter: saturate(1.02);
-    }
-
-    /* decorative circle / shape */
-    .product-card .card-deco {
-        position: absolute;
-        right: -20%;
-        bottom: -20%;
-        width: 70%;
-        height: 70%;
-        background: radial-gradient(circle at 30% 30%, rgba(102, 126, 234, 0.12), rgba(90, 31, 45, 0.06));
-        transform: rotate(-15deg);
-        z-index: 0;
-    }
-
-    /* label (badge) */
-    .product-card .label-block {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 4;
-    }
-
-    .product-card .label {
-        background: linear-gradient(90deg, #ffb86b, #ff6b6b);
-        color: #111;
-        padding: 6px 10px;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 0.82rem;
-    }
-
-    /* quick actions (appear on hover) */
-    .product-card .card-actions {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 5;
-        opacity: 0;
-        transform: translateY(-6px);
-        transition: opacity .18s ease, transform .18s ease;
-    }
-
-    .product-card:hover .card-actions {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    /* action buttons style */
-    .action-btn {
-        background: rgba(255, 255, 255, 0.92);
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 20px rgba(11, 15, 30, 0.08);
-        cursor: pointer;
-        transition: transform .12s ease, background .12s ease;
-    }
-
-    .action-btn:hover {
-        transform: translateY(-3px);
-    }
-
-    .action-btn:disabled,
-    .action-btn[aria-disabled="true"] {
-        opacity: .5;
-        cursor: not-allowed;
-    }
-
-    /* Out of stock overlay */
-    .product-card.out-of-stock .product-img {
-        filter: grayscale(.35) contrast(.95) brightness(.85);
-    }
-
-    .product-card .stock-overlay {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 6;
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45));
-        color: #fff;
-        font-weight: 700;
-        font-size: 1rem;
-    }
-
-    /* product info area */
-    .product-card .product-info {
-        padding: 12px 10px 16px 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .price-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .price {
-        color: var(--brand);
-        font-weight: 800;
-        font-size: 1rem;
-    }
-
-    .rating-list {
-        display: flex;
-        gap: 4px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-
-    .rating-list li i {
-        color: #f59e0b;
-        font-size: 0.85rem;
-    }
-
-    /* material text */
-    .product-info .material {
-        font-size: 0.85rem;
-        color: var(--muted);
-    }
-
-    /* product name */
-    .product-name h5 {
-        margin: 0;
-        font-size: 0.95rem;
-        color: #111;
-        font-weight: 700;
-    }
-
-    /* small stock note styling (kept for semantic) */
-    .stock-note {
-        margin: 8px 0 0 0;
-        font-size: 0.85rem;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 1200px) {
-        .produtos-grid .col-xl-2 {
-            flex: 0 0 20%;
-            max-width: 20%;
-        }
-    }
-
-    @media (max-width: 992px) {
-        .produtos-grid .col-lg-3 {
-            flex: 0 0 25%;
-            max-width: 25%;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .produtos-grid .col-md-4 {
-            flex: 0 0 33.333%;
-            max-width: 33.333%;
-        }
-
-        .product-card .card-actions {
-            right: 8px;
-            top: 8px;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .produtos-grid .col-6 {
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
-
-        .product-card .img-wrapper {
-            padding-top: 100%;
+    /* Hover effect refinement */
+    @media (hover: hover) {
+        .group:hover img {
+            transform: scale(1.02);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
     }
 </style>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // -- melhorias UX para produtos (colar dentro do DOMContentLoaded existente) --
-        (function() {
-            // substituir ícones feather (se estiver usando feather)
-            if (window.feather) {
-                feather.replace({
-                    'aria-hidden': 'true'
-                });
-            }
-
-            // colocar feedback visual ao clicar em adicionar ao carrinho
-            document.querySelectorAll('.product-card .add-cart').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (this.disabled) return;
-                    const produtoId = this.getAttribute('data-id');
-
-                    // micro-feedback: anima o botão e troca ícone por check temporário
-                    const origHtml = this.innerHTML;
-                    this.classList.add('added');
-                    this.style.transform = 'scale(0.96)';
-                    this.innerHTML =
-                        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-
-                    // reverter e disparar evento custom (pode ser capturado para adicionar AJAX)
-                    setTimeout(() => {
-                        this.style.transform = '';
-                        this.innerHTML = origHtml;
-                        this.classList.remove('added');
-
-                        // Dispara evento custom para integrar com seu JS de carrinho
-                        const event = new CustomEvent('produto:addCarrinho', {
-                            detail: {
-                                produtoId
-                            }
-                        });
-                        document.dispatchEvent(event);
-                    }, 900);
-                });
-            });
-
-            // permite abrir produto com Enter quando o cartão estiver com foco
-            document.querySelectorAll('.product-card').forEach(card => {
-                card.setAttribute('tabindex', '0');
-                card.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        const link = this.querySelector('.img-link') || this.querySelector(
-                            '.product-name a');
-                        if (link) link.click();
-                    }
-                });
-            });
-
-            // Exemplo: ouvir evento para integrar com seu fluxo de adicionar ao carrinho
-            // document.addEventListener('produto:addCarrinho', function(e){
-            //   // e.detail.produtoId -> aqui você pode chamar seu AJAX ou lógica
-            //   console.log('Adicionar produto ao carrinho:', e.detail.produtoId);
-            // });
-
-        })();
-
-    });
-</script>

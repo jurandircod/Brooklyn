@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\{LoginController, RegisterController};
 use App\Http\Controllers\{AvaliacaoController, PerfilController, User, ItemCarrinhoController, FazerPedidoController};
 use App\Http\Controllers\Administrativo\{PrincipalController, VendasController, TabelasControllers, PermissoesController, ProdutosController, CategoriaController, MarcaController};
+use App\Http\Controllers\MercadoPagoController;
 use Illuminate\Support\Facades\Log;
 
 /*
@@ -25,88 +26,17 @@ use Illuminate\Support\Facades\Log;
 // Em routes/web.php
 // Em routes/web.php - TESTE ESTA ROTA PRIMEIRO
 // Em routes/web.php
-Route::get('/test-pix-debug', function () {
-    try {
-        Log::info('=== TESTE PIX DEBUG INICIADO ===');
-
-        $mpService = app(App\Services\MercadoPagoService::class);
-
-        // Dados de teste MUITO simples
-        $testData = [
-            'amount' => 1.00,
-            'description' => 'Teste Debug PIX',
-            'customer' => [
-                'email' => 'test@test.com',
-                'first_name' => 'Test',
-                'last_name' => 'User',
-                'cpf' => '12345678900'
-            ]
-        ];
-
-        Log::info('Chamando createPixPayment com dados:', $testData);
-
-        $testPayment = $mpService->createPixPayment(
-            $testData['amount'],
-            $testData['description'],
-            $testData['customer']
-        );
-
-        Log::info('=== TESTE PIX DEBUG SUCESSO ===', $testPayment);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'PIX criado com sucesso!',
-            'data' => $testPayment
-        ]);
-    } catch (\Exception $e) {
-        Log::error('=== TESTE PIX DEBUG FALHOU ===', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString() // Log completo do trace
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-            'debug' => 'Verifique os logs para detalhes completos'
-        ], 500);
-    }
-});
-Route::get('/debug-mp-credentials', function () {
-    try {
-        $accessToken = env('MERCADOPAGO_ACCESS_TOKEN');
-
-        if (!$accessToken) {
-            return response()->json([
-                'success' => false,
-                'error' => 'MERCADOPAGO_ACCESS_TOKEN não encontrado no .env'
-            ]);
-        }
-
-        \MercadoPago\SDK::setAccessToken($accessToken);
-
-        // Teste de autenticação simples
-        $preference = new \MercadoPago\Preference();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Credenciais carregadas com sucesso',
-            'access_token' => substr($accessToken, 0, 10) . '...', // Mostra apenas parte por segurança
-            'token_length' => strlen($accessToken)
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-            'access_token' => env('MERCADOPAGO_ACCESS_TOKEN') ? 'Configurado' : 'Não configurado'
-        ], 500);
-    }
-});
 // ==========================================
 // ROTAS PÚBLICAS (SEM AUTENTICAÇÃO)
 // ==========================================
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/register/salvar', [RegisterController::class, 'register'])->name('registerSalvar');
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+
+Route::post('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
+Route::get('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
+
+
 
 // Autenticação
 Auth::routes(['reset' => true]);

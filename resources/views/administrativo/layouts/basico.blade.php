@@ -270,7 +270,6 @@
 
 
     <!-- 6. DataTables & Plugins (dependem de jQuery) -->
-    <script src="{{ asset('js/administrativo/produto/listProdutos.js') }}"></script>
     <!-- 7. AdminLTE -->
     <script src="{{ asset('dist/js/adminlte.js') }}"></script>
 

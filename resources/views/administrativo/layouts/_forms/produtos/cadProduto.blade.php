@@ -195,7 +195,7 @@
                             <div class="row mb-3" id="calcaSection" style="display: none;">
                                 <div class="col-md-12 mb-3">
                                     <div class="row">
-                                        @foreach (['p', 'm', 'g', 'gg'] as $size)
+                                        @foreach (['P', 'M', 'G', 'GG'] as $size)
                                             <div class="col-md-3">
                                                 <label for="quantidade{{ $size }}"
                                                     class="form-label">Quantidade em Estoque Tamanho

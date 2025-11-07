@@ -352,6 +352,7 @@ class ProdutosController extends Controller
                 ->withInput();
         }
         try {
+
             DB::transaction(function () use ($data) {
                 $data = $this->prepareProductData($data);
                 $produto = $this->createProductWithStock($data);
@@ -389,7 +390,7 @@ class ProdutosController extends Controller
         $data['user_id'] = auth()->id();
         $produto = Produto::create($data);
         //Cria estoque de camisas, skates e outros
-        $this->createStockObject($data, $produto->id);
+        $teste = $this->createStockObject($data, $produto->id);
         return $produto;
     }
 
@@ -429,7 +430,7 @@ class ProdutosController extends Controller
             // Remove campos nulos
             return $valor !== null && $valor !== '' && $valor !== '0';
         }, ARRAY_FILTER_USE_BOTH);
-        
+
         foreach ($dadosFiltrados as $key => $value) {
             if (!isset($this->mapaTamanho[$key])) {
                 continue;
@@ -451,7 +452,6 @@ class ProdutosController extends Controller
                 );
             }
         }
-        
     }
 
     /**

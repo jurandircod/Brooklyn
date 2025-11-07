@@ -378,6 +378,7 @@
         </div>
     </div>
 </div>
+    <script src="{{ asset('js/administrativo/produto/listProdutos.js') }}"></script>
 
 <!-- ... seu modal atual ... -->
 <!-- CSS (padrão) -->

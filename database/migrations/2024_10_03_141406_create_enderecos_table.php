@@ -17,12 +17,13 @@ class CreateEnderecosTable extends Migration
             $table->id();
             $table->string('logradouro');
             $table->string('numero');
-            $table->string('complemento');
+            $table->string('complemento')->nullable();
             $table->string('bairro');
             $table->string('cidade');
             $table->string('estado');
             $table->string('telefone');
             $table->string('cep');
+            $table->string('cpf');
             $table->enum('status', ['ativo', 'inativo'])->default('ativo');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

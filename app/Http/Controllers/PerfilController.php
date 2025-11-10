@@ -25,11 +25,6 @@ class PerfilController extends Controller
             $enderecosEditar = Endereco::where('id', $id)->where('user_id', Auth::id())->first();
             if (!$enderecosEditar) {
                 $enderecosEditar = null;
-
-
-
-
-
             }
             $activeTab = 3;
             return view('site.perfil', ['enderecoEditar' => $enderecosEditar, 'enderecosMostrar' => $enderecosMostrar, 'pedidos' => $pedidos, 'activeTab' => $activeTab]);

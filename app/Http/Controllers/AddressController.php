@@ -65,8 +65,8 @@ class AddressController extends Controller
             'cep' => 'required|digits:8',
             'logradouro' => 'required|min:3|max:255',
             'numero' => 'required|max:255|numeric',
-            'complemento' => 'required|min:3|max:255',
             'telefone' => 'required|min:3|numeric',
+            'cpf' => 'required|digits:11',
         ], [
             // Mensagens de erro personalizadas
             'bairro.required' => 'O bairro é obrigatório',
@@ -85,13 +85,14 @@ class AddressController extends Controller
             'logradouro.max' => 'O logradouro deve ter no máximo 255 caracteres',
             'numero.required' => 'O numero é obrigatório',
             'numero.max' => 'O numero deve ter no máximo 255 caracteres',
-            'complemento.required' => 'O complemento é obrigatório',
-            'complemento.min' => 'O complemento deve ter pelo menos 3 caracteres',
-            'complemento.max' => 'O complemento deve ter no máximo 255 caracteres',
             'telefone.required' => 'O telefone é obrigatório',
             'telefone.min' => 'O telefone deve ter pelo menos 3 caracteres',
             'telefone.numeric' => 'O telefone é inválido',
             'numero.numeric' => 'O numero é inválido',
+            'cpf.required' => 'O campo cpf é obrigatório',
+            'cpf.digits' => 'O campo cpf deve ter 11 dígitos',
+            'cpf.unique' => 'O campo cpf deve ser único',
+
         ]);
 
         return $validator;
@@ -103,18 +104,20 @@ class AddressController extends Controller
         $data = $request->all();
         $data['cep'] = $cepTratado;
         $data['user_id'] = Auth::user()->id;
+        $data['cpf'] = str_replace(['.', '-'], '', $data['cpf']);
 
         // Chama a função de validação
         $validator = $this->validarInput($data);
-
+        
+        // Redireciona de volta para o formulário mantendo os dados
         if ($validator->fails()) {
-            Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
-            return redirect()
-                ->route('site.perfil', ['activeTab' => $this->activeTab])
-                ->withErrors($validator)
-                ->withInput();
+            $activeTab = 3;
+            return redirect()->route('site.perfil', ['activeTab' => $activeTab])
+            ->withErrors($validator)
+            ->withInput();
         }
-
+        
+        
         try {
             Endereco::create($data);
             Alert::alert('Endereço', 'Salvo com sucesso', 'success');

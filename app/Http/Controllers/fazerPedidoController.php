@@ -68,7 +68,14 @@ class FazerPedidoController extends Controller
             return back()->withErrors($validator);
         }
 
+        try {
+            $cpf = Endereco::where('user_id', auth()->id())->where('status', 'ativo')->where('id', $request->endereco_id)->first()->cpf;
+        } catch (\Exception $e) {
+            Alert::error('Erro', 'Endereço inválido');
+            return back();
+        }
         $user = auth()->user();
+
 
         $valor = $this->normalizarValor($request->input('valor'));
         // Exemplo rápido: montando payload de pagamento (substitua pela lógica real)
@@ -76,13 +83,18 @@ class FazerPedidoController extends Controller
         $description = 'Pagamento Brooklyn - pedido do usuário ' . ($user->id ?? 'anon');
 
         // Cria o service via container (respeita DI)
-        $mpService = app(\App\Services\MercadoPagoService::class);
+        try {
+            $mpService = app(\App\Services\MercadoPagoService::class);
+        } catch (\Exception $e) {
+            Alert::error('Erro', 'Erro ao criar pedido');
+            return back();
+        }
         $customer = [
             'email' => $user->email,
             'first_name' => $user->name,
             'last_name' => $user->name,
             // CPF real se tiver — atenção em produção
-            'cpf' => '11117634965' // CPF do usuário
+            'cpf' => $cpf // CPF do usuário
         ];
 
         $pixData = $mpService->createPixPayment($amount, $description, $customer);

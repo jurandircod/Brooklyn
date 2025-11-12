@@ -103,6 +103,9 @@ class ProdutosController extends Controller
         $notificacaoContador = $this->notificacaoContador;
         $notificacao = $this->notificacao;
         // Retornar view normal
+        if (isset($_GET['alterado'])) {
+            Alert::alert('Produto', 'Alterado com sucesso', 'success');
+        }
         return view('administrativo.produto', [
             'produtos' => $produtos,
             'categorias' => $this->categorias,
@@ -347,6 +350,7 @@ class ProdutosController extends Controller
         $data = $request->all();
         $validator = $this->validateInput($data);
         if ($validator->fails()) {
+            Alert::error('Erro', 'Falha ao salvar o produto');
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
@@ -795,7 +799,7 @@ class ProdutosController extends Controller
             if (isset($data['deleteImage'])) {
                 $verifica = $this->deleteImagem($data);
             }
-
+           
             $this->atualizarImagem($request);
             DB::transaction(function () use ($data) {
                 $this->validateProductId($data['id'] ?? null);
@@ -803,8 +807,7 @@ class ProdutosController extends Controller
                 $this->updateProductStock($produto, $data);
                 $produto->update($data);
             });
-            Alert::success('Alteração', 'Alteração realizada com sucesso');
-            return redirect()->route('administrativo.produtos');
+            return redirect()->route('administrativo.produtos', ['alterado' => true]);
         } catch (Exception $e) {
             return $this->redirectWithError($e->getMessage());
         }
@@ -868,8 +871,6 @@ class ProdutosController extends Controller
             // Otimiza e salva a nova imagem
             $this->optimizeAndSaveImage($arquivo->getPathname(), $caminhoCompleto, $extensao);
         }
-
-        return redirect()->back()->with('success', 'Imagens atualizadas e otimizadas!');
     }
 
 

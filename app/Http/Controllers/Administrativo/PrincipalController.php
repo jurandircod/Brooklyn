@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Model\{Pedido, Produto, User, Categoria, Notificacao};
+use RealRashid\SweetAlert\Facades\Alert;
 
 class PrincipalController extends Controller
 {
@@ -38,6 +39,7 @@ class PrincipalController extends Controller
 
         $notificacaoContador = $this->notificacaoContador;
         $notificacao = $this->notificacao;
+                Alert::toast('Bem vindo(a) ao painel de produtos', 'success')->width('400px')->timerProgressBar();
         return view('administrativo.principal', compact(
             'totalVendas',
             'totalProdutos',

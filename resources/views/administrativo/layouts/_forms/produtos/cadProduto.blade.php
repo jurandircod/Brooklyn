@@ -144,7 +144,7 @@
                                     <input type="file" class="form-control" id="inputGroupFile02" name="url_imagem[]"
                                         multiple accept="image/png,image/jpeg,image/jpg"
                                         onchange="verificarLimiteFotos()">
-                                    @error('url_imagem.*')
+                                    @error('url_imagem')
                                         <span class="invalid-feedback d-block"
                                             style="color: red">{{ $message }}</span>
                                     @enderror

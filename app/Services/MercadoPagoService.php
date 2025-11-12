@@ -11,10 +11,10 @@ class MercadoPagoService
 {
     public function __construct()
     {
-        $accessToken = env('MERCADOPAGO_ACCESS_TOKEN');
+        $accessToken = env('MERCADO_PAGO_ACCESS_TOKEN');
 
         if (!$accessToken) {
-            throw new Exception('MERCADOPAGO_ACCESS_TOKEN não configurado no .env');
+            throw new Exception('MERCADO_PAGO_ACCESS_TOKEN não configurado no .env');
         }
 
         SDK::setAccessToken($accessToken);

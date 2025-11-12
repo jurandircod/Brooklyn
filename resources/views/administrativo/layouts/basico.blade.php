@@ -2,6 +2,16 @@
 <html lang="en">
 
 <head>
+    <script>
+        function removeParam(param) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete(param);
+            window.history.replaceState({}, '', url);
+        }
+
+        // Uso:
+        removeParam('alterado');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Administrativo - @yield('titulo')</title>
@@ -51,13 +61,6 @@
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
-
-    <div class="preloader flex-column justify-content-center align-items-center">
-        <img class="animation__shake" src="{{ asset('dist/img/bart.gif') }}" alt="AdminLTELogo" height="120"
-            width="120">
-        <h6 class="text-center">Aguarde enquanto carregamos o painel de administração</h6>
-    </div>
-
     <div class="wrapper">
         @include('administrativo.layouts._partials.topo')
         <aside class="main-sidebar sidebar-dark-primary elevation-4">

@@ -121,41 +121,13 @@
             }
         }
     </style>
-    <div id="loading">
-        <h4 class="text">Aguarde a trick carregar...</h2>
-        <div class="row">
-                <img src="{{ asset('images/loading.gif') }}" width="100" height="100" alt="Carregando...">
-        </div>
-    </div>
-    <div id="content" style="display: none;">
+
         @include('site.layouts._components.perfil.mobileMenu')
         @include('site.layouts._partials.topo')
         @yield('conteudo')
         @include('site.layouts._partials.footer')
-    </div>
 </body>
 
-<style>
-    #loading {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        /* Garante que o loading fique por cima */
-    }
-</style>
-<script>
-    window.onload = function() {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-    };
-</script>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('js/jquery-3.5.1.min.js') }}"></script>

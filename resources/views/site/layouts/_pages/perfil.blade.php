@@ -359,7 +359,7 @@
                                                 </label>
                                                 <input type="tel"
                                                     class="form-control w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                                     value="{{ isset($enderecoEditar) ? $enderecoEditar->telefone : old('telefone') }}"
+                                                    value="{{ isset($enderecoEditar) ? $enderecoEditar->telefone : old('telefone') }}"
                                                     name="telefone" id="input-phone" placeholder="(11) 99999-9999">
                                                 @error('telefone')
                                                     <p class="text-red-500 text-xs mt-1"> {{ $errors->first('telefone') }}
@@ -520,28 +520,7 @@
 </section>
 
 <!-- Newsletter Section -->
-<section class="bg-gradient-to-r from-purple-600 to-indigo-600 py-12 md:py-16">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col lg:flex-row items-center gap-6">
-            <div class="lg:w-2/3 text-white">
-                <h2 class="text-2xl md:text-3xl font-bold mb-3">Assine Nossa Newsletter</h2>
-                <p class="text-white/90">Receba novidades sobre nossos produtos incríveis.</p>
-            </div>
-            <div class="lg:w-1/3 w-full">
-                <div class="flex flex-col sm:flex-row gap-2">
-                    <input type="text"
-                        class="flex-1 px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-white/50 transition-all"
-                        placeholder="Seu email">
-                    <button
-                        class="btn bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap flex items-center justify-center gap-2"
-                        type="button">
-                        <i class="fas fa-paper-plane"></i> Assinar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <style>
     /* Mobile Sidebar Styles */
@@ -617,7 +596,8 @@
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
 <script>
     $(document).ready(function() {
         // Mobile menu toggle
@@ -631,6 +611,8 @@
                 $('.sidebar').removeClass('show');
             }
         });
+
+
 
         // CEP lookup functionality
         $('#input-cep').on('blur', function() {
@@ -712,6 +694,90 @@
         }
     }
 </script>
+
+<script>
+        // Máscara para CEP
+        document.getElementById('input-cep').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 8);
+            }
+            
+            e.target.value = value;
+        });
+
+        // Máscara para CPF
+        document.getElementById('input-cpf').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length <= 3) {
+                value = value;
+            } else if (value.length <= 6) {
+                value = value.substring(0, 3) + '.' + value.substring(3, 6);
+            } else if (value.length <= 9) {
+                value = value.substring(0, 3) + '.' + value.substring(3, 6) + '.' + value.substring(6, 9);
+            } else {
+                value = value.substring(0, 3) + '.' + value.substring(3, 6) + '.' + value.substring(6, 9) + '-' + value.substring(9, 11);
+            }
+            
+            e.target.value = value;
+        });
+
+        // Máscara para Telefone (adaptável para 10 ou 11 dígitos)
+        document.getElementById('input-phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length === 0) {
+                e.target.value = '';
+                return;
+            }
+            
+            if (value.length <= 2) {
+                value = '(' + value;
+            } else if (value.length <= 6) {
+                value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 6);
+            } else if (value.length <= 10) {
+                value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 6) + '-' + value.substring(6, 10);
+            } else {
+                value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 7) + '-' + value.substring(7, 11);
+            }
+            
+            e.target.value = value;
+        });
+
+        // Função para remover máscara (útil para enviar dados)
+        function removerMascara(valor) {
+            return valor.replace(/\D/g, '');
+        }
+
+        // Exemplo de uso: pegar valores sem máscara
+        function obterValores() {
+            const cep = removerMascara(document.getElementById('input-cep').value);
+            const cpf = removerMascara(document.getElementById('input-cpf').value);
+            const phone = removerMascara(document.getElementById('input-phone').value);
+            
+            console.log('Valores sem máscara:', { cep, cpf, phone });
+            return { cep, cpf, phone };
+        }
+
+        // Validação básica
+        function validarCampos() {
+            const cep = removerMascara(document.getElementById('input-cep').value);
+            const cpf = removerMascara(document.getElementById('input-cpf').value);
+            const phone = removerMascara(document.getElementById('input-phone').value);
+            
+            const validacoes = {
+                cep: cep.length === 8,
+                cpf: cpf.length === 11,
+                phone: phone.length === 10 || phone.length === 11
+            };
+            
+            console.log('Validações:', validacoes);
+            return validacoes;
+        }
+    </script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

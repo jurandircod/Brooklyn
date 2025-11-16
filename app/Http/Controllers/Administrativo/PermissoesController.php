@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Administrativo;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -162,21 +164,28 @@ class PermissoesController extends Controller
      */
     public function permissoesUsuarios()
     {
-        if (Auth::check()) {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        try {
             $permissoesUser = Permissao::where('role_id', Auth::user()->role_id)->get();
-        } else {
-            $permissoesUser = collect();
+        } catch (\Exception $e) {
+            $this->enviarAlert('Erro', $e->getMessage(), 'error');
+            return redirect()->route('login');
         }
 
         $notificacaoContador = $this->notificacaoContador;
         $notificacao = $this->notificacao;
         $permissoes = Permissao::all();
-        $usuarios = User::with('permissoes')->paginate(10);
-        dd($usuarios);
+        $usuarios = User::with('permissao')->paginate(10);
+        if ($usuarios === null) {
+            $this->enviarAlert('Erro', 'Erro ao buscar usuários', 'error');
+            return redirect()->route('login');
+        }
 
         return view('administrativo.permissoesUsuarios', compact('usuarios', 'permissoes', 'notificacaoContador', 'notificacao'));
     }
-
     /**
      * Atualiza a permissão de um usuário específico.
      * 

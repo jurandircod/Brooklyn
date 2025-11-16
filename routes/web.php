@@ -102,8 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'perfilController@index')->name('site.perfil');
         Route::get('/{id}', 'PerfilController@index')->name('site.perfil.enviaParaformEnderecos');
         Route::post('/salvar', 'AddressController@salvar')->name('site.perfil.salvarEndereco');
-        Route::get('/remover/{id}', 'AddressController@remover')->name('site.perfil.removerEndereco');
-        Route::post('/editar/{id}', 'AddressController@editar')->name('site.perfil.editarEndereco');
+        Route::get('/remover/{id}', 'AddressController@disableAddress')->name('site.perfil.removerEndereco');
+        Route::post('/editar/{id}', 'AddressController@updateAddress')->name('site.perfil.editarEndereco');
     });
 
     // ==========================================
@@ -191,7 +191,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // Categorias
             Route::get('/categoria', [CategoriaController::class, 'index'])->name('administrativo.produto.categoria');
             Route::post('/salvar/categoria', [CategoriaController::class, 'salvarCategoria'])->name('administrativo.produto.categoria.salvar');
-            Route::post('/enviaFormAlterar/categoria', [CategoriaController::class, 'enviaFormAlterar'])->name('administrativo.produto.categoria.enviaFormAlterar');
             Route::post('/alterar/categoria', [CategoriaController::class, 'alterarCategoria'])->name('administrativo.produto.categoria.alterar');
             Route::post('/excluir/categoria', [CategoriaController::class, 'excluirCategoria'])->name('administrativo.produto.categoria.excluir');
 
@@ -206,7 +205,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('marca')->group(function () {
             Route::get('/', [MarcaController::class, 'index'])->name('administrativo.marca');
             Route::post('/alterar', [MarcaController::class, 'marcaAlterar'])->name('administrativo.marca.alterar');
-            Route::post('/enviarForm', [MarcaController::class, 'marcaEnviarForm'])->name('administrativo.marca.enviarForm');
             Route::post('/salvar', [MarcaController::class, 'marcaSalvar'])->name('administrativo.marca.salvar');
             Route::post('/excluir', [MarcaController::class, 'marcaExcluir'])->name('administrativo.marca.excluir');
         });

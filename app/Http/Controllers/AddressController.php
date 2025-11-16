@@ -64,8 +64,8 @@ class AddressController extends Controller
             'estado' => 'required|min:2|max:255',
             'cep' => 'required|digits:8',
             'logradouro' => 'required|min:3|max:255',
-            'numero' => 'required|max:255|numeric',
-            'telefone' => 'required|min:3|numeric',
+            'numero' => 'required|max:20|numeric',
+            'telefone' => 'required|min:3|numeric|digits_between:3,11',
             'cpf' => 'required|digits:11',
         ], [
             // Mensagens de erro personalizadas
@@ -88,6 +88,7 @@ class AddressController extends Controller
             'telefone.required' => 'O telefone é obrigatório',
             'telefone.min' => 'O telefone deve ter pelo menos 3 caracteres',
             'telefone.numeric' => 'O telefone é inválido',
+            'telefone.digits_between' => 'o telefone deve ter entre 3 a 11 digitos',
             'numero.numeric' => 'O numero é inválido',
             'cpf.required' => 'O campo cpf é obrigatório',
             'cpf.digits' => 'O campo cpf deve ter 11 dígitos',
@@ -98,26 +99,40 @@ class AddressController extends Controller
         return $validator;
     }
 
+    /**
+     * Salva um novo endereço para o usuário logado.
+     *
+     * Esta função recebe os dados do formulário de edição de endereços e os salva no banco de dados.
+     *
+     * Se houver algum erro de validação, a função redireciona para o formulário mantendo os dados e mostrando as mensagens de erro.
+     *
+     * Se houver algum erro de banco de dados, a função redireciona para o formulário mostrando a mensagem de erro.
+     *
+     * @param Request $request
+     * @return Redirect
+     */
     public function salvar(Request $request)
     {
-        $cepTratado = preg_replace('/[^0-9]/', '', $request->cep);
-        $data = $request->all();
-        $data['cep'] = $cepTratado;
-        $data['user_id'] = Auth::user()->id;
-        $data['cpf'] = str_replace(['.', '-'], '', $data['cpf']);
+        $data = $this->str_correct($request->all());
+        $userId = Auth::user()->id;
+        $count = Endereco::where('user_id', $userId)->count();
+        if ($count >= 4) {
+            Alert::alert('Erro', 'Limite de endereço atingido', 'error');
+            return redirect()->route('site.perfil', ['activeTab' => 3])->withInput();
+        }
 
+        $data['user_id'] = $userId;
         // Chama a função de validação
         $validator = $this->validarInput($data);
-        
+
         // Redireciona de volta para o formulário mantendo os dados
         if ($validator->fails()) {
             $activeTab = 3;
             return redirect()->route('site.perfil', ['activeTab' => $activeTab])
-            ->withErrors($validator)
-            ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
-        
-        
+
         try {
             Endereco::create($data);
             Alert::alert('Endereço', 'Salvo com sucesso', 'success');
@@ -128,11 +143,27 @@ class AddressController extends Controller
         }
     }
 
-    public function editar(Request $request, $id)
+    public function str_correct($data)
     {
-        $validator = $this->validarInput($request->all());
+        $data['cep'] = preg_replace('/[^0-9]/', '', $data['cep']);
+        $data['cpf'] = str_replace(['.', '-'], '', $data['cpf']);
+        $data['telefone'] = str_replace(['(', ')', ' ', '-'], '', $data['telefone']);
+        return  $data;
+    }
+
+    /**
+     * Atualiza um endereço existente com base nos dados recebidos via Request
+     * 
+     * @param Request $request
+     * @param int $addressId
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
+    public function updateAddress(Request $request, int $addressId)
+    {
+        $data = $this->str_correct($request->all());
+        $validator = $this->validarInput($data);
         if ($validator->fails()) {
-            Alert::alert('Endereço', 'Preencha os campos obrigatórios', 'error');
             return redirect()
                 ->route('site.perfil', ['activeTab' => $this->activeTab])
                 ->withErrors($validator)
@@ -140,42 +171,37 @@ class AddressController extends Controller
         }
 
         try {
-            $endereco = Endereco::findOrFail($id);
-            $data = $request->all();
-            $endereco['estado'] = $data['estado'];
-            $endereco['cidade'] = $data['cidade'];
-            $endereco['logradouro'] = $data['logradouro'];
-            $endereco['numero'] = $data['numero'];
-            $endereco['bairro'] = $data['bairro'];
-            $endereco['cep'] = $data['cep'];
-            $endereco['telefone'] = $data['telefone'];
-            $endereco['complemento'] = $data['complemento'];
-            $endereco->save($data);
-            $endereco = Endereco::findOrFail($id);
-            Alert::alert('Endereço', 'Atualizado com sucesso', 'success');
-            return redirect()->route('site.perfil', ['id' => null, 'activeTab' => 6]);
+            $address = Endereco::findOrFail($addressId);
+            $address->fill($request->all());
+            $address->save();
+            return redirect()->route('site.perfil', ['activeTab' => 6]);
         } catch (\Exception $e) {
-            Alert::alert('Erro', $e->getMessage(), 'error');
-            return view('site.perfil');
+            return redirect()->route('site.perfil', ['activeTab' => $this->activeTab])->with([
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 
 
-    public function remover($id)
+    /**
+     * Disable an address with the given ID.
+     *
+     * If the address has related orders, its status will be set to "inactive".
+     *
+     * @param int $addressId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function disableAddress(int $addressId)
     {
-        $activeTab = $this->activeTab;
-        $pedidos = Pedido::where('endereco_id', $id)->orWhere('status', 'pago')->orWhere('status', 'enviado')->orWhere('status', 'entregue')->orWhere('status', 'aguardando')->get();
-        if ($pedidos->count() > 0) {
-            Alert::alert('Destivado', 'Endereco foi desativado', 'sucess');
-            $endereco = Endereco::findOrFail($id);
-            $endereco->status = 'inativo';
-            $endereco->save();
-            return redirect()->route('site.perfil', ['activeTab' => $this->activeTab]);
-            exit;
-        }
-        $endereco = Endereco::findOrFail($id);
-        $endereco->delete();
-        Alert::alert('Endereço', 'Removido com sucesso', 'success');
+        $address = Endereco::findOrFail($addressId);
+        
+            Alert::alert('Desativado', 'Endereço foi desativado', 'success');
+            $address->status = 'inativo';
+            $address->save();
+        
+            $address->delete();
+            Alert::alert('Endereço', 'Removido com sucesso', 'success');
+
         return redirect()->route('site.perfil', ['activeTab' => 6]);
     }
 }

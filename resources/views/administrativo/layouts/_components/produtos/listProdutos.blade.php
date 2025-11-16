@@ -259,29 +259,25 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="">Tamanho 7.75</label>
-                                        <input type="number" id="quanti775" class="form-control"
-                                            name="775">
+                                        <input type="number" id="quanti775" class="form-control" name="775">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade8">Tamanho 8</label>
-                                        <input type="number" class="form-control" id="quanti8"
-                                            name="8">
+                                        <input type="number" class="form-control" id="quanti8" name="8">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade825">Tamanho 8.25</label>
-                                        <input type="number" class="form-control" id="quanti825"
-                                            name="825">
+                                        <input type="number" class="form-control" id="quanti825" name="825">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidade85">Tamanho 8.5</label>
-                                        <input type="number" class="form-control" id="quanti85"
-                                            name="85">
+                                        <input type="number" class="form-control" id="quanti85" name="85">
                                     </div>
                                 </div>
 
@@ -341,22 +337,19 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidadeP">Tamanho P</label>
-                                        <input type="number" id="quantidadePC" class="form-control"
-                                            name="p">
+                                        <input type="number" id="quantidadePC" class="form-control" name="p">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidadeM">Tamanho M</label>
-                                        <input type="number" class="form-control" id="quantidadeMC"
-                                            name="m">
+                                        <input type="number" class="form-control" id="quantidadeMC" name="m">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="quantidadeG">Tamanho G</label>
-                                        <input type="number" class="form-control" id="quantidadeGC"
-                                            name="g">
+                                        <input type="number" class="form-control" id="quantidadeGC" name="g">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -378,9 +371,7 @@
         </div>
     </div>
 </div>
-    <script src="{{ asset('js/administrativo/produto/listProdutos.js') }}"></script>
+<script src="{{ asset('js/administrativo/produto/listProdutos.js') }}"></script>
 
 <!-- ... seu modal atual ... -->
 <!-- CSS (padrão) -->
-
-

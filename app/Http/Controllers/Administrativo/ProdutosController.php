@@ -31,25 +31,56 @@ class ProdutosController extends Controller
     protected $categorias;   // Lista de categorias
     protected $marcas;       // Lista de marcas
     protected $estoques;     // Lista de estoques
-    private  $mapaTamanho = [
+
+    private $mapaTamanho = [
         'p' => 'p',
         'm' => 'm',
         'g' => 'g',
         'gg' => 'gg',
-        '775' => '775',
-        '8' => '8',
-        '825' => '825',
-        '85' => '85',
-        'quantidade' => 'padrao',
+        'G' => 'G',
+        'M' => 'M',
+        'P' => 'P',
+        'GG' => 'GG',
+        775 => '775',
+        8 => '8',
+        825 => '825',
+        85 => '85',
         '38' => '38',
         '39' => '39',
         '40' => '40',
         '41' => '41',
         '42' => '42',
+        38 => '38',
+        39 => '39',
+        40 => '40',
+        41 => '41',
+        42 => '42',
+    ];
+
+    private $calcasCamisas = [
+        'p' => 'p',
+        'm' => 'm',
+        'g' => 'g',
+        'gg' => 'gg',
+        'G' => 'G',
+        'M' => 'M',
+        'P' => 'P',
+        'GG' => 'GG',
+    ];
+
+    private $skates = [
         775 => '775',
         8 => '8',
         825 => '825',
         85 => '85',
+    ];
+
+    private $tenis = [
+        '38' => '38',
+        '39' => '39',
+        '40' => '40',
+        '41' => '41',
+        '42' => '42',
         38 => '38',
         39 => '39',
         40 => '40',
@@ -439,9 +470,27 @@ class ProdutosController extends Controller
             if (!isset($this->mapaTamanho[$key])) {
                 continue;
             }
-            $tamanho = strval($this->mapaTamanho[$key]) ?? 'padrao';
-            if (isset($this->mapaTamanho[$value])) {
-            }
+
+            $tamanho = null;
+
+            switch (intval($dadosFiltrados['categoria_id'])) {
+                case 1:
+                    $tamanho = strval($this->calcasCamisas[$key]) ?? 'padrao';
+                    break;
+                case 2:
+                    $tamanho = strval($this->skates[$key]) ?? 'padrao';
+                    break;
+                case 3:
+                    $tamanho = strval($this->tenis[$key]) ?? 'padrao';
+                    break;
+                case 4:
+                    $tamanho = strval($this->calcasCamisas[$key]) ?? 'padrao';
+                    break;
+                default:
+                    Alert::alert('errors', 'erro ao salvar categoria não existe no banco');
+                    return back();
+            };
+
             $quantidade = intVal($value) ?? 0;
             if (intVal($quantidade) > 0) {
                 Estoque::updateOrCreate(
@@ -799,7 +848,7 @@ class ProdutosController extends Controller
             if (isset($data['deleteImage'])) {
                 $verifica = $this->deleteImagem($data);
             }
-           
+
             $this->atualizarImagem($request);
             DB::transaction(function () use ($data) {
                 $this->validateProductId($data['id'] ?? null);

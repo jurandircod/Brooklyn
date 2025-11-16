@@ -51,6 +51,7 @@
     </script>
     <link rel="stylesheet" href="{{ asset('css/site/produtos/customize.css') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+<link rel="shortcut icon" href="{{asset('images/loading.gif')}}" type="image/x-icon">
 
 
     <!-- Bootstrap 5 (mantenha ou remova dependendo da necessidade de compatibilidade) -->
@@ -149,19 +150,19 @@
                                     <li class="nav-item">
                                         <a href="{{ route('administrativo.produtos') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon text-xs"></i>
-                                            <p>Cadastrar Produtos</p>
+                                            <p>Gerenciar Produtos</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="{{ route('administrativo.produto.categoria') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon text-xs"></i>
-                                            <p>Categorias</p>
+                                            <p>Gerenciar Categorias</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="{{ route('administrativo.marca') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon text-xs"></i>
-                                            <p>Marcas</p>
+                                            <p>Gerenciar Marcas</p>
                                         </a>
                                     </li>
                                 </ul>

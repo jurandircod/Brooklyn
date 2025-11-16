@@ -188,6 +188,18 @@ function preencherModal(id, nome, valor, material, categoriaId, marcaId, descric
                         case 'gg':
                             document.getElementById('quantidadeGGC').value = item.quantidade ?? 0;
                             break;
+                        case 'P':
+                            document.getElementById('quantidadePC').value = item.quantidade ?? 0;
+                            break;
+                        case 'M':
+                            document.getElementById('quantidadeMC').value = item.quantidade ?? 0;
+                            break;
+                        case 'G':
+                            document.getElementById('quantidadeGC').value = item.quantidade ?? 0;
+                            break;
+                        case 'GG':
+                            document.getElementById('quantidadeGGC').value = item.quantidade ?? 0;
+                            break;
                         case '775':
                             document.getElementById('quanti775').value = item.quantidade ?? 0;
                             break;
@@ -234,6 +246,11 @@ function preencherModal(id, nome, valor, material, categoriaId, marcaId, descric
         document.getElementById('estoqueProd').style.display = 'none';
         document.getElementById('estoqueCardTenis').style.display = 'none';
     } else if (categoriaId == 1) { // Camisetas
+        document.getElementById('estoqueCard').style.display = 'block';
+        document.getElementById('estoqueCardSkt').style.display = 'none';
+        document.getElementById('estoqueProd').style.display = 'none';
+        document.getElementById('estoqueCardTenis').style.display = 'none';
+    } else if (categoriaId == 4) { // Calças
         document.getElementById('estoqueCard').style.display = 'block';
         document.getElementById('estoqueCardSkt').style.display = 'none';
         document.getElementById('estoqueProd').style.display = 'none';

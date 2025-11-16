@@ -82,14 +82,15 @@ class CategoriaController extends Controller
     {
 
         $validator = Validator::make($request, [
-            'nome' => 'required|string|unique:categorias',
-            'descricao' => 'required|string',
+            'nome' => 'required|string|unique:categorias|max:255',
+            'descricao' => 'max:255',
         ], [
             'nome.required' => 'O campo categoria é obrigatório',
             'nome.string' => 'O campo categoria deve ser uma string',
-            'descricao.required' => 'O campo descricao é obrigatório',
+            'nome.max' => 'O campo categoria deve ter no máximo 255 caracteres',
             'descricao.string' => 'O campo descricao deve ser uma string',
             'nome.unique' => 'Já existe essa categoria cadastrada',
+            'descricao.max' => 'O campo descricao deve ter no máximo 255 caracteres',
         ]);
 
         return $validator;
@@ -114,17 +115,28 @@ class CategoriaController extends Controller
         }
     }
 
+    /**
+     * Altera uma categoria existente
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     *
+     * @throws \Exception
+     */
     public function alterarCategoria(Request $request)
     {
         try {
             $categoria = Categoria::findOrFail($request->input('categoria_id'));
 
-            if ($categoria->id == 1 || $categoria->id == 2) {
-                throw new \Exception("essa categoria não pode ser alterada");
+            if ($categoria->id == 1 || $categoria->id == 2 || $categoria->id == 3 || $categoria->id == 4) {
+                $categoria->update([
+                    'descricao' => $request->input('descricao') ?? "",
+                ]);
+                throw new \Exception("Somente a descrição foi alterada, o nome não pode ser alterado");
             }
             $categoria->update([
                 'nome' => $request->input('nome'),
-                'descricao' => $request->input('descricao'),
+                'descricao' => $request->input('descricao') ?? "",
             ]);
             Alert::alert('Alteração', 'Categoria alterada com sucesso', 'success');
             return redirect()->route('administrativo.produto.categoria');
@@ -132,13 +144,5 @@ class CategoriaController extends Controller
             Alert::alert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.produto.categoria');
         }
-    }
-
-
-    public function enviaFormAlterar(Request $request)
-    {
-        $categoriaAlter = $this->categorias->find($request->input('categoria_id'));
-        $categorias = $this->categorias;
-        return view('administrativo.categoria', compact('categoriaAlter', 'categorias'));
     }
 }

@@ -32,6 +32,14 @@ class marcaController extends Controller
         return view('administrativo.marca', compact('marcas', 'notificacaoContador', 'notificacao'));
     }
 
+    /**
+     * Salva uma marca com os dados passados por parâmetro.
+     * Valida os dados e caso haja algum erro, retorna para a página de marca com os erros.
+     * Caso os dados sejam válidos, salva a marca e retorna para a página de marca com um alert de sucesso.
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
     public function marcaSalvar(Request $request)
     {
         if ($request->has('rotaProduto')) {
@@ -72,9 +80,17 @@ class marcaController extends Controller
         }
     }
 
+    /**
+     * Valida os dados de entrada do produto.
+     *
+     * @param array $request
+     * @return \Illuminate\Contracts\Validation\Validator
+     *
+     * Valida os dados de entrada do produto, verificando se os campos nome e descricao
+     * est o preenchidos.
+     */
     public function validarInput($request)
     {
-
         $validator = Validator::make($request, [
             'nome' => 'required',
             'descricao' => 'required',
@@ -86,6 +102,15 @@ class marcaController extends Controller
         return $validator;
     }
 
+
+    /**
+     * Exclui uma marca existente
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     *
+     * @throws \Exception
+     */
     public function marcaExcluir(Request $request)
     {
         try {
@@ -99,10 +124,19 @@ class marcaController extends Controller
         }
     }
 
+    /**
+     * Altera uma marca existente
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     *
+     * @throws \Exception
+     */
+
     public function marcaAlterar(Request $request)
     {
         try {
-            $marca = marca::findOrFail($request->input('marca_id'));
+            $marca = marca::findOrFail($request->input('id'));
             $marca->update([
                 'nome' => $request->input('nome'),
                 'descricao' => $request->input('descricao'),
@@ -113,12 +147,5 @@ class marcaController extends Controller
             Alert::alert('Erro', $e->getMessage(), 'error');
             return redirect()->route('administrativo.marca');
         }
-    }
-
-    public function marcaEnviarForm(Request $request)
-    {
-        $marcaAlter = $this->marca->find($request->input('id'));
-        $marcas = $this->marca;
-        return view('administrativo.marca', compact('marcaAlter', 'marcas'));
     }
 }

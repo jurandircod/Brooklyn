@@ -184,7 +184,7 @@
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <div class="mb-2"><b>Selecione os tamanhos</b></div>
-                                    @foreach (['P', 'M', 'G', 'GG'] as $size)
+                                    @foreach (['p', 'm', 'g', 'gg'] as $size)
                                         <label class="size-option"
                                             data-size="{{ $size }}">{{ $size }}</label>
                                     @endforeach

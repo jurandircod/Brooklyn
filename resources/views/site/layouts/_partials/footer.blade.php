@@ -1,151 +1,107 @@
-<footer class="footer-sm-space mt-5">
-    <div class="main-footer">
-        <div class="container">
-            <div class="row gy-4">
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="footer-contact">
-                        <div class="brand-logo">
-                            <a href="index.htm" class="footer-logo float-start">
-                                <img src="assets/images/logo.png" class="f-logo img-fluid blur-up lazyload"
-                                    alt="logo">
-                            </a>
+<footer class="mt-16 bg-gradient-to-br from-[#6F2E2F] to-[#5D2728] text-gray-100">
+    <!-- MAIN -->
+    <div class="container mx-auto px-6 py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <!-- Contato -->
+            <div class="space-y-6">
+                <img src="assets/images/logo.png" class="w-36 mb-6 hover:scale-105 transition-transform duration-300" alt="logo">
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-phone text-amber-400 mt-1"></i>
+                        <div>
+                            <span class="font-semibold text-gray-200">Telefone:</span>
+                            <p class="text-gray-300">(44) 9974-7097</p>
                         </div>
-                        <ul class="contact-lists" style="clear:both;">
-                            <li>
-                                <span><b>Telefone:</b> <span class="font-light"> (44) 9974-7097</span></span>
-                            </li>
-                            <li>
-                                <span><b>Endereço:</b><span class="font-light"> Cruzeiro do oeste/PR 
-                                        </span></span>
-                            </li>
-                            <li>
-                                <span><b>Email:</b><span class="font-light"> jurandiraparecido19651965@gmail.com</span></span>
-                            </li>
-                        </ul>
-                    </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-map-marker-alt text-amber-400 mt-1"></i>
+                        <div>
+                            <span class="font-semibold text-gray-200">Endereço:</span>
+                            <p class="text-gray-300">Cruzeiro do Oeste/PR</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-envelope text-amber-400 mt-1"></i>
+                        <div>
+                            <span class="font-semibold text-gray-200">Email:</span>
+                            <p class="text-gray-300 break-all">jurandiraparecido19651965@gmail.com</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Links -->
+            <div>
+                <h3 class="text-xl font-bold mb-6 text-white relative inline-block">
+                    Sobre Nós
+                    <span class="absolute bottom-0 left-0 w-12 h-1 bg-amber-400 rounded-full"></span>
+                </h3>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="/" class="hover:text-amber-400 hover:translate-x-1 inline-block transition-all duration-300">→ Início</a></li>
+                    <li><a href="/pesquisa/produtos" class="hover:text-amber-400 hover:translate-x-1 inline-block transition-all duration-300">→ Produtos</a></li>
+                    <li><a href="/sobre" class="hover:text-amber-400 hover:translate-x-1 inline-block transition-all duration-300">→ Sobre Nós</a></li>
+                    <li><a href="/contato" class="hover:text-amber-400 hover:translate-x-1 inline-block transition-all duration-300">→ Contato</a></li>
+                </ul>
+            </div>
+            
+            <!-- Categorias -->
+            <div>
+                <h3 class="text-xl font-bold mb-6 text-white relative inline-block">
+                    Categorias
+                    <span class="absolute bottom-0 left-0 w-12 h-1 bg-amber-400 rounded-full"></span>
+                </h3>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="shop.html" class="hover:text-amber-400 hover:translate-x-1 inline-block transition-all duration-300">→ Últimos Oversizeds</a></li>
+                    <li><a href="shop.html" class="hover:text-amber-400 hover:translate-x-1 inline-block transition-all duration-300">→ Novos Jeans</a></li>
+                    <li><a href="shop.html" class="hover:text-amber-400 hover:translate-x-1 inline-block transition-all duration-300">→ Novos Skates</a></li>
+                </ul>
+            </div>
+            
+            <!-- Newsletter -->
+            <div>
+                <h3 class="text-xl font-bold mb-6 text-white relative inline-block">
+                    Fique em Contato
+                    <span class="absolute bottom-0 left-0 w-12 h-1 bg-amber-400 rounded-full"></span>
+                </h3>
+                <div class="flex items-stretch bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden mb-4 shadow-lg border border-white/20 hover:border-amber-400/50 transition-all duration-300">
+                    <input type="text" placeholder="Seu Email"
+                        class="w-full bg-transparent px-4 py-3 text-sm placeholder-gray-400 focus:outline-none text-white">
+                    <button class="px-5 bg-amber-500 hover:bg-amber-600 transition-colors duration-300 text-white">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
-                <div class="col-lg-2 col-md-4 col-sm-6">
-                    <div class="footer-links">
-                        <div class="footer-title">
-                            <h3>Sobre Nós</h3>
-                        </div>
-                        <div class="footer-content">
-                            <ul>
-                                <li>
-                                    <a href="/" class="font-dark">Inicio</a>
-                                </li>
-                                <li>
-                                    <a href="/produtos" class="font-dark">Produtos</a>
-                                </li>
-                                <li>
-                                    <a href="/sobre-nos" class="font-dark">Sobre Nós</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="font-dark">Blog</a>
-                                </li>
-                                <li>
-                                    <a href="/contato" class="font-dark">Contato</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-                    <div class="footer-links">
-                        <div class="footer-title">
-                            <h3>Categorias</h3>
-                        </div>
-                        <div class="footer-content">
-                            <ul>
-                                <li>
-                                    <a href="shop.html" class="font-dark">Ultimos oversizeds</a>
-                                </li>
-                                <li>
-                                    <a href="shop.html" class="font-dark">Novos Jeans</a>
-                                </li>
-                                <li>
-                                    <a href="shop.html" class="font-dark">Novos Skates</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-                    <div class="footer-links">
-                        <div class="footer-title">
-                            <h3>Ajuda</h3>
-                        </div>
-                        <div class="footer-content">
-                            <ul>
-                                <li>
-                                    <a href="#" class="font-dark">Seus Pedidos</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="font-dark">Sua Conta</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="font-dark">Carrinho</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-sm-6 d-none d-sm-block">
-                    <div class="footer-newsletter">
-                        <h3>Fique em Contato</h3>
-                        <div class="form-newsletter">
-                            <div class="input-group mb-4">
-                                <input type="text" class="form-control color-4" placeholder="Your Email Address">
-                                <span class="input-group-text" id="basic-addon4"><i
-                                        class="fas fa-arrow-right"></i></span>
-                            </div>
-                            <p class="font-dark mb-0">Fique atualizado com as nossas últimas notícias e ofertas especiais.
-                            </p>
-                        </div>
-                    </div>
+                <p class="text-sm text-gray-300 leading-relaxed">
+                    Fique atualizado com as nossas últimas notícias e ofertas especiais.
+                </p>
+                <!-- Redes Sociais -->
+                <div class="flex gap-3 mt-6">
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-amber-500 hover:scale-110 transition-all duration-300">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-amber-500 hover:scale-110 transition-all duration-300">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-amber-500 hover:scale-110 transition-all duration-300">
+                        <i class="fab fa-twitter"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="sub-footer">
-        <div class="container">
-            <div class="row gy-3">
-                <div class="col-md-6">
-                    <ul>
-                        <li class="font-dark">Nos aceitamos:</li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <img src="{{asset('images/payment-icon/1.jpg')}}" class="img-fluid blur-up lazyload"
-                                    alt="payment icon">
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <img src="{{asset('images/payment-icon/2.jpg')}}" class="img-fluid blur-up lazyload"
-                                    alt="payment icon">
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <img src="{{asset('images/payment-icon/3.jpg')}}" class="img-fluid blur-up lazyload"
-                                    alt="payment icon">
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <img src="{{asset('images/payment-icon/4.jpg')}}" class="img-fluid blur-up lazyload"
-                                    alt="payment icon">
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <p class="mb-0 font-dark">© 2024, Brooklyn SkateShop.</p>
-                </div>
+    <!-- SUB FOOTER -->
+    <div class="bg-black/20 backdrop-blur-sm py-6 border-t border-white/10">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <!-- Pagamentos -->
+            <div class="flex items-center gap-4 flex-wrap justify-center md:justify-start">
+                <span class="text-sm font-medium">Nós aceitamos:</span>
+                <img src="{{asset('images/payment-icon/1.jpg')}}" class="h-8 opacity-90 hover:opacity-100 transition-opacity rounded" alt="">
+                <img src="{{asset('images/payment-icon/2.jpg')}}" class="h-8 opacity-90 hover:opacity-100 transition-opacity rounded" alt="">
+                <img src="{{asset('images/payment-icon/3.jpg')}}" class="h-8 opacity-90 hover:opacity-100 transition-opacity rounded" alt="">
+                <img src="{{asset('images/payment-icon/4.jpg')}}" class="h-8 opacity-90 hover:opacity-100 transition-opacity rounded" alt="">
             </div>
+            <!-- Copyright -->
+            <p class="text-sm text-gray-300">© 2024, <span class="font-semibold text-white">Brooklyn SkateShop</span>. Todos os direitos reservados.</p>
         </div>
     </div>
 </footer>
-
-

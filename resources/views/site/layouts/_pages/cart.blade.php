@@ -65,7 +65,7 @@
                                 <input type="hidden" data-categoria-id="{{ $item->produto->categoria->id }}"
                                     name="categoria_id" id="categoria_id" value="{{ $item->produto->categoria->id }}">
 
-                                <td class="py-3 px-4 font-semibold text-gray-800">
+                                <td id="preco_total" class="py-3 px-4 font-semibold text-gray-800">
                                     R${{ $item->preco_total }}
                                 </td>
 
@@ -106,7 +106,7 @@
                     <div class="flex justify-between"><span>Taxa de Entrega</span><span id="taxaFrete">R$ 0,00</span>
                     </div>
                     <div class="flex justify-between font-semibold text-[#4A1C1D]"><span>Total</span><span
-                            id="preco_total">R$ {{ number_format($preco_total, 2, ',', '.') }}</span></div>
+                            id="preco_total2">R$ {{ number_format($preco_total, 2, ',', '.') }}</span></div>
                 </div>
                 <div class="mt-6">
                     <a href="{{ route('site.fazerPedido') }}"
@@ -354,8 +354,10 @@
             console.log('data.total:', data.total);
             const subTotal = document.querySelector('#subtotal');
             subTotal.textContent = formatCurrency(data.subtotal);
+            const preco_total2 = document.querySelector('#preco_total2');
+            preco_total2.textContent = formatCurrency(data.total);
             const preco_total = document.querySelector('#preco_total');
-            preco_total.textContent = formatCurrency(data.total);
+            preco_total.textContent = formatCurrency(data.subtotal);
             const taxaFrete = document.querySelector('#taxaFrete');
             taxaFrete.textContent = formatCurrency(data.taxa);
         }

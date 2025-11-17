@@ -59,34 +59,18 @@
 
                         <div class="col-md-6">
                             <div class="">
-                                <div class="product-count">
-                                    <ul>
-                                        <li>
-                                            <img src="{{ asset('images/gif/fire.gif') }}"
-                                                class="img-fluid blur-up lazyload" alt="image">
-                                            <span class="p-counter">37</span>
-                                            <span class="lang">orders in last 24 hours</span>
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('images/gif/person.gif') }}"
-                                                class="img-fluid user_img blur-up lazyload" alt="image">
-                                            <span class="p-counter">44</span>
-                                            <span class="lang">active view this</span>
-                                        </li>
-                                    </ul>
-                                </div>
 
                                 <div class="details-image-concept">
                                     <h2>{{ $produto->nome }}</h2>
                                 </div>
 
                                 <div class="label-section">
-                                    <span class="badge badge-grey-color">#1 Best seller</span>
-                                    <span class="label-text">in fashion</span>
+                                    <span class="badge badge-grey-color">Entre os melhores produtos</span>
+                                    <span class="label-text">Em {{$produto->categoria->nome ?? "fashion"}}</span>
                                 </div>
 
                                 <h3 class="price-detail">${{ $produto->valor }}
-                                    <del>{{ $produto->valor * 2 }}</del><span>{{ $produto->valor * 0.5 }} % off</span>
+                                    <del>{{ $produto->valor * 2 }}</del><span>{{ $produto->valor / 2 }} % off</span>
                                 </h3>
 
 
@@ -121,8 +105,7 @@
 
                                                 <a href="javascript:void(0)"
                                                     class="size-option flex flex-col items-center justify-center gap-1 p-3 rounded-lg border transition select-none text-center shadow-sm
-                hover:shadow-md hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#4A1C1D]/40
-                {{ $stockClass }}"
+                hover:shadow-md hover:scale-[1.02] hover:text-white {{ $stockClass }}"
                                                     data-size="{{ $estoque['tamanho'] }}" aria-pressed="false"
                                                     role="button"
                                                     title="Tamanho {{ $estoque['tamanho'] }} - {{ $qtd }} em estoque">

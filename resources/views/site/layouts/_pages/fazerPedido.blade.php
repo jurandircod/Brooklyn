@@ -191,7 +191,7 @@
 
             <li class="py-3 flex justify-between items-center bg-[#4A1C1D] text-white rounded-md px-3 mt-3">
               <div>
-                <h6 class="font-medium">Preço total</h6>
+                <h6 class="text-white font-medium">Preço total</h6>
               </div>
               <div class="font-semibold">R$ {{ number_format($preco_total, 2, ',', '.') }}</div>
             </li>

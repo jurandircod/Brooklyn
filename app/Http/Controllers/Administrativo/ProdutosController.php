@@ -394,7 +394,7 @@ class ProdutosController extends Controller
                 $this->handleProductImages($produto, $data['nome']);
             });
             Alert::success('Produto', 'Salvo com sucesso');
-            return redirect()->route('administrativo.produtos')->withInput();
+            return redirect()->route('administrativo.produtos');
         } catch (Exception $e) {
             return $this->redirectWithError($e->getMessage());
         }

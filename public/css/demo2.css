@@ -7368,8 +7368,7 @@ footer .sub-footer {
     position: relative;
     top: 0;
     left: 0;
-    -webkit-transform: translate(0);
-            transform: translate(0); }
+     }
     .login-section .materialContainer .box {
       position: relative;
       top: 0;
@@ -7379,12 +7378,10 @@ footer .sub-footer {
       width: 100%;
       background: #fff;
       border-radius: 10px;
-      -webkit-transform: scale(1);
-              transform: scale(1);
+
       z-index: 5; }
       .login-section .materialContainer .box.back {
-        -webkit-transform: scale(0.95);
-                transform: scale(0.95);
+
         top: -20px;
         opacity: 0.8;
         z-index: -1; }
@@ -7397,8 +7394,7 @@ footer .sub-footer {
         top: -10px;
         background-color: rgba(255, 255, 255, 0.6);
         left: 0;
-        -webkit-transform: scale(0.95);
-                transform: scale(0.95); }
+ }
     .login-section .materialContainer .login-title {
       width: 100%;
       line-height: 46px;

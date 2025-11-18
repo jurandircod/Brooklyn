@@ -1,4 +1,3 @@
-@extends('layouts.app')
 <!-- Sign Up Section Start -->
 <div class="login-section">
     <div class="materialContainer">
@@ -11,11 +10,6 @@
 
                 <div class="input">
                     <label for="name">Nome</label>
-                    <input type="text" id="name" class="block mt-1 w-full" type="text" name="name"
-                        :value="old('name')" required="" autofocus="" autocomplete="name">
-                </div>
-                <div class="input">
-                    <label for="name">CPF</label>
                     <input type="text" id="name" class="block mt-1 w-full" type="text" name="name"
                         :value="old('name')" required="" autofocus="" autocomplete="name">
                 </div>
@@ -70,6 +64,6 @@
                 </div>
             </form>
         </div>
-        <p><a href="{{ route('login') }}" class="theme-color">Já tem uma conta?</a></p>
+        <p><a href="{{ route('login') }}" class="text-white">Já tem uma conta?</a></p>
     </div>
 </div>

@@ -9,7 +9,8 @@
                 <th scope="col">Metodo de Pagamento</th>
                 <th scope="col">Status</th>
                 <th scope="col">Preço</th>
-                <th scope="col">Ver</th>
+                <th scope="col">Cancelar</th>
+                <th scope="col">Confirmar Entrega</th>
             </tr>
         </thead>
         <tbody>
@@ -21,17 +22,18 @@
                     <td>
                         <p class="fs-6 m-0">{{ $pedido->metodo_pagamento }}</p>
                     </td>
-                    <td><span class="status-btn">{{ $pedido->status }}</span>
+                    <td><p class="status-btn">{{ $pedido->status }}</p>
                     </td>
                     <td>
-                        <p class="theme-color fs-6 fw-bold">
+                        <p class="fs-6 fw-bold">
                             R${{ number_format($pedido->preco_total, 2, ',', '.') }}
                         </p>
                     </td>
                     <td>
-                        <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary">
-                            <i class="far fa-eye"></i>
-                        </a>
+                        <p><a href="{{ route('site.perfil.cancelarPedido', ['id' => $pedido->id]) }}" class="hover:text-white">Cancelar Pedido</a></p>
+                    </td>
+                    <td>
+                        <p><a href="{{ route('site.perfil.confirmarPedido', ['id' => $pedido->id]) }}" class="hover:text-white">Confirmar Entrega</a></p>
                     </td>
                 </tr>
             @endforeach

@@ -70,6 +70,10 @@ class FazerPedidoController extends Controller
 
         try {
             $cpf = Endereco::where('user_id', auth()->id())->where('status', 'ativo')->where('id', $request->endereco_id)->first()->cpf;
+            if (!$cpf) {
+                Alert::error('Erro', 'Endereço inválido');
+                return back();
+            }
         } catch (\Exception $e) {
             Alert::error('Erro', 'Endereço inválido');
             return back();
@@ -78,31 +82,22 @@ class FazerPedidoController extends Controller
 
 
         $valor = $this->normalizarValor($request->input('valor'));
-        // Exemplo rápido: montando payload de pagamento (substitua pela lógica real)
         $amount = $valor; // ou calcule $preco_total
         $description = 'Pagamento Brooklyn - pedido do usuário ' . ($user->id ?? 'anon');
 
         // Cria o service via container (respeita DI)
         try {
             $mpService = app(\App\Services\MercadoPagoService::class);
+            if (!$mpService) {
+                Alert::error('Erro', 'Erro ao criar pedido');
+                return back();
+            }
         } catch (\Exception $e) {
             Alert::error('Erro', 'Erro ao criar pedido');
             return back();
         }
-        $customer = [
-            'email' => $user->email,
-            'first_name' => $user->name,
-            'last_name' => $user->name,
-            // CPF real se tiver — atenção em produção
-            'cpf' => $cpf // CPF do usuário
-        ];
 
-        $pixData = $mpService->createPixPayment($amount, $description, $customer);
-
-        return view('site.pix', compact('pixData'));
-
-        exit;
-        return DB::transaction(function () use ($request, $user) {
+        return DB::transaction(function () use ($request, $user, $mpService, $cpf, $valor, $description, $amount) {
             $carrinho = Carrinho::where('user_id', $user->id)->where('status', 'ativo')->first();
             if (!$carrinho) {
                 Alert::error('Erro', 'Carrinho inválido');
@@ -125,7 +120,6 @@ class FazerPedidoController extends Controller
             foreach ($itens as $item) {
                 $tamanho = $item->tamanho;
                 $estoque = Estoque::where('produto_id', $item->produto_id)->where('tamanho', $tamanho)->first();
-                $teste[] = $estoque->quantidade;
                 if (!$estoque || $estoque->quantidade < $item->quantidade) {
                     throw new \Exception("Estoque insuficiente para o produto {$item->produto_nome} (tamanho {$tamanho}).");
                 }
@@ -150,8 +144,19 @@ class FazerPedidoController extends Controller
                 'status' => 'aguardando'
             ]);
 
-            Alert::success('Pedido', 'Pedido realizado com Sucesso');
-            return redirect()->route('site.principal');
+            $customer = [
+                'email' => $user->email,
+                'first_name' => $user->name,
+                'last_name' => $user->name,
+                // CPF real se tiver — atenção em produção
+                'cpf' => $cpf // CPF do usuário
+            ];
+
+            $pixData = $mpService->createPixPayment($amount, $description, $customer);
+
+            
+            Alert::success('Pedido', 'Pedido realizado, aguardando pagamento');
+            return view('site.pix', compact('pixData'));
         });
     }
 

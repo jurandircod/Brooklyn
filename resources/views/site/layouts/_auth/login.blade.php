@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-
-
 <!-- Log In Section Start -->
 <div class="login-section">
     <div class="materialContainer">

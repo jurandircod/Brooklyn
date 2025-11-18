@@ -286,28 +286,6 @@
         </div>
     </div>
 </section>
-
-<!-- Newsletter Section -->
-<section class="py-16 bg-[#5A1F2D]">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div class="text-center lg:text-left">
-                <h2 class="text-3xl font-light text-white mb-2">Assine Nossa Newsletter</h2>
-                <p class="text-white/80">Receba novidades sobre nossos produtos e ofertas exclusivas</p>
-            </div>
-            <div class="w-full lg:w-auto lg:min-w-[400px]">
-                <div class="flex gap-2">
-                    <input type="email" placeholder="Seu e-mail"
-                        class="flex-1 px-4 py-3 bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:border-white/40 transition-colors">
-                    <button class="px-6 py-3 bg-white text-[#5A1F2D] font-medium hover:bg-gray-100 transition-colors">
-                        Assinar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Modal Container -->
 <div id="qvmodal"></div>
 

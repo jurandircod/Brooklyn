@@ -20,6 +20,7 @@ class Produtos extends Migration
             $table->string('material')->nullable();
             $table->unsignedBigInteger('categoria_id');
             $table->foreign('categoria_id')->references('id')->on('categorias');
+            $table->integer('quantidade')->default(0);
             $table->unsignedBigInteger('marca_id')->nullable();
             $table->foreign('marca_id')->references('id')->on('marcas');
             $table->enum('estado', ['ativo', 'inativo'])->default('ativo');

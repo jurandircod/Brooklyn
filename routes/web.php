@@ -104,6 +104,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/salvar', 'AddressController@salvar')->name('site.perfil.salvarEndereco');
         Route::get('/remover/{id}', 'AddressController@disableAddress')->name('site.perfil.removerEndereco');
         Route::post('/editar/{id}', 'AddressController@updateAddress')->name('site.perfil.editarEndereco');
+        Route::get('/cancelar/pedido/{id}', 'PerfilController@cancelarPedido')->name('site.perfil.cancelarPedido');
+        Route::get('/confirmar/pedido/{id}', 'PerfilController@confirmarPedido')->name('site.perfil.confirmarPedido');
     });
 
     // ==========================================

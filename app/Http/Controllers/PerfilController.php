@@ -1,12 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use App\model\{Pedido, Endereco};
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\AddressController;
 use App\Http\Controllers\FazerPedidoController;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class PerfilController extends Controller
 {
@@ -42,6 +40,35 @@ class PerfilController extends Controller
         return $this->index($id = null, $activeTab);
     }
 
+    public function cancelarPedido($id)
+    {
+        $pedido = Pedido::where('id', $id)->where('user_id', Auth::id())->first();
+        if (!$pedido) {
+            return back();
+        } else if($pedido->status == 'pago' || $pedido->status == 'enviado' || $pedido->status == 'entregue'){
+            Alert::error('Erro', 'Este pedido não pode ser cancelado, pois já foi pago ou enviado. Entre em contato na aba Contato para solicitar o cancelamento.');
+            return back();
+        }
+        $pedido->status = 'cancelado';
+        $pedido->save();
+
+        Alert::success('Pedido', 'Pedido cancelado com sucesso');
+        return back();
+    }
+
+    public function confirmarPedido($id)
+    {
+        $pedido = Pedido::where('id', $id)->where('user_id', Auth::id())->first();
+        if (!$pedido) {
+            Alert::error('Erro', 'Pedido inválido');
+            return back();
+        }
+        $pedido->status = 'entregue';
+        $pedido->save();
+
+        Alert::success('Pedido', 'Pedido confirmado com sucesso');
+        return back();
+    }
 
     protected function tabControl($activeTab)
     {

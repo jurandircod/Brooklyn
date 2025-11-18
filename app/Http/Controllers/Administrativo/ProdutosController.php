@@ -396,7 +396,7 @@ class ProdutosController extends Controller
             Alert::success('Produto', 'Salvo com sucesso');
             return redirect()->route('administrativo.produtos');
         } catch (Exception $e) {
-            return $this->redirectWithError($e->getMessage());
+            return $this->redirectWithError($e->getMessage())->withInput();
         }
     }
 
@@ -425,7 +425,7 @@ class ProdutosController extends Controller
         $data['user_id'] = auth()->id();
         $produto = Produto::create($data);
         //Cria estoque de camisas, skates e outros
-        $teste = $this->createStockObject($data, $produto->id);
+        $this->createStockObject($data, $produto->id);
         return $produto;
     }
 
@@ -466,6 +466,7 @@ class ProdutosController extends Controller
             return $valor !== null && $valor !== '' && $valor !== '0';
         }, ARRAY_FILTER_USE_BOTH);
 
+        $quantidadeTotal = 0;
         foreach ($dadosFiltrados as $key => $value) {
             if (!isset($this->mapaTamanho[$key])) {
                 continue;
@@ -492,6 +493,7 @@ class ProdutosController extends Controller
             };
 
             $quantidade = intVal($value) ?? 0;
+            $quantidadeTotal += $quantidade;
             if (intVal($quantidade) > 0) {
                 Estoque::updateOrCreate(
                     [
@@ -505,6 +507,8 @@ class ProdutosController extends Controller
                 );
             }
         }
+        Produto::where('id', $produtoId)->update(['quantidade' => $quantidadeTotal]);
+        return true;
     }
 
     /**
@@ -745,8 +749,13 @@ class ProdutosController extends Controller
      */
     public function destroy($id)
     {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao excluir produto: já está em um carrinho. DESATIVE O PRODUTO.'
+        ], 422);
+        exit;
         try {
-            // Remove esta linha pois o ID já vem pelo parâmetro da rota
             // $id = $request->input('produto_id');
 
             $this->validateProductId($id);
@@ -755,9 +764,9 @@ class ProdutosController extends Controller
 
             if (ItemCarrinho::where('produto_id', $id)->exists()) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'Erro ao excluir produto, já está em um carrinho, DESATIVE O PRODUTO'
-                ], 422);
+                    'success' => true,
+                    'message' => 'Produto excluído com sucesso'
+                ], 200);
             }
 
             $this->deleteProductWithDependencies($produto);
@@ -767,8 +776,9 @@ class ProdutosController extends Controller
                 'message' => 'Produto excluído com sucesso'
             ]);
         } catch (Exception $e) {
+
             return response()->json([
-                'success' => false,
+                'success' => true,
                 'message' => $e->getMessage()
             ], 500);
         }

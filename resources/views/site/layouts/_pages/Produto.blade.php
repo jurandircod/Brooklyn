@@ -104,25 +104,26 @@
                                                 @endphp
 
                                                 <a href="javascript:void(0)"
-                                                    class="size-option flex flex-col items-center justify-center gap-1 p-3 rounded-lg border transition select-none text-center shadow-sm
-                hover:shadow-md hover:scale-[1.02] hover:text-white {{ $stockClass }}"
+                                                    class="size-option flex flex-col items-center justify-center gap-1 p-3 hover:text-white rounded-lg border transition select-none text-center shadow-sm
+                hover:shadow-md hover:scale-[1.02] {{ $stockClass }}"
                                                     data-size="{{ $estoque['tamanho'] }}" aria-pressed="false"
                                                     role="button"
                                                     title="Tamanho {{ $estoque['tamanho'] }} - {{ $qtd }} em estoque">
+                                                
 
+                                                <span
+                                                    class="text-sm font-semibold text-grey" >{{ $estoque['tamanho'] }}</span>
+
+                                                <span class="text-xs tracking-tight">
                                                     <span
-                                                        class="text-sm font-semibold text-gray-800">{{ $estoque['tamanho'] }}</span>
-
-                                                    <span class="text-xs tracking-tight">
-                                                        <span
-                                                            class="stock-pill inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium">
-                                                            <svg class="w-3 h-3 shrink-0" viewBox="0 0 8 8"
-                                                                fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                                <circle cx="4" cy="4" r="4"></circle>
-                                                            </svg>
-                                                            <span class="stock-count">{{ $qtd }}</span>
-                                                        </span>
+                                                        class="stock-pill inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium">
+                                                        <svg class="w-3 h-3 shrink-0" viewBox="0 0 8 8"
+                                                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                            <circle cx="4" cy="4" r="4"></circle>
+                                                        </svg>
+                                                        <span class="stock-count">{{ $qtd }}</span>
                                                     </span>
+                                                </span>
                                                 </a>
                                             @endforeach
                                         </div>
@@ -151,23 +152,24 @@
 
 
 
-                                @if(Auth::check())
-                                <div class="product-buttons">
-                                    <a href="javascript:void(0)" data-id="{{ $produto->id }}" id="cartEffect"
-                                        class="addtocart-btn btn btn-solid hover-solid btn-animation">
-                                        <i class="fa fa-shopping-cart"></i>
+                                @if (Auth::check())
+                                    <div class="product-buttons">
+                                        <a href="javascript:void(0)" data-id="{{ $produto->id }}" id="cartEffect"
+                                            class="addtocart-btn btn btn-solid hover-solid btn-animation">
+                                            <i class="fa fa-shopping-cart"></i>
 
-                                        <span>Adicionar ao carrinho</span>
+                                            <span>Adicionar ao carrinho</span>
 
-                                    </a>
-                                </div>
+                                        </a>
+                                    </div>
                                 @else
-                                <div class="product-buttons">
-                                    <a href="{{ route('login') }}" class="addtocart-btn btn btn-solid hover-solid btn-animation">
-                                        <i class="fa fa-shopping-cart"></i>
-                                        <span>Adicionar ao carrinho</span>
-                                    </a>
-                                </div>
+                                    <div class="product-buttons">
+                                        <a href="{{ route('login') }}"
+                                            class="addtocart-btn btn btn-solid hover-solid btn-animation">
+                                            <i class="fa fa-shopping-cart"></i>
+                                            <span>Adicionar ao carrinho</span>
+                                        </a>
+                                    </div>
                                 @endif
                             </div>
 
@@ -185,7 +187,7 @@
                                     <span></span> em estoque
                                 </h6>
                                 <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: 78%"></div>
+                                    <div class="progress-bar" role="progressbar" style="width: 20%"></div>
                                 </div>
                             </div>
 

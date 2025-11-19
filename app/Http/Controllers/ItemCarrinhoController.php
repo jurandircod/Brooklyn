@@ -157,7 +157,6 @@ class ItemCarrinhoController extends Controller
 
             ExistenciaController::estoqueExiste($item->produto_id);
             // Mapeia o campo correto conforme o tamanho
-
             $tamanhoTratado = $this->mapaTamanho->getTamanhoDisponiveis($request->categoria_id, $tamanho);
             $estoque = Estoque::where('produto_id', $item->produto_id)->where('tamanho', $tamanhoTratado)->firstOrFail();
             if (!$estoque) {

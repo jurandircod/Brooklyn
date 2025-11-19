@@ -52,9 +52,6 @@ Route::prefix('site')->group(function () {
     Route::post('resetar-senha', 'PasswordResetController@reset')
         ->name('site.password.update');
 });
-// ==========================================
-// ROTAS COM AUTENTICAÇÃO E VERIFICAÇÃO
-// ==========================================
 Route::get('/principal', 'PrincipalController@principal')->name('site.principal');
 Route::get('/', 'PrincipalController@principal')->name('site.principal');
 
@@ -62,6 +59,9 @@ Route::prefix('produto')->group(function () {
     Route::get('/{id}', 'ProdutoController@index')->name('site.produto');
     Route::post('/avaliacao', 'AvaliacaoController@CreateAvaliacao')->name('site.produto.avaliacao');
 });
+// ==========================================
+// ROTAS COM AUTENTICAÇÃO E VERIFICAÇÃO
+// ==========================================
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // ==========================================

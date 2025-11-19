@@ -20,6 +20,10 @@ class MapaTamanho extends Model
         'm' => 'm',
         'g' => 'g',
         'gg' => 'gg',
+        'P' => 'P',
+        'M' => 'M',
+        'G' => 'G',
+        'GG' => 'GG',
     ];
 
     protected $tamanhoSkates = [

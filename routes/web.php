@@ -55,13 +55,18 @@ Route::prefix('site')->group(function () {
 // ==========================================
 // ROTAS COM AUTENTICAÇÃO E VERIFICAÇÃO
 // ==========================================
+Route::get('/principal', 'PrincipalController@principal')->name('site.principal');
+Route::get('/', 'PrincipalController@principal')->name('site.principal');
+
+Route::prefix('produto')->group(function () {
+    Route::get('/{id}', 'ProdutoController@index')->name('site.produto');
+    Route::post('/avaliacao', 'AvaliacaoController@CreateAvaliacao')->name('site.produto.avaliacao');
+});
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // ==========================================
     // ROTAS GERAIS DO SITE
     // ==========================================
-    Route::get('/principal', 'PrincipalController@principal')->name('site.principal');
-    Route::get('/', 'PrincipalController@principal')->name('site.principal');
     Route::get('/contato', 'ContatoController@contato')->name('site.contato');
     Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
     Route::get('/cep/{cep}', 'AddressController@getCityByCep');
@@ -89,10 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     // ROTAS DE PRODUTO
     // ==========================================
-    Route::prefix('produto')->group(function () {
-        Route::get('/{id}', 'ProdutoController@index')->name('site.produto');
-        Route::post('/avaliacao', 'AvaliacaoController@CreateAvaliacao')->name('site.produto.avaliacao');
-    });
+
 
     // ==========================================
     // ROTAS DE PERFIL

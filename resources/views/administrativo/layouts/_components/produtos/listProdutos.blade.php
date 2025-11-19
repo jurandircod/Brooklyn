@@ -142,13 +142,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6" id="estoqueProd">
-                            <div class="form-group">
-                                <label for="quantidade">Quantidade</label>
-                                <input type="number" class="form-control" id="quantidadeProduto"
-                                    name="quantidadeProduto" placeholder="Digite a quantidade" style="width: 100px;">
-                            </div>
-                        </div>
+
                     </div>
 
                     <div class="form-group">
@@ -282,6 +276,14 @@
                                 </div>
 
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="estoqueProd">
+                        <div class="form-group">
+                            <label for="quantidade">Quantidade</label>
+                            <input type="number" class="form-control" id="quantidadeProduto"
+                                name="quantidade" placeholder="Digite a quantidade" style="width: 100px;">
                         </div>
                     </div>
 

@@ -467,46 +467,61 @@ class ProdutosController extends Controller
         }, ARRAY_FILTER_USE_BOTH);
 
         $quantidadeTotal = 0;
-        foreach ($dadosFiltrados as $key => $value) {
-            if (!isset($this->mapaTamanho[$key])) {
-                continue;
-            }
+        if (isset($data['quantidade']) ) {
+            $quantidadeTotal = $data['quantidade'];
+            Estoque::updateOrCreate(
+                [
+                    'produto_id' => $produtoId,
+                    'tamanho' => 'padrao',
+                ],
+                [
+                    'quantidade' => $quantidadeTotal,
+                    'ativo' => 'S'
+                ]
+            );
+        } else {
+            foreach ($dadosFiltrados as $key => $value) {
+                if (!isset($this->mapaTamanho[$key])) {
+                    continue;
+                }
 
-            $tamanho = null;
+                $tamanho = null;
 
-            switch (intval($dadosFiltrados['categoria_id'])) {
-                case 1:
-                    $tamanho = strval($this->calcasCamisas[$key]) ?? 'padrao';
-                    break;
-                case 2:
-                    $tamanho = strval($this->skates[$key]) ?? 'padrao';
-                    break;
-                case 3:
-                    $tamanho = strval($this->tenis[$key]) ?? 'padrao';
-                    break;
-                case 4:
-                    $tamanho = strval($this->calcasCamisas[$key]) ?? 'padrao';
-                    break;
-                default:
-                    Alert::alert('errors', 'erro ao salvar categoria não existe no banco');
-                    return back();
-            };
+                switch (intval($dadosFiltrados['categoria_id'])) {
+                    case 1:
+                        $tamanho = strval($this->calcasCamisas[$key]) ?? 'padrao';
+                        break;
+                    case 2:
+                        $tamanho = strval($this->skates[$key]) ?? 'padrao';
+                        break;
+                    case 3:
+                        $tamanho = strval($this->tenis[$key]) ?? 'padrao';
+                        break;
+                    case 4:
+                        $tamanho = strval($this->calcasCamisas[$key]) ?? 'padrao';
+                        break;
+                    default:
+                        Alert::alert('errors', 'erro ao salvar categoria não existe no banco');
+                        return back();
+                };
 
-            $quantidade = intVal($value) ?? 0;
-            $quantidadeTotal += $quantidade;
-            if (intVal($quantidade) > 0) {
-                Estoque::updateOrCreate(
-                    [
-                        'produto_id' => $produtoId,
-                        'tamanho' => $tamanho
-                    ],
-                    [
-                        'quantidade' => $quantidade,
-                        'ativo' => 'S'
-                    ]
-                );
+                $quantidade = intVal($value) ?? 0;
+                $quantidadeTotal += $quantidade;
+                if (intVal($quantidade) > 0) {
+                    Estoque::updateOrCreate(
+                        [
+                            'produto_id' => $produtoId,
+                            'tamanho' => $tamanho
+                        ],
+                        [
+                            'quantidade' => $quantidade,
+                            'ativo' => 'S'
+                        ]
+                    );
+                }
             }
         }
+
         Produto::where('id', $produtoId)->update(['quantidade' => $quantidadeTotal]);
         return true;
     }

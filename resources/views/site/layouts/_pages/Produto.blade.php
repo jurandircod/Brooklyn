@@ -66,7 +66,7 @@
 
                                 <div class="label-section">
                                     <span class="badge badge-grey-color">Entre os melhores produtos</span>
-                                    <span class="label-text">Em {{$produto->categoria->nome ?? "fashion"}}</span>
+                                    <span class="label-text">Em {{ $produto->categoria->nome ?? 'fashion' }}</span>
                                 </div>
 
                                 <h3 class="price-detail">${{ $produto->valor }}
@@ -138,16 +138,6 @@
                                                     style="display: none;">Quantidade indisponível para o estoque
                                                     selecionado</small>
                                             </div>
-
-                                            <div class="ml-auto">
-                                                <input type="hidden" id="selected-size" name="selected_size">
-                                                <button type="button"
-                                                    class="addtocart-btn inline-flex items-center gap-2 bg-[#4A1C1D] text-white px-4 py-2 rounded-md hover:bg-[#6f2e2f] transition"
-                                                    data-id="{{ $produto->id }}">
-                                                    <i class="fa fa-shopping-cart"></i>
-                                                    <span>Adicionar</span>
-                                                </button>
-                                            </div>
                                         </div>
                                     </div>
 
@@ -161,13 +151,24 @@
 
 
 
+                                @if(Auth::check())
                                 <div class="product-buttons">
                                     <a href="javascript:void(0)" data-id="{{ $produto->id }}" id="cartEffect"
                                         class="addtocart-btn btn btn-solid hover-solid btn-animation">
                                         <i class="fa fa-shopping-cart"></i>
+
+                                        <span>Adicionar ao carrinho</span>
+
+                                    </a>
+                                </div>
+                                @else
+                                <div class="product-buttons">
+                                    <a href="{{ route('login') }}" class="addtocart-btn btn btn-solid hover-solid btn-animation">
+                                        <i class="fa fa-shopping-cart"></i>
                                         <span>Adicionar ao carrinho</span>
                                     </a>
                                 </div>
+                                @endif
                             </div>
 
 
@@ -413,59 +414,79 @@
     });
 </script>
 <style>
-  /* Visual básico para estados de estoque */
-  .size-option.in-stock {
-    border-color: rgba(74,28,29,0.12);
-  }
-  .size-option.in-stock .stock-pill {
-    color: #065f46; /* verde-700 */
-    background-color: rgba(6,95,70,0.08);
-  }
+    /* Visual básico para estados de estoque */
+    .size-option.in-stock {
+        border-color: rgba(74, 28, 29, 0.12);
+    }
 
-  .size-option.low-stock {
-    border-color: rgba(234,88,12,0.12);
-  }
-  .size-option.low-stock .stock-pill {
-    color: #92400e; /* amber-800 */
-    background-color: rgba(146,64,14,0.06);
-  }
+    .size-option.in-stock .stock-pill {
+        color: #065f46;
+        /* verde-700 */
+        background-color: rgba(6, 95, 70, 0.08);
+    }
 
-  .size-option.out-of-stock {
-    opacity: 0.55;
-    pointer-events: auto; /* mantém clique (JS mostra mensagem), mas visual indica indisponível */
-    border-color: rgba(220,38,38,0.12);
-  }
-  .size-option.out-of-stock .stock-pill {
-    color: #b91c1c; /* red-700 */
-    background-color: rgba(185,28,28,0.06);
-  }
+    .size-option.low-stock {
+        border-color: rgba(234, 88, 12, 0.12);
+    }
 
-  /* estado selecionado — seu JS faz `classList.add('selected')` */
-  .size-option.selected {
-    background: linear-gradient(180deg, rgba(74,28,29,1) 0%, rgba(111,46,47,1) 100%);
-    color: #fff !important;
-    border-color: rgba(74,28,29,0.9) !important;
-    box-shadow: 0 6px 20px rgba(74,28,29,0.12);
-    transform: translateY(-2px);
-  }
-  .size-option.selected .stock-pill {
-    background-color: rgba(255,255,255,0.12) !important;
-    color: #fff !important;
-  }
+    .size-option.low-stock .stock-pill {
+        color: #92400e;
+        /* amber-800 */
+        background-color: rgba(146, 64, 14, 0.06);
+    }
 
-  /* acessibilidade (focus) */
-  .size-option:focus {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(74,28,29,0.12);
-  }
+    .size-option.out-of-stock {
+        opacity: 0.55;
+        pointer-events: auto;
+        /* mantém clique (JS mostra mensagem), mas visual indica indisponível */
+        border-color: rgba(220, 38, 38, 0.12);
+    }
 
-  /* pequenas correções para o .stock-pill */
-  .stock-pill svg { color: inherit; }
-  .stock-pill .stock-count { display:inline-block; min-width: 18px; text-align:center; }
+    .size-option.out-of-stock .stock-pill {
+        color: #b91c1c;
+        /* red-700 */
+        background-color: rgba(185, 28, 28, 0.06);
+    }
 
-  /* responsividade: em telas muito pequenas, diminuímos padding */
-  @media (max-width: 420px) {
-    .size-option { padding: 10px 8px; }
-    .stock-pill { padding: 2px 6px; }
-  }
+    /* estado selecionado — seu JS faz `classList.add('selected')` */
+    .size-option.selected {
+        background: linear-gradient(180deg, rgba(74, 28, 29, 1) 0%, rgba(111, 46, 47, 1) 100%);
+        color: #fff !important;
+        border-color: rgba(74, 28, 29, 0.9) !important;
+        box-shadow: 0 6px 20px rgba(74, 28, 29, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .size-option.selected .stock-pill {
+        background-color: rgba(255, 255, 255, 0.12) !important;
+        color: #fff !important;
+    }
+
+    /* acessibilidade (focus) */
+    .size-option:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(74, 28, 29, 0.12);
+    }
+
+    /* pequenas correções para o .stock-pill */
+    .stock-pill svg {
+        color: inherit;
+    }
+
+    .stock-pill .stock-count {
+        display: inline-block;
+        min-width: 18px;
+        text-align: center;
+    }
+
+    /* responsividade: em telas muito pequenas, diminuímos padding */
+    @media (max-width: 420px) {
+        .size-option {
+            padding: 10px 8px;
+        }
+
+        .stock-pill {
+            padding: 2px 6px;
+        }
+    }
 </style>

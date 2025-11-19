@@ -46,17 +46,57 @@
     }
 
     /* Background animado */
-    .login-section {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 20px;
-        background-image: url("https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c2thdGV8ZW58MHx8MHx8fDA%3D");
-        background-size: cover;
-        position: relative;
-        overflow: hidden;
-    }
+/* -------------------------
+   SEÇÃO PRINCIPAL (FUNDO)
+------------------------- */
+.login-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+
+    /* Imagem de skate */
+    background-image: url("https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c2thdGV8ZW58MHx8MHx8fDA%3D");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Overlay escuro para destacar o card */
+.login-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(3px);
+}
+
+
+/* -------------------------
+   CARD PRINCIPAL DO LOGIN
+------------------------- */
+.materialContainer {
+    position: relative;
+    padding: 40px 35px;
+    background: #fff; /* leve transparência */
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    width: 100%;
+    max-width: 420px;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+/* -------------------------
+   BOX INTERNA (renomeada)
+------------------------- */
+
+
 
     @keyframes gradientMove {
         0% {
@@ -96,16 +136,7 @@
 
     /* Box estilizado */
     .box {
-        background: rgba(30, 30, 30, 0.8);
-        backdrop-filter: blur(25px);
-        border-radius: 28px;
-        padding: 45px;
-        width: 100%;
-        max-width: 420px;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        z-index: 2;
-        animation: fadeInUp 0.6s ease-out;
+
     }
 
     /* Título com gradiente */
@@ -416,7 +447,6 @@
         justify-content: center;
         min-height: 100vh;
         padding: 20px;
-        background-image: url("https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c2thdGV8ZW58MHx8MHx8fDA%3D");
         background-size: cover;
         position: relative;
         overflow: hidden;

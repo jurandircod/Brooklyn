@@ -13,21 +13,23 @@ class PrincipalController extends Controller
     
     public static function principal(Request $request)
     {
-        $cart = Carrinho::where('user_id', Auth::id())->first();
-       
-        if (!$cart) {
-            $cart = Carrinho::create([
-                'user_id' => Auth::id(),
-                'status' => 'ativo'
-            ]);
+
+        if(Auth::check()){
+            $cart = Carrinho::where('user_id', Auth::id())->first();
+            if (!$cart) {
+                $cart = Carrinho::create([
+                    'user_id' => Auth::id(),
+                    'status' => 'ativo'
+                ]);
+            }
+            $itens = ItemCarrinho::where('carrinho_id', $cart->id)->get();
         }
-        $itens = ItemCarrinho::where('carrinho_id', $cart->id)->get();
         
         // Carrega todos os produtos COM suas fotos (eager loading)
         $produtos = Produto::with('fotos')->take(12)->get();
         $produtoDestaque = $produtos->first();
         $categorias = Categoria::whereIn('nome', ['camisas', 'skates', 'tenis'])->get();
-        $itens = $itens;
+        $itens = $itens ?? [];
         $i = 0;
         $cart = $request->query('cart') == 1 ? 1 : null;
         return view('site.principal', compact('produtos', 'cart', 'itens','categorias', 'i', 'produtoDestaque'));

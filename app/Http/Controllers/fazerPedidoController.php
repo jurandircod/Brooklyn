@@ -136,14 +136,14 @@ class FazerPedidoController extends Controller
             $carrinho->save();
 
             // Cria pedido
-            Pedido::create([
+            $pedidoo = Pedido::create([
                 'user_id' => $user->id,
                 'preco_total' => $preco_total,
+                'carrinho_id' => $carrinho->id,
                 'metodo_pagamento' => $request->metodo_pagamento,
                 'endereco_id' => $request->endereco_id,
                 'status' => 'aguardando'
             ]);
-
             $customer = [
                 'email' => $user->email,
                 'first_name' => $user->name,
@@ -154,7 +154,7 @@ class FazerPedidoController extends Controller
 
             $pixData = $mpService->createPixPayment($amount, $description, $customer);
 
-            
+
             Alert::success('Pedido', 'Pedido realizado, aguardando pagamento');
             return view('site.pix', compact('pixData'));
         });
@@ -176,15 +176,6 @@ class FazerPedidoController extends Controller
             'endereco_id.required' => 'Selecione pelo menos um endereço',
             'endereco_id.numeric' => 'O campo endereço deve ser numérico',
             'endereco_id.exists' => 'O endereço selecionado não existe ou não pertence a você',
-        ]);
-    }
-
-    public static function pedidosApi($pedidosPassados)
-    {
-        $pedidos = $pedidosPassados;
-        return response()->json([
-            'table' => view('site.layouts._pages.perfil.partials.pedidos-table', compact('pedidos'))->render(),
-            'pagination' => view('site.layouts._pages.perfil.partials.pedidos-pagination', compact('pedidos'))->render()
         ]);
     }
 }

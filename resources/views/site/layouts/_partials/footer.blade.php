@@ -1,4 +1,4 @@
-<footer class="mt-16 bg-gradient-to-br from-[#6F2E2F] to-[#5D2728] text-gray-100">
+<footer class="hidden lg:block mt-16 bg-gradient-to-br from-[#6F2E2F] to-[#5D2728] text-gray-100">
     <!-- MAIN -->
     <div class="container mx-auto px-6 py-16">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">

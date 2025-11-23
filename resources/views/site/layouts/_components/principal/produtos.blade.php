@@ -33,7 +33,7 @@
                     @endif
 
                     <!-- Quick Actions - Clean -->
-                    <div class="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button class="w-9 h-9 bg-white border border-gray-200 flex items-center justify-center hover:border-[#5A1F2D] hover:bg-[#5A1F2D] hover:text-white transition-all duration-300 {{ !$produto->estoque ? 'opacity-50 cursor-not-allowed' : '' }}"
                                 data-id="{{ $produto->id }}"
                                 title="Adicionar ao carrinho"

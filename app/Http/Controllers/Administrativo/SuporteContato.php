@@ -131,7 +131,7 @@ class SuporteContato extends Controller
                 'email_cliente' => $contato->email
             ];
 
-            // Enviar email (você pode personalizar o template)
+            // Enviar email 
             Mail::send('emails.resposta-contato', $dadosEmail, function ($message) use ($contato, $request) {
                 $message->to($contato->email, $contato->nome . ' ' . $contato->sobrenome)
                     ->subject($request->assunto)
@@ -139,7 +139,6 @@ class SuporteContato extends Controller
             });
 
             // Marcar como resolvido
-            $contato->update(['status' => 'resolvido']);
 
             return response()->json([
                 'success' => true,

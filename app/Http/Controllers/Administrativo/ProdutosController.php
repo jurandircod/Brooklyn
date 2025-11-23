@@ -165,13 +165,13 @@ class ProdutosController extends Controller
      */
     public function myProductsPaginated($perPage = 10, $search = '', $categoria = '', $marca = '', $orderBy = 'nome', $orderDirection = 'asc')
     {
-        $query = Produto::where('user_id', auth()->id())
+        $query = Produto::where('user_id', auth()->id())->where('estado', 'ativo')
             ->with(['categoria', 'marca', 'estoque']); // Eager loading para performance
 
         // Aplicar filtros de busca
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
-                $q->where('nome', 'LIKE', "%{$search}%")
+                $q->where('nome', 'LIKE', "%{$search}%")->where('estado', 'ativo')
                     ->orWhere('material', 'LIKE', "%{$search}%")
                     ->orWhere('descricao', 'LIKE', "%{$search}%")
                     ->orWhereHas('categoria', function ($subQ) use ($search) {
@@ -209,7 +209,7 @@ class ProdutosController extends Controller
      */
     public function myProducts()
     {
-        return Produto::where('user_id', auth()->id())->get();
+        return Produto::where('user_id', auth()->id())->where('estado', 'ativo')->get();
     }
 
     /**
@@ -381,7 +381,6 @@ class ProdutosController extends Controller
         $data = $request->all();
         $validator = $this->validateInput($data);
         if ($validator->fails()) {
-            Alert::error('Erro', 'Falha ao salvar o produto');
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
@@ -467,7 +466,7 @@ class ProdutosController extends Controller
         }, ARRAY_FILTER_USE_BOTH);
 
         $quantidadeTotal = 0;
-        if (isset($data['quantidade']) ) {
+        if (isset($data['quantidade'])) {
             $quantidadeTotal = $data['quantidade'];
             Estoque::updateOrCreate(
                 [
@@ -765,36 +764,32 @@ class ProdutosController extends Controller
     public function destroy($id)
     {
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Erro ao excluir produto: já está em um carrinho. DESATIVE O PRODUTO.'
-        ], 422);
-        exit;
         try {
-            // $id = $request->input('produto_id');
-
-            $this->validateProductId($id);
-
-            $produto = Produto::findOrFail($id);
-
-            if (ItemCarrinho::where('produto_id', $id)->exists()) {
+            $produto = Produto::find($id);
+            if (is_null($produto)) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Produto excluído com sucesso'
-                ], 200);
+                    'success' => false,
+                    'message' => 'Produto não encontrado.'
+                ], 404);
             }
 
-            $this->deleteProductWithDependencies($produto);
-
+            $produto->estado = 'inativo';
+            $produto->save();
             return response()->json([
                 'success' => true,
-                'message' => 'Produto excluído com sucesso'
-            ]);
-        } catch (Exception $e) {
+                'message' => "$produto->estado"
+            ], 200);
+        } catch (\Throwable $e) {
+            if ($e instanceof \Exception) {
+                Log::error($e->getMessage());
+            } else {
+                Log::error('Erro interno ao excluir produto');
+            }
 
             return response()->json([
-                'success' => true,
-                'message' => $e->getMessage()
+                'success' => false,
+                'message' => 'Erro interno ao excluir produto',
+                'error' => $e->getMessage() // remova essa linha quando for debug
             ], 500);
         }
     }

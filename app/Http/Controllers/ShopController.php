@@ -62,10 +62,10 @@ class ShopController extends Controller
 
         // Requisição normal (não AJAX)
         if (!$id) {
-            $produtos = $query->paginate(8);
+            $produtos = $query->where('estado', 'ativo')->paginate(8);
             return view('site.shop', compact('produtos', 'categorias', 'marcas'));
-        }else{
-            $produtos = $query->where('produtos.categoria_id', $id)->paginate(8);
+        } else {
+            $produtos = $query->where('produtos.categoria_id', $id)->where('estado', 'ativo')->paginate(8);
             return view('site.shop', compact('produtos', 'categorias', 'marcas'));
         }
     }
@@ -118,6 +118,7 @@ class ShopController extends Controller
             $query->whereIn('produtos.marca_id', $marcas);
         }
 
+        $query->where('produtos.estado', 'ativo');
         // Filtro por faixa de preço
         if ($request->filled('min_price')) {
             $query->where('produtos.valor', '>=', $request->input('min_price'));

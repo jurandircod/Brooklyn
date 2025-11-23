@@ -111,7 +111,7 @@
                                                     title="Tamanho {{ $estoque['tamanho'] }} - {{ $qtd }} em estoque">
 
                                                     <span
-                                                        class="text-sm font-semibold text-gray-800">{{ $estoque['tamanho'] }}</span>
+                                                        class="text-sm font-semibold">{{ $estoque['tamanho'] }}</span>
 
                                                     <span class="text-xs tracking-tight">
                                                         <span
@@ -330,7 +330,7 @@
                 const loadingToast = Toastify({
                     text: "Adicionando ao carrinho...",
                     duration: -1,
-                    gravity: "top",
+                    gravity: "bottom",
                     position: "right",
                     backgroundColor: "#4CAF50",
                     stopOnFocus: true
@@ -374,7 +374,7 @@
                             Toastify({
                                 text: `Adicionado ao carrinho!`,
                                 duration: 3000,
-                                gravity: "top",
+                                gravity: "bottom",
                                 position: "right",
                                 backgroundColor: "#4CAF50",
                                 stopOnFocus: true

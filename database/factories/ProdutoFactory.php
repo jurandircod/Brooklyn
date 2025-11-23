@@ -8,7 +8,7 @@ $factory->define(Produto::class, function (Faker $faker) {
     return [
         'nome' => $faker->word,
         'descricao' => $faker->sentence,
-        'categoria_id' => $faker->randomElement([1, 2, 3]),
+        'categoria_id' => $faker->randomElement([1, 2, 3, 4]),
         'user_id' => 1,
         'material' => $faker->word,
         'valor' => $faker->randomFloat(2, 10, 1000),

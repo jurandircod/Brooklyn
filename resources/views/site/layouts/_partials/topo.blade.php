@@ -1,5 +1,3 @@
-
-
 <link rel="stylesheet" href="{{ asset('css/site/topo/customize.css') }}">
 
 <header class="header-style-2" id="home">
@@ -33,16 +31,18 @@
                                         </li>
                                         <li><a href="{{ route('site.principal') }}"
                                                 class="nav-link menu-title">Inicio</a></li>
-                                        <li><a href="{{ route('site.shop.produto') }}" class="nav-link menu-title">Produtos</a>
+                                        <li><a href="{{ route('site.shop.produto') }}"
+                                                class="nav-link menu-title">Produtos</a>
                                         </li>
-                                        <li><a href="{{ route('site.carrinho') }}"
-                                                class="nav-link menu-title">Carrinho</a></li>
+                                        @if (Auth::check())
+                                            <li><a href="{{ route('site.carrinho') }}"
+                                                    class="nav-link menu-title">Carrinho</a></li>
+                                        @endif
                                         <li><a href="{{ route('site.sobre') }}" class="nav-link menu-title">Sobre
                                                 Nós</a></li>
                                         <li><a href="{{ route('site.contato') }}"
                                                 class="nav-link menu-title">Contato</a>
                                         </li>
-                                        <li><a href="blog.html" class="nav-link menu-title">Blog</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -178,7 +178,7 @@
             // Opcional: Atualizar quando ocorrem eventos relevantes
             $(document).on('click', '.adicionar-ao-carrinho, .remover-do-carrinho', function() {
                 setTimeout(atualizarContadorCarrinho,
-                1000); // Espera 1s para dar tempo do backend processar
+                    1000); // Espera 1s para dar tempo do backend processar
             });
         });
     });

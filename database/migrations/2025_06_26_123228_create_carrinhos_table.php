@@ -18,7 +18,6 @@ class CreateCarrinhosTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->enum('status', ['ativo', 'finalizado'])->default('ativo');
             $table->timestamps();
-
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

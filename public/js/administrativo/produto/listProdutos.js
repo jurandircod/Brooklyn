@@ -114,17 +114,15 @@ document.addEventListener("DOMContentLoaded", function () {
             const csrf = tokenMeta ? tokenMeta.getAttribute("content") : null;
 
             fetch(`/administrativo/produto/excluir/${id}`, {
-                method: "DELETE",
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     ...(csrf ? { "X-CSRF-TOKEN": csrf } : {})
                 }
-            }).then(r => {
-                if (r.ok) {
-                    window.produtosTable.ajax.reload(null, false);
-                } else {
-                    alert("Falha ao excluir produto.");
-                }
+            }).then(async r => {
+                console.log("Status:", r.status);
+                let txt = await r.text();
+                console.log("Resposta RAW:", txt);
             });
         }
     });

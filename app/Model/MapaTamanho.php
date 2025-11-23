@@ -20,6 +20,10 @@ class MapaTamanho extends Model
         'm' => 'm',
         'g' => 'g',
         'gg' => 'gg',
+        'P' => 'P',
+        'G' => 'G',
+        'M' => 'M',
+        'GG' => 'GG'
     ];
 
     protected $tamanhoSkates = [
@@ -37,8 +41,10 @@ public function getTamanhoDisponiveis($categoriaId, $tamanho)
         return $this->tamanhoSkates[$tamanho] ?? null;
     } elseif ($categoriaId == 3) {
         return $this->tamanhoTenis[$tamanho] ?? null;
+
+    }else {
+        return "padrao";
     }
-    return null;
 }
 
 }

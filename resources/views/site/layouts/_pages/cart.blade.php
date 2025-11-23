@@ -65,7 +65,8 @@
                                 <input type="hidden" data-categoria-id="{{ $item->produto->categoria->id }}"
                                     name="categoria_id" id="categoria_id" value="{{ $item->produto->categoria->id }}">
 
-                                <td id="preco_total" class="py-3 px-4 font-semibold text-gray-800">
+                                <td class="preco_total py-3 px-4 font-semibold text-gray-800">
+
                                     R${{ $item->preco_total }}
                                 </td>
 
@@ -200,7 +201,7 @@
                 .then(data => {
                     if (data.status === 'success') {
                         // Atualiza a linha (preço total está na coluna 6)
-                        const totalCell = row.querySelector('td:nth-child(6) h2');
+                        const totalCell = row.querySelector('.preco_total');
                         if (totalCell) {
                             totalCell.textContent = formatCurrency(data.item_total);
                         }
@@ -356,8 +357,6 @@
             subTotal.textContent = formatCurrency(data.subtotal);
             const preco_total2 = document.querySelector('#preco_total2');
             preco_total2.textContent = formatCurrency(data.total);
-            const preco_total = document.querySelector('#preco_total');
-            preco_total.textContent = formatCurrency(data.subtotal);
             const taxaFrete = document.querySelector('#taxaFrete');
             taxaFrete.textContent = formatCurrency(data.taxa);
         }

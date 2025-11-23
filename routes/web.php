@@ -42,6 +42,10 @@ Route::get('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
 Auth::routes(['reset' => true]);
 Auth::routes(['verify' => true]);
 
+// ==========================================
+// ROTAS DE REDEFINIÇÃO DE SENHA
+// ==========================================
+
 Route::prefix('site')->group(function () {
     // Verificar email
     Route::get('/email/verificar', [User::class, 'verificarEmail'])->name('site.email.verificar');
@@ -58,42 +62,44 @@ Route::prefix('site')->group(function () {
 Route::get('/principal', 'PrincipalController@principal')->name('site.principal');
 Route::get('/', 'PrincipalController@principal')->name('site.principal');
 
+
+
+// ==========================================
+// ROTAS DE PRODUTO
+// ==========================================
 Route::prefix('produto')->group(function () {
     Route::get('/{id}', 'ProdutoController@index')->name('site.produto');
     Route::post('/avaliacao', 'AvaliacaoController@CreateAvaliacao')->name('site.produto.avaliacao');
 });
+
+
+// ==========================================
+// ROTAS DE PESQUISA
+// ==========================================
+
+
+Route::prefix('pesquisa')->group(function () {
+    Route::get('/pesquisa/{id}', 'ShopController@index')->name('site.shop')->where('id', '[0-9]+');
+    Route::post('/pesquisa/{id}', 'ShopController@index')->name('site.shop')->where('id', '[0-9]+');
+    Route::post('/produtos', 'ShopController@index')->name('site.shop.produto');
+    Route::get('/produtos', 'ShopController@index')->name('site.shop.produto');
+    Route::post('/filter', 'ShopController@index')->name('site.pesquisa.filtrar');
+    Route::post('/pesquisa', 'ShopController@index')->name('site.shop');
+    Route::get('/produtos/categoria/{id}', 'ShopController@index')->name('site.shop.categoria')->where('id', '[0-9]+');
+    Route::post('/produtos/categoria/{id}', 'ShopController@index')->name('site.shop.categoria')->where('id', '[0-9]+');
+});
+
+
+Route::get('/contato', 'ContatoController@contato')->name('site.contato');
+Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
+Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // ==========================================
     // ROTAS GERAIS DO SITE
     // ==========================================
-    Route::get('/contato', 'ContatoController@contato')->name('site.contato');
-    Route::get('/sobre', 'SobreNosController@sobre')->name('site.sobre');
     Route::get('/cep/{cep}', 'AddressController@getCityByCep');
-    Route::post('/contato', 'ContatoController@salvar')->name('site.contato.salvar');
     Route::get('/fazerPedido', 'fazerPedidoController@index')->name('site.fazerPedido');
-
-    // ==========================================
-    // ROTAS DE REDEFINIÇÃO DE SENHA
-    // ==========================================
-
-    // ==========================================
-    // ROTAS DE PESQUISA
-    // ==========================================
-    Route::prefix('pesquisa')->group(function () {
-        Route::get('/pesquisa/{id}', 'ShopController@index')->name('site.shop')->where('id', '[0-9]+');
-        Route::post('/pesquisa/{id}', 'ShopController@index')->name('site.shop')->where('id', '[0-9]+');
-        Route::post('/produtos', 'ShopController@index')->name('site.shop.produto');
-        Route::get('/produtos', 'ShopController@index')->name('site.shop.produto');
-        Route::post('/filter', 'ShopController@index')->name('site.pesquisa.filtrar');
-        Route::post('/pesquisa', 'ShopController@index')->name('site.shop');
-        Route::get('/produtos/categoria/{id}', 'ShopController@index')->name('site.shop.categoria')->where('id', '[0-9]+');
-        Route::post('/produtos/categoria/{id}', 'ShopController@index')->name('site.shop.categoria')->where('id', '[0-9]+');
-    });
-
-    // ==========================================
-    // ROTAS DE PRODUTO
-    // ==========================================
 
 
     // ==========================================
@@ -108,6 +114,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/editar/{id}', 'AddressController@updateAddress')->name('site.perfil.editarEndereco');
         Route::get('/cancelar/pedido/{id}', 'PerfilController@cancelarPedido')->name('site.perfil.cancelarPedido');
         Route::get('/confirmar/pedido/{id}', 'PerfilController@confirmarPedido')->name('site.perfil.confirmarPedido');
+        Route::get('/pedidos/api', 'PerfilController@pedidosApi')->name('site.pedidos.api');
     });
 
     // ==========================================
@@ -181,7 +188,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // CRUD Básico
         Route::post('/produto/salvar', [ProdutosController::class, 'create'])->name('administrativo.produto.salvar');
         Route::post('/produto/atualizar', [ProdutosController::class, 'edit'])->name('administrativo.produto.atualizar');
-        Route::delete('/produto/excluir/{id}', [ProdutosController::class, 'destroy'])->name('administrativo.produto.excluir');
+        Route::post('/produto/excluir/{id}', [ProdutosController::class, 'destroy'])->name('administrativo.produto.excluir');
 
         // ==========================================
         // PRODUTOS (Estrutura Detalhada)
@@ -227,7 +234,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 'show' => 'admin.produtos.show',
                 'edit' => 'admin.produtos.edit',
                 'update' => 'admin.produtos.update',
-                'destroy' => 'admin.produtos.destroy'
             ]
         ]);
 

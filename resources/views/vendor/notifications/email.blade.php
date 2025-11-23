@@ -44,7 +44,7 @@
 
 {{-- Footer --}}
 <div style="text-align:center; margin-top:22px; padding:14px; background:#fafafa; border-radius:8px; font-size:12px; color:#666;">
-    📍 Rua Exemplo, 123 — Sua Cidade • 📞 (XX) XXXX-XXXX<br>
+    📍 Centro, 19 — Cruzeiro do Oeste/PR • 📞 (44) 999747097<br>
     Siga: <strong>@brooklynskateshop</strong>
 </div>
 

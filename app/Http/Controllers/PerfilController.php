@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\model\{Pedido, Endereco};
+
+use App\model\{Pedido, Endereco, Carrinho};
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FazerPedidoController;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -9,15 +10,67 @@ use RealRashid\SweetAlert\Facades\Alert;
 class PerfilController extends Controller
 {
 
+
+    public static function pedidosApi()
+    {
+        $pedidos = Pedido::where('user_id', Auth::id())->with('carrinho', 'carrinho.itens', 'carrinho.itens.produto')->paginate(7);
+        $orders = $pedidos->map(function ($pedido) {
+            return [
+                'id' => $pedido->id,
+                'date' => $pedido->created_at->format('Y-m-d'),
+                'customer' => $pedido->user->name ?? 'Cliente',
+                'status' => $pedido->status,
+                'total' => $pedido->preco_total,
+                'items' => $pedido->carrinho->itens->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->produto->nome,
+                        'qty' => $item->quantidade,
+                        'size' => $item->tamanho,
+                        'price' => $item->produto->valor,
+                        'img' => $item->produto->fotos->first()->url_imagem,
+                    ];
+                }),
+            ];
+        });;
+        return response()->json([
+            // 🔥 AQUI entra o JSON no formato que você quer usar no JS!
+            'orders' => $pedidos,
+        ]);
+    }
     public function index($id = null, $activeTab = null)
     {
 
         $enderecosMostrar = Endereco::where('user_id', Auth::id())->where('status', 'ativo')->get();
-        $pedidos = Pedido::where('user_id', Auth::id())->paginate(7);
         $isAjax = request()->ajax();
+
         if ($isAjax) {
-            return FazerPedidoController::pedidosApi($pedidos);
+            $pedidos = Pedido::where('user_id', Auth::id())->with('carrinho', 'carrinho.itens', 'carrinho.itens.produto')->paginate(7);
+            $orders = $pedidos->map(function ($pedido) {
+                return [
+                    'id' => $pedido->id,
+                    'date' => $pedido->created_at->format('Y-m-d'),
+                    'customer' => $pedido->user->name ?? 'Cliente',
+                    'status' => $pedido->status,
+                    'total' => $pedido->preco_total,
+                    'items' => $pedido->carrinho->itens->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->produto->nome,
+                            'qty' => $item->quantidade,
+                            'size' => $item->tamanho,
+                            'price' => $item->produto->valor,
+                            'img' => $item->produto->fotos->first()->url_imagem,
+                        ];
+                    }),
+                ];
+            });;
+            return response()->json([
+                // 🔥 AQUI entra o JSON no formato que você quer usar no JS!
+                'orders' => $pedidos,
+            ]);
         }
+        $pedidos = Pedido::where('user_id', Auth::id())->with('carrinho', 'carrinho.itens', 'carrinho.itens.produto')->paginate(7);
 
         if (isset($id)) {
             $enderecosEditar = Endereco::where('id', $id)->where('user_id', Auth::id())->first();
@@ -45,7 +98,7 @@ class PerfilController extends Controller
         $pedido = Pedido::where('id', $id)->where('user_id', Auth::id())->first();
         if (!$pedido) {
             return back();
-        } else if($pedido->status == 'pago' || $pedido->status == 'enviado' || $pedido->status == 'entregue'){
+        } else if ($pedido->status == 'pago' || $pedido->status == 'enviado' || $pedido->status == 'entregue') {
             Alert::error('Erro', 'Este pedido não pode ser cancelado, pois já foi pago ou enviado. Entre em contato na aba Contato para solicitar o cancelamento.');
             return back();
         }
@@ -91,9 +144,7 @@ class PerfilController extends Controller
             case 6:
                 break;
             //return 'tab-pane fade';
-            case 7
-            
-            :
+            case 7:
                 break;
             default:
                 return 'tab-pane fade';

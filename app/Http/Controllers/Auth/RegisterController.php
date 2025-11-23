@@ -73,8 +73,22 @@ class RegisterController extends Controller
 
         ]);
 
+        $nome = strtolower($request->name);
+
+        // 2. primeira letra maiúscula
+        $nome = ucwords($nome);
+
+        // 3. permitir só nome e sobrenome
+        $partes = explode(" ", $nome);
+
+        // remove entradas vazias (múltiplos espaços)
+        $partes = array_filter($partes);
+
+        // pega só as duas primeiras
+        $nomeFormatado = implode(" ", array_slice($partes, 0, 2));
+
         $user = User::create([
-            'name' => $request->name,
+            'name' => $nomeFormatado,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_id' => 2,

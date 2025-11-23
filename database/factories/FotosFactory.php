@@ -11,10 +11,18 @@ $factory->define(Fotos::class, function (Faker $faker) {
 
     if ($produto->categoria_id == 1) {
         $tamanho = ['p', 'm', 'g', 'gg'];
+        $caminhoDownloads = "C:\Users\JURANDIR\Documents\Fotos Brooklyn\Camisas"; // usa barra normal no PHP
+
     } elseif ($produto->categoria_id == 2) {
         $tamanho = ['775', '8', '825', '85'];
+        $caminhoDownloads = "C:\Users\JURANDIR\Documents\Fotos Brooklyn\Skates"; // usa barra normal no PHP
+
     } elseif ($produto->categoria_id == 3) {
+        $caminhoDownloads = "C:\Users\JURANDIR\Documents\Fotos Brooklyn\Tenis"; // usa barra normal no PHP
         $tamanho = ['38', '39', '40', '41', '42'];
+    } elseif ($produto->categoria_id == 4) {
+        $caminhoDownloads = "C:\Users\JURANDIR\Documents\Fotos Brooklyn\Calcas";
+        $tamanho = ['p', 'm', 'g', 'gg']; // usa barra normal no PHP
     }
 
     // Cria o estoque para o produto
@@ -26,7 +34,6 @@ $factory->define(Fotos::class, function (Faker $faker) {
     }
 
     // Define o caminho base de downloads e destino
-    $caminhoDownloads = "C:/Users/User/Documents/skate"; // usa barra normal no PHP
     $caminhoDestino = public_path("uploads/produtos/{$produto->id}");
 
     // Cria o diretório se não existir

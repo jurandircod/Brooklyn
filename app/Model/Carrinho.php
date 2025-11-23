@@ -17,6 +17,10 @@ class Carrinho extends Model
         return $this->hasMany(ItemCarrinho::class);
     }
 
+    public function pedidos()
+    {
+        return $this->hasMany(Pedido::class);
+    }
 
 
 

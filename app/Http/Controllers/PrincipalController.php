@@ -25,7 +25,6 @@ class PrincipalController extends Controller
         
         // Carrega todos os produtos COM suas fotos (eager loading)
         $produtos = Produto::with('fotos')->where('estado', 'ativo')->take(12)->get();
-        dd($produtos);
         $produtoDestaque = $produtos->first();
         $categorias = Categoria::whereIn('nome', ['camisas', 'skates', 'tenis'])->get();
         $itens = $itens ?? [];

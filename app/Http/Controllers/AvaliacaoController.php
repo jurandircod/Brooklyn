@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\model\{Produto, Avaliacao};
+use App\Models\{Produto, Avaliacao};
 use Illuminate\Support\Facades\DB;
 
 class AvaliacaoController extends Controller

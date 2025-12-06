@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\model\{Produto, Fotos, Carrinho, ItemCarrinho, Categoria};
+use App\Model\{Produto, Fotos, Carrinho, ItemCarrinho, Categoria};
 use Illuminate\Support\Facades\Auth;
 
 

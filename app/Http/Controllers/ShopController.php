@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\model\{Produto, Categoria, Marca, MapaTamanho};
+use App\Models\{Produto, Categoria, Marca, MapaTamanho};
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 

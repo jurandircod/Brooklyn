@@ -6,7 +6,7 @@ use App\Http\Controllers\Administrativo\SuporteContato;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\{LoginController, RegisterController};
-use App\Http\Controllers\{AvaliacaoController, PerfilController, UserController, ItemCarrinhoController, FazerPedidoController};
+use App\Http\Controllers\{AvaliacaoController, PerfilController, User, ItemCarrinhoController, FazerPedidoController};
 use App\Http\Controllers\Administrativo\{PrincipalControllerAdministrativo, VendasController, TabelasControllers, PermissoesController, ProdutosController, CategoriaController, MarcaController};
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\MercadoPagoController;
@@ -29,8 +29,10 @@ use Illuminate\Support\Facades\Log;
 // ROTAS PÚBLICAS (SEM AUTENTICAÇÃO)
 // ==========================================
 Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/register/salvar', [RegisterController::class, 'register'])->name('registerSalvar');
-Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
 Route::get('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
 Route::get('/login/google', [GoogleController::class, 'redirectToGoogle']);
@@ -43,7 +45,7 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 // ==========================================
 Route::prefix('site')->group(function () {
     // Verificar email
-    Route::get('/email/verificar', [UserController::class, 'verificarEmail'])->name('site.email.verificar');
+    Route::get('/email/verificar', [User::class, 'verificarEmail'])->name('site.email.verificar');
     
     // Mostrar formulário de reset (quando chega pelo email)
     Route::get('resetar-senha/{token}', [PasswordResetController::class, 'showResetForm'])
@@ -143,7 +145,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // VENDAS
         // ==========================================
         Route::get('/vendas', [VendasController::class, 'index'])->name('administrativo.vendas');
-        Route::get('/tabelas', [TabelasControllers::class, 'index'])->name('administrativo.tabelas');
 
         // ==========================================
         // PERMISSÕES
@@ -154,7 +155,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/salvarPermissao', [PermissoesController::class, 'salvar'])->name('administrativo.permissao.salvar');
             Route::post('/removerPermissao', [PermissoesController::class, 'remover'])->name('administrativo.permissao.remover');
             Route::post('/enviarPermissao', [PermissoesController::class, 'editar'])->name('administrativo.permissao.editar');
-            Route::post('/enviarPermissao/usuario', [UserController::class, 'enviarPermissao'])->name('administrativo.enviarPermissao.usuario');
+            Route::post('/enviarPermissao/usuario', [User::class, 'enviarPermissao'])->name('administrativo.enviarPermissao.usuario');
             Route::post('/editarPermissao/usuario', [PermissoesController::class, 'editarUsuarioPermissao'])->name('administrativo.permissao.editar.usuario');
         });
 

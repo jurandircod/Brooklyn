@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\model\{Marca, Notificacao};
 use Illuminate\Http\Request;
 
-class marcaController extends Controller
+class MarcaController extends Controller
 {
 
     private $notificacaoContador;

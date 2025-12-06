@@ -2,13 +2,17 @@
 
 namespace App\Services;
 
-use MercadoPago\SDK;
-use MercadoPago\Payment;
+// Para versão mais recente (SDK 3.x)
+use MercadoPago\Client\Payment\PaymentClient;
+use MercadoPago\MercadoPagoConfig;
+use MercadoPago\Client\Common\RequestOptions;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
 class MercadoPagoService
 {
+    protected $paymentClient;
+
     public function __construct()
     {
         $accessToken = env('MERCADOPAGO_ACCESS_TOKEN');
@@ -17,65 +21,50 @@ class MercadoPagoService
             throw new Exception('MERCADOPAGO_ACCESS_TOKEN não configurado no .env');
         }
 
-        SDK::setAccessToken($accessToken);
+        // Configuração para SDK 3.x
+        MercadoPagoConfig::setAccessToken($accessToken);
+        MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::LOCAL);
+        
+        $this->paymentClient = new PaymentClient();
     }
 
     public function createPixPayment($amount, $description, $customer)
     {
         try {
-            // Validação básica
             if (!is_array($customer)) {
                 throw new Exception('Parâmetro customer deve ser um array');
             }
 
-            $payment = new Payment();
-
-            // O valor deve ser FLOAT (em reais), não centavos
-            $payment->transaction_amount = (float) $amount;
-            $payment->description = substr($description ?? 'Pagamento', 0, 200);
-            $payment->payment_method_id = "pix";
-
-            // Dados do pagador (use dados reais se disponíveis)
+            // Formatar CPF
             $cpf = isset($customer['cpf']) ? preg_replace('/[^0-9]/', '', $customer['cpf']) : '12345678900';
-            $payment->payer = [
-                "email" => $customer['email'] ?? 'comprador@teste.com',
-                "first_name" => $customer['first_name'] ?? 'Cliente',
-                "last_name" => $customer['last_name'] ?? 'Teste',
-                "identification" => [
-                    "type" => "CPF",
-                    "number" => $cpf
-                ]
+            
+            // Montar request para SDK 3.x
+            $paymentRequest = [
+                "transaction_amount" => (float) $amount,
+                "description" => substr($description ?? 'Pagamento', 0, 200),
+                "payment_method_id" => "pix",
+                "payer" => [
+                    "email" => $customer['email'] ?? 'comprador@teste.com',
+                    "first_name" => $customer['first_name'] ?? 'Cliente',
+                    "last_name" => $customer['last_name'] ?? 'Teste',
+                    "identification" => [
+                        "type" => "CPF",
+                        "number" => $cpf
+                    ]
+                ],
+                "external_reference" => $customer['pedido_id'] ?? null,
             ];
 
-            $payment->external_reference = $customer['pedido_id'] ?? null; 
-            Log::info('Enviando pagamento PIX para o Mercado Pago', [
-                'amount' => $amount,
-                'description' => $description,
-                'payer' => $payment->payer
-            ]);
+            Log::info('Enviando pagamento PIX para o Mercado Pago', $paymentRequest);
 
-            // Salva o pagamento (gera o QR Code)
-            $payment->save();
+            // Criar pagamento
+            $payment = $this->paymentClient->create($paymentRequest);
 
             if (isset($payment->error)) {
                 Log::error('=== ERRO DETALHADO MERCADO PAGO ===', [
-                    'status' => $payment->error->status ?? null,
-                    'code' => $payment->error->cause[0]->code ?? null,
-                    'description' => $payment->error->cause[0]->description ?? null,
-                    'message' => $payment->error->message ?? null,
-                    'full_error' => $payment->error // salva tudo pra garantir
+                    'error' => $payment->error
                 ]);
-
                 throw new Exception($payment->error->message ?? 'Erro desconhecido no Mercado Pago');
-            }
-            // Verificação de erro da API
-            if (isset($payment->error)) {
-                Log::error('Erro Mercado Pago PIX:', (array) $payment->error);
-                throw new Exception($payment->error->message ?? 'Erro desconhecido do Mercado Pago');
-            }
-
-            if (!$payment->id) {
-                throw new Exception('Pagamento não criado: ID ausente.');
             }
 
             // Retorna os dados do QR PIX

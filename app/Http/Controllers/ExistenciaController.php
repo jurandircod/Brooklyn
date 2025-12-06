@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\model\{Produto, ItemCarrinho, Carrinho, Estoque};
+use App\Models\{Produto, ItemCarrinho, Carrinho, Estoque};
 use Illuminate\Support\Facades\Auth;
 
 class ExistenciaController extends Controller

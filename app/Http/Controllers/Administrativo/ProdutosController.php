@@ -7,13 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho, Notificacao};
-use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use App\model\Tamanho;
-
 
 /**
  * Class ProdutosController
@@ -165,7 +164,7 @@ class ProdutosController extends Controller
      */
     public function myProductsPaginated($perPage = 10, $search = '', $categoria = '', $marca = '', $orderBy = 'nome', $orderDirection = 'asc')
     {
-        $query = Produto::where('user_id', auth()->id())->where('estado', 'ativo')
+        $query = Produto::where('user_id', Auth::id())->where('estado', 'ativo')
             ->with(['categoria', 'marca', 'estoque']); // Eager loading para performance
 
         // Aplicar filtros de busca
@@ -209,7 +208,7 @@ class ProdutosController extends Controller
      */
     public function myProducts()
     {
-        return Produto::where('user_id', auth()->id())->where('estado', 'ativo')->get();
+        return Produto::where('user_id', Auth::id())->where('estado', 'ativo')->get();
     }
 
     /**
@@ -264,9 +263,6 @@ class ProdutosController extends Controller
         return $datatable->toJson();
     }
 
-
-
-
     /**
      * Método para exportar produtos (Excel, PDF, etc.)
      *
@@ -301,7 +297,7 @@ class ProdutosController extends Controller
         $term = $request->get('q', '');
         $limit = $request->get('limit', 10);
 
-        $produtos = Produto::where('user_id', auth()->id())
+        $produtos = Produto::where('user_id', Auth::id())
             ->where(function ($query) use ($term) {
                 $query->where('nome', 'LIKE', "%{$term}%")
                     ->orWhere('material', 'LIKE', "%{$term}%");
@@ -427,7 +423,7 @@ class ProdutosController extends Controller
     protected function createProductWithStock(array $data)
     {
         try {
-            $data['user_id'] = auth()->id();
+            $data['user_id'] = Auth::id();
             // tenta criar o produto
             $produto = Produto::create($data);
 
@@ -528,9 +524,9 @@ class ProdutosController extends Controller
                         return back();
                 };
 
-                $quantidade = intVal($value) ?? 0;
+                $quantidade = intval($value) ?? 0;
                 $quantidadeTotal += $quantidade;
-                if (intVal($quantidade) > 0) {
+                if (intval($quantidade) > 0) {
                     Estoque::updateOrCreate(
                         [
                             'produto_id' => $produtoId,
@@ -594,7 +590,7 @@ class ProdutosController extends Controller
     }
 
     /**
-     * Converte imagem para WebP (tenta usar Intervention; se falhar, usa fallback GD)
+     * Converte imagem para WebP (usa implementação nativa GD; se falhar retorna false)
      *
      * @param string $originalPath
      * @param string $webpPath
@@ -603,32 +599,12 @@ class ProdutosController extends Controller
      */
     protected function convertToWebp(string $originalPath, string $webpPath, int $quality = 80)
     {
+        ini_set('memory_limit', '512M');
         try {
-            ini_set('memory_limit', '512M');
-            // Usa Intervention Image (Facade)
-            $image = Image::make($originalPath);
-            $image->orientate(); // corrige orientação EXIF
-            $image->resize(1200, 1200, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
-
-            // garante diretório
-            $dir = dirname($webpPath);
-            if (!file_exists($dir)) {
-                mkdir($dir, 0755, true);
-            }
-
-            // Tenta codificar em webp (Intervention depende de GD/Imagick com suporte webp)
-            $image->encode('webp', $quality);
-            $image->save($webpPath);
-            $image->destroy();
-
-            return file_exists($webpPath);
-        } catch (\Exception $e) {
-            Log::error('convertToWebp (Intervention) falhou: ' . $e->getMessage());
-            // Fallback nativo com GD/imagick -> tenta criar WebP direto, ou salva JPEG se não suportar
             return $this->convertToWebpNative($originalPath, $webpPath, $quality);
+        } catch (\Exception $e) {
+            Log::error('convertToWebp falhou: ' . $e->getMessage());
+            return false;
         }
     }
 
@@ -651,11 +627,12 @@ class ProdutosController extends Controller
 
             switch ($mime) {
                 case 'image/jpeg':
+                case 'image/jpg':
                     $img = imagecreatefromjpeg($originalPath);
                     break;
                 case 'image/png':
                     $img = imagecreatefrompng($originalPath);
-                    // preserva transparência
+                    // preserve alpha
                     imagepalettetotruecolor($img);
                     imagealphablending($img, true);
                     imagesavealpha($img, true);
@@ -667,7 +644,33 @@ class ProdutosController extends Controller
                     return false;
             }
 
-            // redimensiona se necessário
+            if (!$img) {
+                return false;
+            }
+
+            // corrige orientação EXIF para JPEG
+            if ($mime === 'image/jpeg' && function_exists('exif_read_data')) {
+                try {
+                    $exif = @exif_read_data($originalPath);
+                    if (!empty($exif['Orientation'])) {
+                        switch ($exif['Orientation']) {
+                            case 3:
+                                $img = imagerotate($img, 180, 0);
+                                break;
+                            case 6:
+                                $img = imagerotate($img, -90, 0);
+                                break;
+                            case 8:
+                                $img = imagerotate($img, 90, 0);
+                                break;
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // ignora se exif falhar
+                }
+            }
+
+            // redimensiona mantendo proporção se maior que max
             $width = imagesx($img);
             $height = imagesy($img);
             $max = 1200;
@@ -681,7 +684,7 @@ class ProdutosController extends Controller
                 }
                 $tmp = imagecreatetruecolor($newW, $newH);
 
-                // preserva transparência quando necessário
+                // preserva transparência
                 if ($mime === 'image/png' || $mime === 'image/gif') {
                     imagealphablending($tmp, false);
                     imagesavealpha($tmp, true);
@@ -727,42 +730,140 @@ class ProdutosController extends Controller
      */
     protected function optimizeAndSaveImage(string $tmpPath, string $savePath, string $extension)
     {
+        ini_set('memory_limit', '512M');
         // garante diretório
         $dir = dirname($savePath);
         if (!file_exists($dir)) {
             mkdir($dir, 0755, true);
         }
-        $image = Image::make($tmpPath);
-        $image->orientate();
-        $image->resize(1200, 1200, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        });
+
         $ext = strtolower($extension);
-        switch ($ext) {
-            case 'jpeg':
-            case 'jpg':
-                $image->encode('jpg', 80);
-                break;
-            case 'png':
-                // PNG: encode aceita quality 0-9 para driver GD via Intervention; aqui usamos 8 como compressão
-                $image->encode('png', 8);
-                break;
-            case 'webp':
-                // tenta webp, se falhar o próprio Intervention lançará e o catch pode tratar
-                try {
-                    $image->encode('webp', 80);
-                } catch (\Exception $e) {
-                    Log::warning('encode webp falhou no optimizeAndSaveImage: ' . $e->getMessage());
-                    $image->encode('jpg', 80);
-                }
-                break;
-            default:
-                $image->encode($ext, 80);
+
+        // tenta abrir imagem com GD
+        $img = null;
+        $mime = null;
+        $info = @getimagesize($tmpPath);
+        if ($info !== false) {
+            $mime = $info['mime'];
         }
 
-        $image->save($savePath);
-        $image->destroy();
+        try {
+            switch ($mime) {
+                case 'image/jpeg':
+                case 'image/jpg':
+                    $img = imagecreatefromjpeg($tmpPath);
+                    break;
+                case 'image/png':
+                    $img = imagecreatefrompng($tmpPath);
+                    break;
+                case 'image/gif':
+                    $img = imagecreatefromgif($tmpPath);
+                    break;
+                default:
+                    // tenta com base na extensão
+                    if (in_array($ext, ['jpg','jpeg'])) {
+                        $img = imagecreatefromjpeg($tmpPath);
+                    } elseif ($ext === 'png') {
+                        $img = imagecreatefrompng($tmpPath);
+                    } elseif ($ext === 'gif') {
+                        $img = imagecreatefromgif($tmpPath);
+                    } else {
+                        // formato desconhecido: copia arquivo direto
+                        copy($tmpPath, $savePath);
+                        return;
+                    }
+            }
+
+            if (!$img) {
+                copy($tmpPath, $savePath);
+                return;
+            }
+
+            // corrige orientação EXIF se JPEG
+            if (($mime === 'image/jpeg' || $ext === 'jpg' || $ext === 'jpeg') && function_exists('exif_read_data')) {
+                try {
+                    $exif = @exif_read_data($tmpPath);
+                    if (!empty($exif['Orientation'])) {
+                        switch ($exif['Orientation']) {
+                            case 3:
+                                $img = imagerotate($img, 180, 0);
+                                break;
+                            case 6:
+                                $img = imagerotate($img, -90, 0);
+                                break;
+                            case 8:
+                                $img = imagerotate($img, 90, 0);
+                                break;
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // ignora
+                }
+            }
+
+            // redimensiona mantendo proporção, max 1200
+            $width = imagesx($img);
+            $height = imagesy($img);
+            $max = 1200;
+            if ($width > $max || $height > $max) {
+                if ($width > $height) {
+                    $newW = $max;
+                    $newH = intval($height * ($max / $width));
+                } else {
+                    $newH = $max;
+                    $newW = intval($width * ($max / $height));
+                }
+                $tmp = imagecreatetruecolor($newW, $newH);
+
+                // preserva transparência quando png/gif
+                if ($mime === 'image/png' || $mime === 'image/gif' || $ext === 'png' || $ext === 'gif') {
+                    imagealphablending($tmp, false);
+                    imagesavealpha($tmp, true);
+                    $transparent = imagecolorallocatealpha($tmp, 255, 255, 255, 127);
+                    imagefilledrectangle($tmp, 0, 0, $newW, $newH, $transparent);
+                }
+
+                imagecopyresampled($tmp, $img, 0, 0, 0, 0, $newW, $newH, $width, $height);
+                imagedestroy($img);
+                $img = $tmp;
+            }
+
+            // salva conforme extensão pedida (com fallback se necessário)
+            switch ($ext) {
+                case 'jpeg':
+                case 'jpg':
+                    imagejpeg($img, $savePath, 80);
+                    break;
+                case 'png':
+                    // imagepng quality: 0 (no compression) - 9 (max). Convert 0-9 from 0-9 scale
+                    $pngQuality = 6; // escolha intermediária (equivalente a compress 6)
+                    imagepng($img, $savePath, $pngQuality);
+                    break;
+                case 'webp':
+                    if (function_exists('imagewebp')) {
+                        imagewebp($img, $savePath, 80);
+                    } else {
+                        imagejpeg($img, $savePath, 80); // fallback
+                    }
+                    break;
+                case 'gif':
+                    imagegif($img, $savePath);
+                    break;
+                default:
+                    // tenta salvar como jpeg
+                    imagejpeg($img, $savePath, 80);
+            }
+
+            imagedestroy($img);
+        } catch (\Throwable $e) {
+            Log::error('optimizeAndSaveImage falhou: ' . $e->getMessage());
+            // fallback simples: copia arquivo bruto
+            try {
+                copy($tmpPath, $savePath);
+            } catch (\Throwable $ex) {
+                Log::error('Falha ao copiar arquivo fallback: ' . $ex->getMessage());
+            }
+        }
     }
 
     /**
@@ -965,7 +1066,6 @@ class ProdutosController extends Controller
             $this->optimizeAndSaveImage($arquivo->getPathname(), $caminhoCompleto, $extensao);
         }
     }
-
 
     public function validarImagem($data)
     {

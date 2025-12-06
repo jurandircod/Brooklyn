@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\model\{Contato};
+use App\Models\{Contato};
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 

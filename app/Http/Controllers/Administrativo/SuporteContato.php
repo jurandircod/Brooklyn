@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use App\model\{Contato, Notificacao};
+use App\Models\{Contato, Notificacao};
 
 class SuporteContato extends Controller
 {

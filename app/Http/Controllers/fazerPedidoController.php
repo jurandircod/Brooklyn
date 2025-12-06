@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\model\{Carrinho, Estoque, ItemCarrinho, Pedido, Endereco, MapaTamanho};
+use App\Models\{Carrinho, Estoque, ItemCarrinho, Pedido, Endereco, MapaTamanho};
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +18,7 @@ class FazerPedidoController extends Controller
 
     public function index()
     {
-        $enderecos = Endereco::where('user_id', auth()->id())->where('status', 'ativo')->get();
+        $enderecos = Endereco::where('user_id', Auth::id())->where('status', 'ativo')->get();
         $itens = $this->queryBuilderItensCarrinho();
 
         $preco_total = $itens->sum('preco_total');
@@ -36,7 +36,7 @@ class FazerPedidoController extends Controller
     {
         return ItemCarrinho::with(['produto.fotos', 'carrinho'])
             ->whereHas('carrinho', function ($query) {
-                $query->where('user_id', auth()->id())
+                $query->where('user_id', Auth::id())
                     ->where('status', 'ativo');
             })
             ->select('item_carrinhos.*')
@@ -69,7 +69,7 @@ class FazerPedidoController extends Controller
         }
 
         try {
-            $cpf = Endereco::where('user_id', auth()->id())->where('status', 'ativo')->where('id', $request->endereco_id)->first()->cpf;
+            $cpf = Endereco::where('user_id', Auth::id())->where('status', 'ativo')->where('id', $request->endereco_id)->first()->cpf;
             if (!$cpf) {
                 Alert::error('Erro', 'Endereço inválido');
                 return back();
@@ -78,7 +78,7 @@ class FazerPedidoController extends Controller
             Alert::error('Erro', 'Endereço inválido');
             return back();
         }
-        $user = auth()->user();
+        $user = Auth::user();
 
 
         $valor = $this->normalizarValor($request->input('valor'));
@@ -169,7 +169,7 @@ class FazerPedidoController extends Controller
             'endereco_id' => [
                 'required',
                 'numeric',
-                'exists:enderecos,id,user_id,' . auth()->id() // Garante que o endereço pertence ao usuário
+                'exists:enderecos,id,user_id,' . Auth::id() // Garante que o endereço pertence ao usuário
             ],
             'metodo_pagamento' => 'required|in:dinheiro,credito,debito,pix', // Adicione todos os métodos válidos
         ], [

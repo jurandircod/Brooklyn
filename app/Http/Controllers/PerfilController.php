@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\model\{Pedido, Endereco, Carrinho};
+use App\Models\{Pedido, Endereco, Carrinho};
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FazerPedidoController;
 use RealRashid\SweetAlert\Facades\Alert;

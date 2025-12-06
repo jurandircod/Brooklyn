@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Administrativo;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Model\{Pedido, Produto, User, Categoria, Notificacao};
+use App\Models\{Pedido, Produto, User, Categoria, Notificacao};
 use RealRashid\SweetAlert\Facades\Alert;
 
-class PrincipalController extends Controller
+class PrincipalControllerAdministrativo extends Controller
 {
 
     private $notificacaoContador;

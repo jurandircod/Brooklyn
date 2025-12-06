@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\model\{Produto, ItemCarrinho, Carrinho};
+use App\Models\{Produto, ItemCarrinho, Carrinho};
 
 class CarrinhoController extends Controller
 {

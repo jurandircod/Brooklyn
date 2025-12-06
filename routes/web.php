@@ -139,7 +139,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ==========================================
     Route::prefix('administrativo')->middleware(['admin'])->group(function () {
         // Dashboard Principal
-        Route::get('/', [PrincipalController::class, 'index'])->name('administrativo.principal');
+        Route::get('/', [PrincipalControllerAdministrativo::class, 'index'])->name('administrativo.principal');
 
         // ==========================================
         // VENDAS

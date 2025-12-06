@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\model\{Produto, User, Endereco, Carrinho, Estoque, ItemCarrinho, MapaTamanho};
+use App\Models\{Produto, User, Endereco, Carrinho, Estoque, ItemCarrinho, MapaTamanho};
 use App\Http\Controllers\ExistenciaController;
 use Illuminate\Support\Facades\Auth;
-use PHPUnit\Util\Json;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class ItemCarrinhoController extends Controller
@@ -25,7 +24,7 @@ class ItemCarrinhoController extends Controller
     {
 
         try {
-            $user_id = auth()->id();
+            $user_id = Auth::id();
             if (!$user_id) {
                 throw new \Exception('Usuário não autenticado.');
                 exit;
@@ -107,7 +106,7 @@ class ItemCarrinhoController extends Controller
      */
     private function verificaEstoque($tamanho, Estoque $estoqueProduto, $quantidadeSolicitada, $produtoId)
     {
-        $carrinho = Carrinho::where('user_id', auth()->id())->where('status', 'ativo')->first();
+        $carrinho = Carrinho::where('user_id', Auth::id())->where('status', 'ativo')->first();
         $itemCarrinho = ItemCarrinho::where('tamanho', $tamanho)->where('produto_id', $produtoId)->where('carrinho_id', $carrinho->id)->first();
         if (isset($itemCarrinho)) {
             $verificaQuantidade = $itemCarrinho->quantidade + $quantidadeSolicitada;
@@ -151,7 +150,7 @@ class ItemCarrinhoController extends Controller
     public function atualizarQuantidade(Request $request)
     {
         try {
-            $user_id = auth()->id();
+            $user_id = Auth::id();
             $item_id = $request->item_id;
             // verifica se o produto existe
             ExistenciaController::itemExiste($item_id);
@@ -228,7 +227,7 @@ class ItemCarrinhoController extends Controller
     public function limpaCarrinho()
     {
         try {
-            $carrinho = Carrinho::where('user_id', auth()->id())->where('status', 'ativo')->first();
+            $carrinho = Carrinho::where('user_id', Auth::id())->where('status', 'ativo')->first();
             if(!$carrinho){
                 Alert::warning('Carrinho vazio', 'Não há itens para limpar');
                 return redirect()->route('site.carrinho');
@@ -245,7 +244,7 @@ class ItemCarrinhoController extends Controller
     public function removerItem(Request $request)
     {
         try {
-            $user_id = auth()->id(); // Fallback para teste
+            $user_id = Auth::id(); // Fallback para teste
             $item_id = $request->item_id;
             // verifica se o produto existe
             ExistenciaController::itemExiste($item_id);

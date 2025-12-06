@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Model\{Produto, ItemCarrinho, Pedido, Notificacao};
+use App\Models\{Produto, ItemCarrinho, Pedido, Notificacao};
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 

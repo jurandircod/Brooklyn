@@ -37,8 +37,6 @@ Route::get('/login/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 // Autenticação
-Auth::routes(['reset' => true]);
-Auth::routes(['verify' => true]);
 
 // ==========================================
 // ROTAS DE REDEFINIÇÃO DE SENHA

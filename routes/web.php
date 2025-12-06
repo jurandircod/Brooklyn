@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\{LoginController, RegisterController};
 use App\Http\Controllers\{AvaliacaoController, PerfilController, User, ItemCarrinhoController, FazerPedidoController};
 use App\Http\Controllers\Administrativo\{PrincipalController, VendasController, TabelasControllers, PermissoesController, ProdutosController, CategoriaController, MarcaController};
 use App\Http\Controllers\MercadoPagoController;
+use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Log;
 
 /*
@@ -36,7 +37,8 @@ Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('
 Route::post('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
 Route::get('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
 
-
+Route::get('/login/google', [GoogleController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 // Autenticação
 Auth::routes(['reset' => true]);

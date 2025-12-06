@@ -38,7 +38,16 @@
                 </button>
             </div>
 
-            <p>Não lembra? <a href="{{ route('register') }}" class="theme-color">Se inscrever</a></p>
+            
+            <!-- Example social buttons (configure routes if needed) -->
+            <div class="mt-4">
+                <a href="{{ url('login/google') }}"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 hover:shadow-sm transition">
+                <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-4 h-4">
+                <span class="text-sm text-gray-700">Entrar com o Google</span>
+            </a>
+        </div>
+        <p>Não lembra? <a href="{{ route('register') }}" class="theme-color">Se inscrever</a></p>
         </form>
 
     </div>

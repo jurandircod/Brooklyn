@@ -46,6 +46,7 @@
     <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
     <link rel="shortcut icon" href="{{ asset('dist/img/favicon.ico') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script>
         window.defaultImage = "{{ asset('uploads/produtos/padrao/1.gif') }}";
     </script>
@@ -246,6 +247,8 @@
 
     <!-- 4. Moment.js (para daterangepicker) -->
     <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <!-- 5. Plugins diversos (que dependem de jQuery) -->
     <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>

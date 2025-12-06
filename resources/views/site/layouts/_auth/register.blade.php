@@ -63,6 +63,11 @@
                 </button>
             </div>
         </form>
+        <a href="{{ url('login/google') }}"
+           class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 hover:shadow-sm transition">
+           <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-4 h-4">
+           <span class="text-sm text-gray-700">Cadastrar com o Google</span>
+       </a>
         <p><a href="{{ route('login') }}" class="text-grey">Já tem uma conta?</a></p>
     </div>
 </div>

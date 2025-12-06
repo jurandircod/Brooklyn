@@ -60,6 +60,7 @@
                             <th>Material</th>
                             <th>Estoque</th>
                             <th>Categoria</th>
+                            <th>Status</th>
                             <th>Marca</th>
                             <th>Descrição</th>
                             <th width="80px">Ações</th>
@@ -107,30 +108,46 @@
                                     name="valor" required>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="valorProduto">Valor compra (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="valorCompra"
+                                    name="valor_compra" required>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="materialProduto">Material</label>
                                 <input type="text" class="form-control" id="materialProduto" name="material">
                             </div>
                         </div>
+                    </div>
+
+
+                    <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
+                            <div hidden class="form-group">
                                 <label for="categoriaProduto">Categoria</label>
                                 <select class="form-control" id="categoriaProduto" name="categoria_id">
                                     @foreach ($categorias as $categorias)
                                         <option value="{{ $categorias->id }}">{{ $categorias->nome }}</option>
-                                        </option>
                                     @endforeach
                                 </select>
                             </div>
-
                         </div>
-                    </div>
 
+                    </div>
+                    
                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">Estado do produto</label>
+                                <select class="form-control" id="" name="estado">
+                                    <option value="ativo">Ativo</option>
+                                    <option value="inativo">Inativo</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="marcaProduto">Marca</label>
@@ -282,8 +299,8 @@
                     <div class="col-md-6" id="estoqueProd">
                         <div class="form-group">
                             <label for="quantidade">Quantidade</label>
-                            <input type="number" class="form-control" id="quantidadeProduto"
-                                name="quantidade" placeholder="Digite a quantidade" style="width: 100px;">
+                            <input type="number" class="form-control" id="quantidadeProduto" name="quantidade"
+                                placeholder="Digite a quantidade" style="width: 100px;">
                         </div>
                     </div>
 

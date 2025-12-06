@@ -20,11 +20,12 @@ class Produtos extends Migration
             $table->string('material')->nullable();
             $table->unsignedBigInteger('categoria_id');
             $table->foreign('categoria_id')->references('id')->on('categorias');
-            $table->integer('quantidade')->default(0);
+            $table->integer('quantidade')->nullable()->default(0);
             $table->unsignedBigInteger('marca_id')->nullable();
             $table->foreign('marca_id')->references('id')->on('marcas');
             $table->enum('estado', ['ativo', 'inativo'])->default('ativo');
             $table->string('descricao')->nullable();
+            $table->double('valor_compra')->nullable();
             $table->unsignedBigInteger('user_id'); // pode ajustar a posição
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

@@ -47,6 +47,7 @@ class MercadoPagoService
                 ]
             ];
 
+            $payment->external_reference = $customer['pedido_id'] ?? null; 
             Log::info('Enviando pagamento PIX para o Mercado Pago', [
                 'amount' => $amount,
                 'description' => $description,

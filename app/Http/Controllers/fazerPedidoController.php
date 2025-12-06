@@ -144,18 +144,20 @@ class FazerPedidoController extends Controller
                 'endereco_id' => $request->endereco_id,
                 'status' => 'aguardando'
             ]);
+            
             $customer = [
                 'email' => $user->email,
                 'first_name' => $user->name,
                 'last_name' => $user->name,
                 // CPF real se tiver — atenção em produção
-                'cpf' => $cpf // CPF do usuário
+                'cpf' => $cpf, // CPF do usuário
+                'pedido_id' => $pedidoo->id,
             ];
 
             $pixData = $mpService->createPixPayment($amount, $description, $customer);
 
 
-            Alert::success('Pedido', 'Pedido realizado, aguardando pagamento');
+            toast('Pedido realizado com sucesso', 'success', 'bottom-right')->autoClose(5000);
             return view('site.pix', compact('pixData'));
         });
     }

@@ -22,6 +22,4 @@ class User extends Controller
 
     return view('site.verificarEmail');
   }
-
-
 }

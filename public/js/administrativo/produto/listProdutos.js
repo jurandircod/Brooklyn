@@ -21,8 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 params.append("search", searchValue);
             }
 
-            console.log(params.toString());
-
             fetch("/administrativo/produtos/api?" + params.toString())
                 .then(res => res.json())
                 .then(json => callback(json));
@@ -42,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { data: "material" },
             { data: "quantidade_total" },
             { data: "categoria" },
+            { data: "status" },
             { data: "marca" },
             { data: "descricao" },
             {
@@ -53,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             Alterar
                         </button>
                         <button type="button" class="btn btn-sm btn-danger mt-1 btn-delete" data-id="${data}">
-                            Excluir
+                            Inativar
                         </button>
                     `;
                 },
@@ -94,7 +93,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     row.imagem_url3 ?? "",
                     row.imagem_url4 ?? "",
                     row.imagem_url5 ?? "",
-                    row.estoque ?? ""
+                    row.estoque ?? "",
+                    row.valor_compra ?? ""
                 );
             }
 
@@ -122,7 +122,18 @@ document.addEventListener("DOMContentLoaded", function () {
             }).then(async r => {
                 console.log("Status:", r.status);
                 let txt = await r.text();
-                console.log("Resposta RAW:", txt);
+                if (r.status === 200) {
+                    txt = "Produto excluido com sucesso!";
+                }
+                Toastify({
+                    text: 'Produto desativado com sucesso',
+                    duration: 3000,
+                    gravity: "bottom",
+                    position: "right",
+                    backgroundColor: "#4CAF50",
+                    stopOnFocus: true
+                }).showToast();
+                window.produtosTable.ajax.reload();
             });
         }
     });
@@ -132,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Suas funções existentes permanecem as mesmas
 function preencherModal(id, nome, valor, material, categoriaId, marcaId, descricao,
-    imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5, tamanho) {
+    imagemUrl1, imagemUrl2, imagemUrl3, imagemUrl4, imagemUrl5, tamanho, valorCompra) {
 
     document.getElementById('produtoId').value = id;
     document.getElementById('nomeProduto').value = nome;
@@ -141,6 +152,7 @@ function preencherModal(id, nome, valor, material, categoriaId, marcaId, descric
     document.getElementById('descricaoProduto').value = descricao;
     document.getElementById('categoriaProduto').value = categoriaId;
     document.getElementById('marcaProduto').value = marcaId || '';
+    document.getElementById('valorCompra').value = valorCompra || '';
 
     // Verificação se é um array vazio simples []
     function isEmptyArray(arr) {

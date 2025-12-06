@@ -279,7 +279,7 @@
         <div class="error-code">404</div>
         
         <div class="message">
-            Ops! Parece que você tentou um trick muito avançado...<br>
+            Ops! Parece que você tentou uma trick muito avançada...<br>
             Esta página saiu de cena, mas temos muito mais para você explorar!
         </div>
         

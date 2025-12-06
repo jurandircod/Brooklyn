@@ -61,7 +61,7 @@
                             @csrf
                             <!-- Nome do produto -->
                             <div class="row mb-3">
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
                                     <label for="nome" class="form-label">Nome <span
                                             style="color: red">*</span></label>
                                     <input type="text" class="form-control" name="nome"
@@ -73,7 +73,7 @@
                                 </div>
 
                                 <div class="col-md-3 mb-3">
-                                    <label for="valor" class="form-label">Valor do Produto<span
+                                    <label for="valor" class="form-label">Valor de venda<span
                                             style="color: red">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text">R$</span>
@@ -86,7 +86,21 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-5 mb-3">
+                                <div class="col-md-3 mb-3">
+                                    <label for="valor" class="form-label">Valor da compra<span
+                                            style="color: red">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R$</span>
+                                        <input type="text" id="valor_compra" oninput="formatCurrency(this)"
+                                            value="{{ old('valor_compra') }}" class="form-control" name="valor_compra"
+                                            placeholder="R$ 0,00">
+                                    </div>
+                                    @error('valor_compra')
+                                        <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-3 mb-3">
                                     <label for="categoria" class="form-label">Categoria do Produto <span
                                             style="color: red">*</span></label>
                                     <div class="input-group">
@@ -103,7 +117,8 @@
                                             data-bs-target="#modalNovaCategoria">+</button>
                                     </div>
                                     @error('categoria_id')
-                                        <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
+                                        <span class="invalid-feedback d-block"
+                                            style="color: red">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -141,8 +156,8 @@
                                 <div class="col-md-5 mb-3">
                                     <label for="inputGroupFile02" class="form-label">Imagens do Produto <span
                                             style="color: red">*</span></label>
-                                    <input type="file" class="form-control" id="inputGroupFile02" name="url_imagem[]"
-                                        multiple accept="image/png,image/jpeg,image/jpg"
+                                    <input type="file" class="form-control" id="inputGroupFile02"
+                                        name="url_imagem[]" multiple accept="image/png,image/jpeg,image/jpg"
                                         onchange="verificarLimiteFotos()">
                                     @error('url_imagem')
                                         <span class="invalid-feedback d-block"

@@ -256,6 +256,7 @@ class ProdutosController extends Controller
         $datatable
             ->addColumn('categoria', fn($produto) => $produto->categoria->nome ?? '')
             ->addColumn('marca', fn($produto) => $produto->marca->nome ?? '')
+            ->addColumn('status', fn($produto) => $produto->estado == 'ativo' ? 'Ativo' : 'Inativo')
             ->addColumn('quantidade_total', fn($produto) => $produto->estoque->sum('quantidade'))
             ->with([
                 'draw' => intval($request->input('draw', 0))
@@ -346,10 +347,13 @@ class ProdutosController extends Controller
             'categoria_id' => 'required|integer|exists:categorias,id',
             'marca_id' => 'required|integer|exists:marcas,id',
             'valor' => 'required|min:0.01',
+            'valor_compra' => 'required|min:0.01',
             'url_imagem' => 'required|array|min:1', // Garante que pelo menos 1 arquivo foi enviado
             'url_imagem.*' => 'file|mimes:jpeg,png,jpg,gif|max:20480' // Valida cada arquivo
         ], [
             'valor.integer' => 'O campo valor deve ser um número inteiro',
+            'valor_compra.required' => 'O campo valor de compra deve ser preenchido',
+            'valor_compra.min' => 'O campo valor de compra deve ser maior que 0',
             'url_imagem.required' => 'O campo imagem é obrigatório',
             'url_imagem.array' => 'O campo imagem deve ser mais de um arquivo',
             'url_imagem.*.mimes' => 'O campo imagem deve ser um arquivo de imagem',
@@ -385,8 +389,8 @@ class ProdutosController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-        try {
 
+        try {
             DB::transaction(function () use ($data) {
                 $data = $this->prepareProductData($data);
                 $produto = $this->createProductWithStock($data);
@@ -408,6 +412,7 @@ class ProdutosController extends Controller
     protected function prepareProductData(array $data): array
     {
         $data['valor'] = str_replace(['R$', ' ', ','], ['', '', '.'], $data['valor']);
+        $data['valor_compra'] = str_replace(['R$', ' ', ','], ['', '', '.'], $data['valor_compra']);
         $data['nome'] = str_replace('.', '-', $data['nome']);
         $data['marca_id'] = empty($data['marca_id']) || !is_numeric($data['marca_id']) ? null : $data['marca_id'];
         return $data;
@@ -421,11 +426,30 @@ class ProdutosController extends Controller
      */
     protected function createProductWithStock(array $data)
     {
-        $data['user_id'] = auth()->id();
-        $produto = Produto::create($data);
-        //Cria estoque de camisas, skates e outros
-        $this->createStockObject($data, $produto->id);
-        return $produto;
+        try {
+            $data['user_id'] = auth()->id();
+            // tenta criar o produto
+            $produto = Produto::create($data);
+
+            // tenta criar o estoque
+            $this->createStockObject($data, $produto->id);
+
+            return $produto;
+        } catch (Exception $e) {
+
+            // Loga o erro no storage/logs/laravel.log
+            Log::error('Erro ao criar produto: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'data' => $data
+            ]);
+
+            // Exibe alerta amigável no front
+            Alert::error('Erro!', 'Ocorreu um problema ao criar o produto.');
+
+            // OU se quiser ver o erro na tela (apenas para debug):
+            // dd($e->getMessage());
+
+        }
     }
 
     /**

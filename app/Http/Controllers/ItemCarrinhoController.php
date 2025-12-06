@@ -94,6 +94,17 @@ class ItemCarrinhoController extends Controller
         }
     }
 
+    /**
+     * Verifica se o item que está sendo adicionado ao carrinho ultrapassa o estoque
+     * e se o carrinho está ativo
+     *
+     * @param string $tamanho
+     * @param Estoque $estoqueProduto
+     * @param int $quantidadeSolicitada
+     * @param int $produtoId
+     *
+     * @return int 100 se o tamanho for inválido, 200 se a quantidade no carrinho ultrapassa o estoque e 300 se o estoque for menor que a quantidade solicitada
+     */
     private function verificaEstoque($tamanho, Estoque $estoqueProduto, $quantidadeSolicitada, $produtoId)
     {
         $carrinho = Carrinho::where('user_id', auth()->id())->where('status', 'ativo')->first();

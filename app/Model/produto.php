@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Produto extends Model
 {
     protected $table = 'produtos';
-    protected $fillable = ['nome', 'valor', 'material', 'categoria_id', 'marca_id', 'descricao', 'largura', 'user_id'];
+    protected $fillable = ['nome', 'valor', 'material', 'categoria_id', 'marca_id', 'descricao', 'largura', 'user_id', 'estado', 'valor_compra', 'quantidade'];
     protected $appends = ['imagem_url'];
     // Define o relacionamento "uma categoria tem muitos produtos"
     public function categoria()

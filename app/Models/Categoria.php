@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Model;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
 class Categoria extends Model
 {
     protected $table = 'categorias';
@@ -14,10 +13,6 @@ class Categoria extends Model
         return $this->hasMany(Produto::class);
     }
 
-    public function tamanho()
-    {
-        return $this->hasMany(Tamanho::class);
-    }
     protected $fillable = ['nome', 'descricao'];
 
     public function listarCategoria(Int $produtoId)

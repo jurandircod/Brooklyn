@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\model\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho, Notificacao};
+use App\Model\{Produto, Categoria, Marca, Fotos, Estoque, ItemCarrinho, Notificacao};
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\DB;
 use Exception;

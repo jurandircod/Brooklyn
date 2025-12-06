@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Model\{Produto, Fotos, Carrinho, ItemCarrinho, Categoria};
+use App\Models\{Produto, Fotos, Carrinho, ItemCarrinho, Categoria};
 use Illuminate\Support\Facades\Auth;
 
 
 class PrincipalController extends Controller
 {
-
-    
     public static function principal(Request $request)
     {
 

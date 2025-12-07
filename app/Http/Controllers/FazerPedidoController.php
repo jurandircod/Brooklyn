@@ -142,7 +142,7 @@ class FazerPedidoController extends Controller
                 'endereco_id' => $request->endereco_id,
                 'status' => 'aguardando'
             ]);
-            
+
             $customer = [
                 'email' => $user->email,
                 'first_name' => $user->name,
@@ -156,7 +156,10 @@ class FazerPedidoController extends Controller
 
 
             toast('Pedido realizado com sucesso', 'success', 'bottom-right')->autoClose(5000);
-            return view('site.pix', compact('pixData'));
+            return view('site.pix', [
+                'pixData'   => $pixData,
+                'pedido_id' => $pedidoo->id
+            ]);
         });
     }
 

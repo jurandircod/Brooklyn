@@ -78,6 +78,8 @@
 */
 const pixData = {!! json_encode($pixData) !!};
 const pedidoId = {!! json_encode($pedidoId ?? data_get($pixData, 'external_reference') ?? data_get($pixData, 'pedido_id') ?? null) !!};
+console.log(pedidoId);
+
 
 // Normalize quick-access props
 pixData.pix_key = pixData.pix_copia_cola ?? pixData.ticket_url ?? pixData.pix_key ?? null;

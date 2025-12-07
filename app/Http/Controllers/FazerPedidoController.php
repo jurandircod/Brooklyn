@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\PaymentController;
-use App\Services\MercadoPagoService;
-use Faker\Provider\ar_EG\Payment;
+
 
 class FazerPedidoController extends Controller
 {

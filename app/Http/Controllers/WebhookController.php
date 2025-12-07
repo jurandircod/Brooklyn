@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Log;
 use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\MercadoPagoConfig;
 use App\Models\Pedido;
+use App\Models\Carrinho;
+use App\Models\ItemCarrinho;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class WebhookController extends Controller
 {
@@ -56,6 +59,15 @@ class WebhookController extends Controller
 
                 return response()->json(['status' => 'payment approved']);
             }
+
+            $user_id = $pedido->user_id;
+            $carrinho = Carrinho::where('user_id', $user_id)->where('status', 'ativo')->first();
+            if (!$carrinho) {
+                return response()->json(['status' => 'error']);
+            }
+
+            $carrinho->status = 'finalizado';
+            $carrinho->save();
 
             $pedido->status = $payment->status;
             $pedido->save();

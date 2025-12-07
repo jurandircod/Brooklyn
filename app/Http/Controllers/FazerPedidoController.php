@@ -125,13 +125,7 @@ class FazerPedidoController extends Controller
                 $estoque->save();
             }
 
-
-
             $preco_total = $itens->sum('preco_total');
-
-            // Finaliza carrinho
-            $carrinho->status = 'finalizado';
-            $carrinho->save();
 
             // Cria pedido
             $pedidoo = Pedido::create([

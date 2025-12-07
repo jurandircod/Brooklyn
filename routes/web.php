@@ -37,6 +37,9 @@ Route::post('/webhook/mercadopago', [WebhookController::class, 'handle']);
 Route::get('/login/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
+// routes/web.php
+Route::middleware('auth')->get('/pedido/{id}/status', [\App\Http\Controllers\PedidoStatusController::class, 'show']);
+
 // Autenticação
 
 // ==========================================

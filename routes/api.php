@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Administrativo\SuporteContato;
 use App\Http\Controllers\MercadoPagoController;
+use App\Http\Controllers\WebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,5 +22,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-
-Route::post('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
+Route::post('/webhook/mercadopago', [WebhookController::class, 'handle']);

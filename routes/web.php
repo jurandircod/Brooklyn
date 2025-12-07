@@ -17,6 +17,7 @@ use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\SobreNosController;
 use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Log;
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider within a group which | contains the "web" middleware group. Now create something great! | */
@@ -24,7 +25,6 @@ use Illuminate\Support\Facades\Log;
 // Em routes/web.php
 // Em routes/web.php - TESTE ESTA ROTA PRIMEIRO
 // Em routes/web.php
-
 // ==========================================
 // ROTAS PÚBLICAS (SEM AUTENTICAÇÃO)
 // ==========================================
@@ -33,8 +33,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/register/salvar', [RegisterController::class, 'register'])->name('registerSalvar');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
-Route::get('/webhook/mercadopago', [MercadoPagoController::class, 'webhook']);
+Route::post('/webhook/mercadopago', [WebhookController::class, 'handle']);
 Route::get('/login/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 

@@ -1,102 +1,114 @@
 <?php
 
-use App\Model\{Fotos, Produto, Estoque};
-use Faker\Generator as Faker;
+namespace Database\Factories;
+
+use App\Models\Fotos;
+use App\Models\Produto;
+use App\Models\Estoque;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\File;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
-$factory->define(Fotos::class, function (Faker $faker) {
-    // Cria o produto
-    $produto = factory(Produto::class)->create();
-
-    if ($produto->categoria_id == 1) {
-        $tamanho = ['p', 'm', 'g', 'gg'];
-        $caminhoDownloads = "C:\Users\JURANDIR\Documents\Fotos Brooklyn\Camisas"; // usa barra normal no PHP
-
-    } elseif ($produto->categoria_id == 2) {
-        $tamanho = ['775', '8', '825', '85'];
-        $caminhoDownloads = "C:\Users\JURANDIR\Documents\Fotos Brooklyn\Skates"; // usa barra normal no PHP
-
-    } elseif ($produto->categoria_id == 3) {
-        $caminhoDownloads = "C:\Users\JURANDIR\Documents\Fotos Brooklyn\Tenis"; // usa barra normal no PHP
-        $tamanho = ['38', '39', '40', '41', '42'];
-    } elseif ($produto->categoria_id == 4) {
-        $caminhoDownloads = "C:\Users\JURANDIR\Documents\Fotos Brooklyn\Calcas";
-        $tamanho = ['p', 'm', 'g', 'gg']; // usa barra normal no PHP
-    }
-
-    // Cria o estoque para o produto
-    foreach ($tamanho as $tamanhoValue) {
-        factory(Estoque::class)->create([
-            'produto_id' => $produto->id,
-            'tamanho' => $tamanhoValue,
-        ]);
-    }
-
-    // Define o caminho base de downloads e destino
-    $caminhoDestino = public_path("uploads/produtos/{$produto->id}");
-
-    // Cria o diretório se não existir
-    if (!File::exists($caminhoDestino)) {
-        File::makeDirectory($caminhoDestino, 0755, true);
-    }
-
-    // Pega todas as imagens do diretório de downloads
-    $imagens = glob($caminhoDownloads . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
-
-    // Seleciona 5 imagens aleatórias (ou menos se não houver 5)
-    $imagensSelecionadas = array_rand(array_flip($imagens), min(5, count($imagens)));
-    $i = 1;
-
-    // Copia/converte as imagens para o novo diretório
-    $urlsImagens = [];
-    foreach ((array) $imagensSelecionadas as $imagem) {
-        $novoNome = $i++ . '.webp'; // agora sempre webp
-        $novoCaminho = "{$caminhoDestino}/{$novoNome}";
-
-        convertToWebp($imagem, $novoCaminho, 80);
-
-        $urlsImagens[] = "/uploads/produtos/{$produto->id}/";
-    }
-
-    // Retorna os dados para cada foto
-    return [
-        'produto_id' => $produto->id,
-        'url_imagem' => $faker->randomElement($urlsImagens),
-        'created_at' => now(),
-        'updated_at' => now(),
-    ];
-});
-
-
-/**
- * Converte uma imagem em WebP otimizando
- */
-function convertToWebp(string $originalPath, string $webpPath, int $quality = 80)
+class FotosFactory extends Factory
 {
-    try {
-        ini_set('memory_limit', '512M');
-        $image = Image::make($originalPath);
-        $image->orientate(); // corrige rotação
+    protected $model = Fotos::class;
 
-        // redimensiona se quiser limitar tamanho
-        $image->resize(1200, 1200, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        });
+    public function definition(): array
+    {
+        // Cria produto
+        $produto = Produto::factory()->create();
 
-        // cria diretório se não existir
-        $dir = dirname($webpPath);
-        if (!file_exists($dir)) {
-            mkdir($dir, 0755, true);
+        $tamanho = [];
+        $caminhoDownloads = null;
+
+        if ($produto->categoria_id == 1) {
+            $tamanho = ['p', 'm', 'g', 'gg'];
+            $caminhoDownloads = 'C:/Users/JURANDIR/Documents/Fotos Brooklyn/Camisas';
+
+        } elseif ($produto->categoria_id == 2) {
+            $tamanho = ['775', '8', '825', '85'];
+            $caminhoDownloads = 'C:/Users/JURANDIR/Documents/Fotos Brooklyn/Skates';
+
+        } elseif ($produto->categoria_id == 3) {
+            $tamanho = ['38', '39', '40', '41', '42'];
+            $caminhoDownloads = 'C:/Users/JURANDIR/Documents/Fotos Brooklyn/Tenis';
+
+        } elseif ($produto->categoria_id == 4) {
+            $tamanho = ['p', 'm', 'g', 'gg'];
+            $caminhoDownloads = 'C:/Users/JURANDIR/Documents/Fotos Brooklyn/Calcas';
         }
 
-        // encode webp
-        $image->encode('webp', $quality)->save($webpPath);
-        $image->destroy();
+        // Cria estoque
+        foreach ($tamanho as $tamanhoValue) {
+            Estoque::factory()->create([
+                'produto_id' => $produto->id,
+                'tamanho' => $tamanhoValue,
+            ]);
+        }
 
-        return file_exists($webpPath);
-    } catch (\Exception $e) {
-        return false;
+        // Pasta destino
+        $caminhoDestino = public_path("uploads/produtos/{$produto->id}");
+
+        if (!File::exists($caminhoDestino)) {
+            File::makeDirectory($caminhoDestino, 0755, true);
+        }
+
+        // Busca imagens
+        $imagens = glob($caminhoDownloads . '/*.{png,jpg,jpeg,gif}', GLOB_BRACE);
+
+        if (!$imagens) {
+            return [
+                'produto_id' => $produto->id,
+                'url_imagem' => null,
+            ];
+        }
+
+        // Seleciona até 5
+        $imagensSelecionadas = array_slice($imagens, 0, min(count($imagens), 5));
+
+        $urlsImagens = [];
+        $i = 1;
+
+        foreach ($imagensSelecionadas as $imagem) {
+            $novoNome = $i++ . '.webp';
+            $novoCaminho = "{$caminhoDestino}/{$novoNome}";
+
+            $this->convertToWebp($imagem, $novoCaminho, 80);
+
+            $urlsImagens[] = "/uploads/produtos/{$produto->id}/{$novoNome}";
+        }
+
+        return [
+            'produto_id' => $produto->id,
+            'url_imagem' => $this->faker->randomElement($urlsImagens),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+    }
+
+    private function convertToWebp(string $originalPath, string $webpPath, int $quality = 80): bool
+    {
+        try {
+            ini_set('memory_limit', '512M');
+
+            $manager = new ImageManager(new Driver());
+
+            $image = $manager->read($originalPath);
+
+            $image->scaleDown(1200, 1200);
+
+            $dir = dirname($webpPath);
+            if (!file_exists($dir)) {
+                mkdir($dir, 0755, true);
+            }
+
+            $image->toWebp($quality)->save($webpPath);
+
+            return file_exists($webpPath);
+
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

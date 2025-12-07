@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\Model\{Permissao, User, Notificacao};
+use App\Models\{Permissao, User, Notificacao};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 

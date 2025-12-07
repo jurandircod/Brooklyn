@@ -3,7 +3,7 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
 use Faker\Generator as Faker;
-use App\Model\Contato;
+use App\Models\Contato;
 
 $factory->define(Contato::class, function (Faker $faker) {
     return [

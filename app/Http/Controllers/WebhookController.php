@@ -15,14 +15,18 @@ class WebhookController extends Controller
         Log::info('🔔 Webhook Mercado Pago recebido', $request->all());
 
         // Garante que é PIX
-        if (!isset($request->type) || $request->type !== 'payment') {
+        if (
+            (!isset($request->type) || $request->type !== 'payment')
+            && (!isset($request->action) || !str_contains($request->action, 'payment'))
+        ) {
             return response()->json(['status' => 'ignored']);
         }
 
-        $paymentId = $request->data['id'] ?? null;
+        $paymentId = $request->input('data.id') ?? $request->id ?? null;
 
         if (!$paymentId) {
-            return response()->json(['error' => 'Payment ID não enviado'], 400);
+            Log::error('Webhook recebido sem ID de pagamento');
+            return response()->json(['error' => 'ID do pagamento não encontrado'], 400);
         }
 
         try {
@@ -36,7 +40,7 @@ class WebhookController extends Controller
             // ID do pedido que você colocou lá no createPixPayment
             $pedidoId = $payment->external_reference;
 
-            $pedido = Pedido::find($pedidoId);
+            $pedido = Pedido::findOrFail($pedidoId);
 
             if (!$pedido) {
                 Log::error("Pedido não encontrado", ['pedido_id' => $pedidoId]);
@@ -57,7 +61,6 @@ class WebhookController extends Controller
             $pedido->save();
 
             return response()->json(['status' => $payment->status]);
-
         } catch (\Exception $e) {
             Log::error('Erro no webhook Mercado Pago', [
                 'message' => $e->getMessage()

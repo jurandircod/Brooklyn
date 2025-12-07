@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\model\{Produto, Categoria, Tamanho, Notificacao};
+use App\Models\{Produto, Categoria, Tamanho, Notificacao};
 
 class CategoriaController extends Controller
 {

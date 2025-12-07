@@ -4,7 +4,7 @@
 
 
 use Faker\Generator as Faker;
-use App\Model\Pedido;
+use App\Models\Pedido;
 
 
 $factory->define(Pedido::class, function (Faker $faker) {

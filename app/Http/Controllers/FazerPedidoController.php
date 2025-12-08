@@ -61,6 +61,7 @@ class FazerPedidoController extends Controller
     }
     public function finalizarCarrinho(Request $request)
     {
+
         $validator = $this->validateInput($request->all());
         if ($validator->fails()) {
             return back()->withErrors($validator);

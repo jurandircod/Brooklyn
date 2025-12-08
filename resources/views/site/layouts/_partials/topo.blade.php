@@ -173,12 +173,12 @@
             atualizarContadorCarrinho();
 
             // Verifica a cada 5 segundos (mais eficiente que 1 segundo)
-            setInterval(atualizarContadorCarrinho, 5000);
+            setInterval(atualizarContadorCarrinho, 100000);
 
             // Opcional: Atualizar quando ocorrem eventos relevantes
             $(document).on('click', '.adicionar-ao-carrinho, .remover-do-carrinho', function() {
                 setTimeout(atualizarContadorCarrinho,
-                    1000); // Espera 1s para dar tempo do backend processar
+                    10000); // Espera 1s para dar tempo do backend processar
             });
         });
     });

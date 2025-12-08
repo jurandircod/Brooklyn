@@ -9,12 +9,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\ResetPasswordNotification;
 use App\Notifications\CustomResetPassword;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
+
+    use HasFactory;
 
     public function enderecos()
     {

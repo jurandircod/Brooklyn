@@ -94,8 +94,14 @@ class ProdutosController extends Controller
      */
     public function __construct()
     {
-        $this->marcas = Marca::all();
-        $this->categorias = Categoria::all();
+        $this->categorias = cache()->remember('categorias_all', 60, function () {
+            return Categoria::all();
+        });
+
+        $this->marcas = cache()->remember('marcas_all', 60, function () {
+            return Marca::all();
+        });
+
         $this->notificacaoContador = notificacao::NotificacaoContador();
         $this->notificacao = notificacao::notificacaoPedido();
     }
@@ -761,7 +767,7 @@ class ProdutosController extends Controller
                     break;
                 default:
                     // tenta com base na extensão
-                    if (in_array($ext, ['jpg','jpeg'])) {
+                    if (in_array($ext, ['jpg', 'jpeg'])) {
                         $img = imagecreatefromjpeg($tmpPath);
                     } elseif ($ext === 'png') {
                         $img = imagecreatefrompng($tmpPath);

@@ -261,7 +261,7 @@
         setTimeout(() => {
             // ajuste a rota conforme seu projeto
             window.location.href = `/perfil/confirmar/pedido/${pedidoId}`;
-        }, 1400);
+        }, 500);
     }
 
     document.addEventListener('DOMContentLoaded', init);

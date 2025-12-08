@@ -19,11 +19,12 @@ class ShopController extends Controller
     }
     public function index(Request $request, $id = null)
     {
-        $this->categorias = Categoria::all();
-        $this->marcas = Marca::all();
-
-        $categorias = $this->categorias;
-        $marcas = $this->marcas;
+        $this->categorias = cache()->remember('categorias_all', 60, function () {
+            return Categoria::all();
+        });
+        $this->marcas = cache()->remember('marcas_all', 60, function () {
+            return Marca::all();
+        });
 
         // Construir query base
         $query = $this->buildQuery($request);

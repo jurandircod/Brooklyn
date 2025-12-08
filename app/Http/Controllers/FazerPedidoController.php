@@ -66,7 +66,6 @@ class FazerPedidoController extends Controller
         if ($validator->fails()) {
             return back()->withErrors($validator);
         }
-
         try {
             $cpf = Endereco::where('user_id', Auth::id())->where('status', 'ativo')->where('id', $request->endereco_id)->first()->cpf;
             if (!$cpf) {

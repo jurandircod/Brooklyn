@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Manifest e Favicon -->
-    <link rel="apple-touch-icon" href="{{ asset('assets/images/favicon.ico') }}">
-    <link rel="icon" href="{{ asset('images/newletter-icon.png') }}" type="image/x-icon">
-    <meta name="msapplication-TileImage" content="{{ asset('assets/images/favicon.ico') }}">
+    <link rel="icon" href="{{ asset('images/23.png') }}" type="image/x-icon">
     <meta name="theme-color" content="#e87316">
 
     <!-- Libera uso de recursos de terceiros -->

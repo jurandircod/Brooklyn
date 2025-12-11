@@ -22,10 +22,11 @@ class ShopController extends Controller
         $this->categorias = cache()->remember('categorias_all', 60, function () {
             return Categoria::all();
         });
+        $categorias = $this->categorias;
         $this->marcas = cache()->remember('marcas_all', 60, function () {
             return Marca::all();
         });
-
+        $marcas = $this->marcas;
         // Construir query base
         $query = $this->buildQuery($request);
 

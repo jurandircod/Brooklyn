@@ -3,8 +3,10 @@
 /public/storage
 /storage/*.key
 /vendor
-/subdomains/cadernoerros/
-/subdomains/campeonato/
+/subdomains/cadernoerros/*
+/subdomains/cadernoerros/.*
+/subdomains/campeonato/*
+/subdomains/campeonato/.*
 .env
 .env.backup
 .phpunit.result.cache

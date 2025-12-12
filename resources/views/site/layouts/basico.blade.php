@@ -5,15 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Brooklyn SkateShop",
-  "url": "https://www.brooklynskateshop.com",
-  "logo": "https://brooklynskateshop.com/public/imagens/23.png"
-}
-</script>
+
     <!-- Manifest e Favicon -->
     <link rel="icon" href="{{ asset('images/23.png') }}" type="image/x-icon">
     <meta name="theme-color" content="#e87316">

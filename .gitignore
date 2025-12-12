@@ -4,6 +4,8 @@
 /storage/*.key
 /vendor
 /public/uploads/produtos/*
+/subdomains/cadernoerros/*
+/subdomains/campeonato/*
 .env
 .env.backup
 .phpunit.result.cache

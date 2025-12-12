@@ -5,8 +5,10 @@
 /vendor
 /subdomains/cadernoerros/*
 /subdomains/cadernoerros/.*
+!/subdomains/cadernoerros/.gitkeep
 /subdomains/campeonato/*
 /subdomains/campeonato/.*
+!/subdomains/campeonato/.gitkeep
 .env
 .env.backup
 .phpunit.result.cache

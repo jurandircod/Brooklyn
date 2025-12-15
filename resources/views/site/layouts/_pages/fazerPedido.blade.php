@@ -16,12 +16,85 @@
               Escolha um endereço para receber seu pedido
             </h3>
 
-            <div id="enderecos-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              <!-- Simulando endereços -->
+            <!-- ===========================
+                 Estilos específicos para os cards de endereço
+                 =========================== -->
+            <style>
+              /* botão/card */
+              .save-details {
+                transition: box-shadow .18s ease, transform .12s ease, border-color .18s ease;
+                border-radius: 12px;
+                background: #fff;
+                border: 1px solid rgba(128,128,128,0.06);
+                padding: 1rem;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+              }
+
+              .save-details:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+                border-color: rgba(74,28,29,0.12);
+              }
+
+              .save-details.selected {
+                border-color: rgba(74,28,29,0.92);
+                box-shadow: 0 14px 40px rgba(74,28,29,0.08);
+                background: linear-gradient(180deg, rgba(250,250,250,1) 0%, rgba(255,255,255,1) 100%);
+              }
+
+              .save-details .select-badge {
+                font-weight: 600;
+                font-size: 0.72rem;
+                padding: 6px 10px;
+                border-radius: 999px;
+                border: 1px solid rgba(74,28,29,0.12);
+                color: rgba(74,28,29,0.9);
+                background: rgba(74,28,29,0.03);
+              }
+
+              .save-details.selected .select-badge {
+                background: rgba(74,28,29,0.92);
+                color: #fff;
+                border-color: rgba(74,28,29,0.92);
+              }
+
+              /* esconder o radio visualmente mas manter acessível */
+              .sr-only {
+                position: absolute !important;
+                width: 1px !important;
+                height: 1px !important;
+                padding: 0 !important;
+                margin: -1px !important;
+                overflow: hidden !important;
+                clip: rect(0,0,0,0) !important;
+                white-space: nowrap !important;
+                border: 0 !important;
+              }
+
+              /* foco do cartão para acessibilidade */
+              .save-details:focus {
+                outline: none;
+                box-shadow: 0 0 0 4px rgba(111,46,47,0.12);
+              }
+
+              /* ajustes pequenos de texto */
+              .save-address p { margin: 0; }
+            </style>
+
+            <!-- Container com role radiogroup -->
+            <div id="enderecos-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" role="radiogroup" aria-label="Endereços salvos">
               @foreach ($enderecos as $endereco)
                 <div class="col">
-                  <div class="save-details rounded-lg p-4 border border-gray-200 hover:shadow-md transition cursor-pointer h-full flex flex-col justify-between"
-                       data-endereco="{{ $endereco->id }}">
+                  <div
+                    class="save-details rounded-lg cursor-pointer"
+                    role="radio"
+                    tabindex="0"
+                    aria-checked="false"
+                    data-endereco="{{ $endereco->id }}"
+                  >
                     <div>
                       <div class="save-name mb-2">
                         <h5 class="text-lg font-semibold text-gray-800">{{ $endereco->cidade }}</h5>
@@ -39,15 +112,16 @@
                     </div>
 
                     <div class="mt-4 flex items-center justify-between">
-                      <div class="address-checkbox flex items-center gap-2">
-                        <input type="radio" id="endereco{{ $endereco->id }}" name="endereco_id" value="{{ $endereco->id }}" class="h-4 w-4 text-[#4A1C1D]">
-                        <label for="endereco{{ $endereco->id }}" class="checkbox-custom text-sm text-gray-700 select-none">
+                      <div class="flex items-center gap-3">
+                        <!-- radio permanece no DOM para submissão -->
+                        <input type="radio" id="endereco{{ $endereco->id }}" name="endereco_id" value="{{ $endereco->id }}" class="sr-only" @if(old('endereco_id') == $endereco->id) checked @endif>
+                        <label for="endereco{{ $endereco->id }}" class="text-sm text-gray-700 select-none">
                           Selecionar endereço
                         </label>
                       </div>
 
-                      <!-- visual indicator quando a save-details tiver .selected (JS adiciona) -->
-                      <span class="text-xs font-semibold px-2 py-1 rounded-full border border-[#4A1C1D]/20 text-[#4A1C1D]">Enviar</span>
+                      <!-- badge de confirmação visual; texto muda via JS -->
+                      <span class="select-badge" aria-hidden="true">Enviar</span>
                     </div>
                   </div>
                 </div>
@@ -81,7 +155,7 @@
 
             <div class="space-y-3">
               <div class="custome-radio-box flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:shadow-sm transition" data-payment="pix">
-                <input class="form-check-input h-4 w-4 text-[#4A1C1D]" type="radio" name="metodo_pagamento" value="pix" id="pix">
+                <input class="form-check-input h-4 w-4 text-[#4A1C1D]" type="radio" name="metodo_pagamento" value="pix" id="pix" @if(old('metodo_pagamento')=='pix') checked @endif>
                 <label class="flex items-center gap-2 cursor-pointer text-gray-700" for="pix">
                   <i class="fab fa-pix text-[#32BCAD] text-xl"></i>
                   <span class="text-sm">PIX - Pagamento instantâneo</span>
@@ -89,7 +163,7 @@
               </div>
 
               <div class="custome-radio-box flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:shadow-sm transition" data-payment="credit">
-                <input class="form-check-input h-4 w-4 text-[#4A1C1D]" type="radio" name="metodo_pagamento" value="credit" id="credit">
+                <input class="form-check-input h-4 w-4 text-[#4A1C1D]" type="radio" name="metodo_pagamento" value="credit" id="credit" @if(old('metodo_pagamento')=='credit') checked @endif>
                 <label class="flex items-center gap-2 cursor-pointer text-gray-700" for="credit">
                   <i class="fas fa-credit-card text-[#4A90E2] text-xl"></i>
                   <span class="text-sm">Cartão de Crédito</span>
@@ -97,7 +171,7 @@
               </div>
 
               <div class="custome-radio-box flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:shadow-sm transition" data-payment="debit">
-                <input class="form-check-input h-4 w-4 text-[#4A1C1D]" type="radio" name="metodo_pagamento" value="debit" id="debit">
+                <input class="form-check-input h-4 w-4 text-[#4A1C1D]" type="radio" name="metodo_pagamento" value="debit" id="debit" @if(old('metodo_pagamento')=='debit') checked @endif>
                 <label class="flex items-center gap-2 cursor-pointer text-gray-700" for="debit">
                   <i class="fas fa-credit-card text-[#E94B3C] text-xl"></i>
                   <span class="text-sm">Cartão de Débito</span>
@@ -114,22 +188,22 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div class="md:col-span-2">
                   <label for="cc-name" class="block mb-1 text-sm text-gray-700">Nome no cartão</label>
-                  <input type="text" class="form-control w-full rounded-md border border-gray-300 px-3 py-2" id="cc-name" placeholder="Nome completo como está no cartão">
+                  <input type="text" class="form-control w-full rounded-md border border-gray-300 px-3 py-2" id="cc-name" placeholder="Nome completo como está no cartão" name="cc_name" value="{{ old('cc_name') }}">
                 </div>
 
                 <div class="md:col-span-2">
                   <label for="cc-number" class="block mb-1 text-sm text-gray-700">Número do cartão</label>
-                  <input type="text" class="form-control w-full rounded-md border border-gray-300 px-3 py-2" id="cc-number" placeholder="1234 5678 9012 3456">
+                  <input type="text" class="form-control w-full rounded-md border border-gray-300 px-3 py-2" id="cc-number" placeholder="1234 5678 9012 3456" name="cc_number" value="{{ old('cc_number') }}">
                 </div>
 
                 <div>
                   <label for="expiration" class="block mb-1 text-sm text-gray-700">Validade</label>
-                  <input type="text" class="form-control w-full rounded-md border border-gray-300 px-3 py-2" id="expiration" placeholder="MM/AA">
+                  <input type="text" class="form-control w-full rounded-md border border-gray-300 px-3 py-2" id="expiration" placeholder="MM/AA" name="cc_expiration" value="{{ old('cc_expiration') }}">
                 </div>
 
                 <div>
                   <label for="cc-cvv" class="block mb-1 text-sm text-gray-700">CVV</label>
-                  <input type="text" class="form-control w-full rounded-md border border-gray-300 px-3 py-2" id="cc-cvv" placeholder="123">
+                  <input type="text" class="form-control w-full rounded-md border border-gray-300 px-3 py-2" id="cc-cvv" placeholder="123" name="cc_cvv">
                 </div>
               </div>
 
@@ -173,7 +247,7 @@
           <h3 class="mb-3 flex items-center gap-3 text-lg font-semibold text-[#4A1C1D]">
             <i class="fas fa-shopping-cart text-[#6f2e2f]"></i>
             Seu carrinho
-            <span class="ml-auto inline-flex items-center px-2 py-1 rounded-full bg-[#4A1C1D]/10 text-[#4A1C1D] text-sm">3</span>
+            <span class="ml-auto inline-flex items-center px-2 py-1 rounded-full bg-[#4A1C1D]/10 text-[#4A1C1D] text-sm">{{ count($itens) }}</span>
           </h3>
 
           <ul class="divide-y divide-gray-200 mb-3">
@@ -213,97 +287,84 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Lógica para seleção única de endereços
-    const enderecoRadios = document.querySelectorAll('input[name="endereco_id"]');
-    const enderecoBoxes = document.querySelectorAll('.save-details');
+    /* ============================
+       ENDEREÇOS - comportamento de botão/card
+       ============================ */
+    (function() {
+      const container = document.getElementById('enderecos-container');
+      if (!container) return;
 
-    enderecoRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            // Remove seleção anterior de todos os boxes
-            enderecoBoxes.forEach(box => box.classList.remove('selected'));
+      const cards = Array.from(container.querySelectorAll('.save-details'));
+      const radios = Array.from(container.querySelectorAll('input[name="endereco_id"]'));
 
-            // Adiciona seleção ao endereço atual usando o value do radio
-            if (this.checked) {
-                const enderecoId = this.value;
-                const selectedBox = document.querySelector(
-                    `.save-details[data-endereco="${enderecoId}"]`);
-                if (selectedBox) {
-                    selectedBox.classList.add('selected');
-                }
-            }
+      function clearSelection() {
+        cards.forEach(c => {
+          c.classList.remove('selected');
+          c.setAttribute('aria-checked', 'false');
+          const badge = c.querySelector('.select-badge');
+          if (badge) badge.textContent = 'Enviar';
         });
-    });
+      }
 
-    // Lógica para métodos de pagamento
+      function selectCard(card) {
+        if (!card) return;
+        const enderecoId = card.getAttribute('data-endereco');
+        const radio = document.querySelector(`input[name="endereco_id"][value="${enderecoId}"]`);
+
+        if (radio) {
+          radio.checked = true;
+          // disparamos change para qualquer listener existente
+          radio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        clearSelection();
+        card.classList.add('selected');
+        card.setAttribute('aria-checked', 'true');
+
+        const badge = card.querySelector('.select-badge');
+        if (badge) badge.textContent = 'Selecionado';
+      }
+
+      // clique no cartão seleciona
+      cards.forEach(card => {
+        card.addEventListener('click', function (e) {
+          selectCard(this);
+        });
+
+        // suporte teclado (Enter/Space)
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.click();
+          }
+        });
+      });
+
+      // quando o radio mudar, sincroniza o cartão correspondente
+      radios.forEach(radio => {
+        radio.addEventListener('change', function () {
+          if (this.checked) {
+            const card = container.querySelector(`.save-details[data-endereco="${this.value}"]`);
+            if (card) selectCard(card);
+          }
+        });
+
+        // aplica estado inicial caso o formulário volte com um radio marcado (old / server repopulate)
+        if (radio.checked) {
+          const card = container.querySelector(`.save-details[data-endereco="${radio.value}"]`);
+          if (card) selectCard(card);
+        }
+      });
+
+      // se nenhum radio estiver marcado e houver cards, podemos opcionalmente deixar nenhum selecionado.
+      // (mantive comportamento de não selecionar automaticamente para evitar surpresa ao usuário)
+    })();
+
+    /* ============================
+       MÉTODOS DE PAGAMENTO / EXIBIÇÃO DE CAMPOS DE CARTÃO
+       ============================ */
     const paymentRadios = document.querySelectorAll('input[name="metodo_pagamento"]');
     const paymentBoxes = document.querySelectorAll('.custome-radio-box');
-    const cardFields = document.getElementById('card-fields');
-    const parcelasSection = document.getElementById('parcelas-section');
-
-    paymentRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            // Remove classe active de todos os boxes
-            paymentBoxes.forEach(box => box.classList.remove('active'));
-
-            // Adiciona classe active ao box selecionado
-            const selectedBox = this.closest('.custome-radio-box');
-            if (selectedBox) {
-                selectedBox.classList.add('active');
-            }
-
-            // Controla exibição dos campos de cartão
-            if (this.value === 'pix') {
-                if (cardFields) cardFields.style.display = 'none';
-                if (parcelasSection) parcelasSection.style.display = 'none';
-            } else if (this.value === 'credit') {
-                if (cardFields) {
-                    cardFields.style.display = 'block';
-                    cardFields.classList.add('fade-in');
-                }
-                if (parcelasSection) parcelasSection.style.display = 'block';
-            } else if (this.value === 'debit') {
-                if (cardFields) {
-                    cardFields.style.display = 'block';
-                    cardFields.classList.add('fade-in');
-                }
-                if (parcelasSection) parcelasSection.style.display = 'none';
-            }
-        });
-    });
-
-    // Máscara para número do cartão
-    const cardNumberInput = document.getElementById('cc-number');
-    if (cardNumberInput) {
-        cardNumberInput.addEventListener('input', function() {
-            let value = this.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
-            this.value = formattedValue;
-        });
-    }
-
-    // Máscara para data de validade
-    const expirationInput = document.getElementById('expiration');
-    if (expirationInput) {
-        expirationInput.addEventListener('input', function() {
-            let value = this.value.replace(/\D/g, '');
-            if (value.length >= 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2, 4);
-            }
-            this.value = value;
-        });
-    }
-
-    // Máscara para CVV
-    const cvvInput = document.getElementById('cc-cvv');
-    if (cvvInput) {
-        cvvInput.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '').substring(0, 4);
-        });
-    }
-});
-
-(function() {
-    // Animação suave do card-fields via classes
     const cardFields = document.getElementById('card-fields');
     const parcelasSection = document.getElementById('parcelas-section');
 
@@ -314,19 +375,40 @@ document.addEventListener('DOMContentLoaded', function() {
             cardFields.style.display = 'block';
         } else {
             cardFields.classList.remove('open');
-            // mantemos display block por animação; esconder após transição
             setTimeout(() => {
                 if (!cardFields.classList.contains('open')) cardFields.style.display = 'none';
             }, 360);
         }
     }
 
-    // aplica estado inicial se algum radio já estiver marcado (útil quando volta com validação)
-    const paymentRadios = document.querySelectorAll('input[name="metodo_pagamento"]');
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            paymentBoxes.forEach(box => box.classList.remove('active'));
+
+            const selectedBox = this.closest('.custome-radio-box');
+            if (selectedBox) {
+                selectedBox.classList.add('active');
+            }
+
+            if (this.value === 'pix') {
+                openCardFields(false);
+                if (parcelasSection) parcelasSection.style.display = 'none';
+            } else if (this.value === 'credit') {
+                openCardFields(true);
+                if (parcelasSection) parcelasSection.style.display = 'block';
+            } else if (this.value === 'debit') {
+                openCardFields(true);
+                if (parcelasSection) parcelasSection.style.display = 'none';
+            }
+        });
+    });
+
+    // estado inicial (útil para repopulação com old())
     paymentRadios.forEach(radio => {
         if (radio.checked) {
             const box = radio.closest('.custome-radio-box');
             if (box) box.classList.add('active');
+
             if (radio.value === 'credit') {
                 openCardFields(true);
                 if (parcelasSection) parcelasSection.style.display = 'block';
@@ -340,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Quando alterar (comportamento já implementado por você), apenas chamamos openCardFields para animação
+    // também mantemos reatividade para casos onde o usuário muda a seleção
     paymentRadios.forEach(radio => {
         radio.addEventListener('change', function() {
             if (this.value === 'pix') {
@@ -356,30 +438,34 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Permitir selecionar um endereço clicando no cartão inteiro (acessibilidade)
-    document.querySelectorAll('.save-details').forEach(box => {
-        box.setAttribute('tabindex', '0');
-        box.style.cursor = 'pointer';
-        box.addEventListener('click', function(e) {
-            // evita marcar quando clicar no próprio input por duplicidade
-            const enderecoId = this.getAttribute('data-endereco');
-            if (!enderecoId) return;
-            const radio = document.querySelector(
-                `input[name="endereco_id"][value="${enderecoId}"]`);
-            if (radio) {
-                radio.checked = true;
-                radio.dispatchEvent(new Event('change', {
-                    bubbles: true
-                }));
-            }
+    /* ============================
+       MÁSCARAS: número, validade, cvv
+       ============================ */
+    const cardNumberInput = document.getElementById('cc-number');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function() {
+            let value = this.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            this.value = formattedValue;
         });
-        // suporte teclado (Enter/Space)
-        box.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.click();
+    }
+
+    const expirationInput = document.getElementById('expiration');
+    if (expirationInput) {
+        expirationInput.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
             }
+            this.value = value;
         });
-    });
-})();
+    }
+
+    const cvvInput = document.getElementById('cc-cvv');
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').substring(0, 4);
+        });
+    }
+});
 </script>

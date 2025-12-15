@@ -12,6 +12,11 @@ class ProdutoController extends Controller
     {
         $produto = Produto::find($id);
 
+
+        if($produto->quantidade <= 0){
+            return redirect("/");
+        }
+
         if (!$produto) {
             return redirect()->route('site.principal');
         }
@@ -43,7 +48,7 @@ class ProdutoController extends Controller
                 'quantidade' => $item->quantidade
             ];
         })->toArray();
-        
+
         return view('site.produto', compact('produto', 'estoque', 'produtosDaMesmaCategoria', 'avaliacoes', 'tamanhosComQuantidade'));
     }
 }

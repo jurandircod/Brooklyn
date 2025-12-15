@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="{{ asset('css/site/topo/customize.css') }}">
 
-<header class="header-style-2" id="home">
+<header class="header-style-2 hidden sm:block" id="home">
     <div class="main-header navbar-searchbar" data-bs-theme="dark">
         <div class="container-fluid-lg">
             <div class="row">

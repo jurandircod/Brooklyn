@@ -19,6 +19,9 @@ use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\FreteController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest; // ADICIONE ESTA LINHA
+
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider within a group which | contains the "web" middleware group. Now create something great! | */
 
@@ -39,6 +42,35 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 
 // routes/web.php
 Route::middleware('auth')->get('/pedido/{id}/status', [\App\Http\Controllers\PedidoStatusController::class, 'show']);
+// Coloque isso ANTES do grupo 'auth' e 'verified'
+// Por exemplo, logo após as rotas públicas:
+
+// ==========================================
+// ROTAS DE VERIFICAÇÃO DE EMAIL
+// ==========================================
+Route::get('/email/verify', function () {
+    return view('site.verify');
+})->middleware(['auth'])->name('verification.notice');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/perfil')->with('status', 'Email verificado com sucesso!');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verify/resend', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/perfil')->with('status', 'Email verificado com sucesso!');
+})->middleware(['auth', 'signed'])->name('verification.verify');
 
 // Autenticação
 
@@ -70,6 +102,13 @@ Route::get('/', [PrincipalController::class, 'principal'])->name('site.principal
 Route::prefix('produto')->group(function () {
     Route::get('/{id}', [ProdutoController::class, 'index'])->name('site.produto');
     Route::post('/avaliacao', [AvaliacaoController::class, 'CreateAvaliacao'])->name('site.produto.avaliacao');
+});
+
+// ==========================================
+// ROTAS DE FRETE
+// ==========================================
+Route::prefix('frete')->group(function () {
+    Route::post('/calcular', [FreteController::class, 'calcular'])->name('site.frete.calcular');
 });
 
 // ==========================================
@@ -262,7 +301,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 });
-
 // ==========================================
 // ROTA DE FALLBACK
 // ==========================================

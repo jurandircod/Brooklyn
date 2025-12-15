@@ -31,9 +31,11 @@ class CarrinhoController extends Controller
         foreach ($itens as $item) {
             $preco_total += $item->preco_total;
         }
+
+        $taxa = 20;
         // pego o produto do carrinho
         $produto = $this->produto;
         $carrinho = $this->carrinho;
-        return view('site.carrinho', compact('carrinho', 'itens', 'produto', 'preco_total'));
+        return view('site.carrinho', compact('carrinho', 'itens', 'produto', 'preco_total', 'taxa'));
     }
 }

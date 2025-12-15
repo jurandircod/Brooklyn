@@ -16,7 +16,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('verification.resend') }}" class="flex justify-center">
+        <form method="POST" action="{{ route('verification.send') }}" class="flex justify-center">
             @csrf
             <button
                 type="submit"

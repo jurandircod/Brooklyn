@@ -66,6 +66,7 @@ class VendasController extends Controller
         }
 
         $page = $request->get('page');
+
         $totais = [
             'total_vendas' => Pedido::count(),
             'total_faturado' => Pedido::sum('preco_total'),

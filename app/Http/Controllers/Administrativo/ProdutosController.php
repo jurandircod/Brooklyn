@@ -529,11 +529,10 @@ class ProdutosController extends Controller
                         Alert::alert('errors', 'erro ao salvar categoria não existe no banco');
                         return back();
                 };
-
                 $quantidade = intval($value) ?? 0;
                 $quantidadeTotal += $quantidade;
                 if (intval($quantidade) > 0) {
-                    Estoque::updateOrCreate(
+                    $estoque = Estoque::updateOrCreate(
                         [
                             'produto_id' => $produtoId,
                             'tamanho' => $tamanho

@@ -69,7 +69,7 @@
                                     <span class="label-text">Em {{ $produto->categoria->nome ?? 'fashion' }}</span>
                                 </div>
 
-                                <h3 class="price-detail">${{ $produto->valor }}
+                                <h3 class="price-detail">R${{ $produto->valor }}
                                     <del>{{ $produto->valor * 2 }}</del><span>{{ $produto->valor / 2 }} % off</span>
                                 </h3>
 
@@ -247,172 +247,195 @@
     }
 </style>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let selectedSize = null;
-        const temTamanho =
-            {{ isset($produto->categoria_id) && in_array($produto->categoria_id, [1, 2]) ? 'true' : 'false' }};
+document.addEventListener("DOMContentLoaded", function() {
+    let selectedSize = null;
+    const temTamanho = {{ isset($produto->categoria_id) && in_array($produto->categoria_id, [1, 2]) ? 'true' : 'false' }};
 
-        // Inicializa estoque
-        let estoqueDisponivel = {};
-        @foreach ($tamanhosComQuantidade as $item)
-            estoqueDisponivel["{{ $item['tamanho'] }}"] = {{ $item['quantidade'] }};
-        @endforeach
+    // Inicializa estoque
+    let estoqueDisponivel = {};
+    @foreach ($tamanhosComQuantidade as $item)
+        estoqueDisponivel["{{ $item['tamanho'] }}"] = {{ $item['quantidade'] }};
+    @endforeach
 
-        console.log(estoqueDisponivel); // Corrigido de 'consoloe.log' para 'console.log'
+    console.log(estoqueDisponivel);
 
-        // Valida estoque
-        if (!Object.keys(estoqueDisponivel).length) {
-            console.error("Erro: estoqueDisponivel não foi inicializado corretamente.");
-            estoqueDisponivel = {
-                quantidade: 0
-            };
+    if (!Object.keys(estoqueDisponivel).length) {
+        console.error("Erro: estoqueDisponivel não foi inicializado corretamente.");
+        estoqueDisponivel = { quantidade: 0 };
+    }
+
+    const sizeOptions = Array.from(document.querySelectorAll(".size-option"));
+    const inputQuantidade = document.getElementById("quantidade");
+    const errorMessage = document.querySelector(".error-message");
+    const errorQuantidade = document.getElementById("quantidade-error");
+
+    // Se existir tamanho "padrao", auto-seleciona para não obrigar escolher
+    const padraoOption = sizeOptions.find(opt => {
+        const s = (opt.getAttribute('data-size') || '').toString().trim().toLowerCase();
+        return s === 'padrao';
+    });
+
+    if (padraoOption) {
+        padraoOption.classList.add('selected');
+        selectedSize = padraoOption.getAttribute('data-size');
+        document.getElementById('selected-size').value = selectedSize;
+
+        // Ajusta quantidade conforme estoque do 'padrao'
+        const estoque = estoqueDisponivel[selectedSize] || 0;
+        inputQuantidade.max = estoque;
+        inputQuantidade.value = estoque > 0 ? 1 : 0;
+
+        if (estoque === 0) {
+            errorQuantidade.textContent = "Produto esgotado para este tamanho";
+            errorQuantidade.style.display = 'block';
+        } else {
+            errorQuantidade.style.display = 'none';
         }
 
-        const sizeOptions = document.querySelectorAll(".size-option");
-        const inputQuantidade = document.getElementById("quantidade");
-        const errorMessage = document.querySelector(".error-message");
-        const errorQuantidade = document.getElementById("quantidade-error");
+        // Não mostrar mensagem de "por favor selecione tamanho" quando padrao existe
+        if (errorMessage) errorMessage.style.display = 'none';
+    }
 
-        // Configura eventos para os tamanhos
-        sizeOptions.forEach(option => {
-            option.addEventListener("click", function() {
-                sizeOptions.forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedSize = this.getAttribute('data-size');
-                document.getElementById('selected-size').value = selectedSize;
+    // Configura eventos para os tamanhos (clicar troca seleção)
+    sizeOptions.forEach(option => {
+        option.addEventListener("click", function() {
+            sizeOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedSize = this.getAttribute('data-size');
+            document.getElementById('selected-size').value = selectedSize;
 
-                errorMessage.style.display = 'none';
+            if (errorMessage) errorMessage.style.display = 'none';
+            if (errorQuantidade) errorQuantidade.style.display = 'none';
+
+            const estoque = estoqueDisponivel[selectedSize] || 0;
+            inputQuantidade.max = estoque;
+            inputQuantidade.value = estoque > 0 ? 1 : 0;
+
+            if (estoque === 0) {
+                errorQuantidade.textContent = "Produto esgotado para este tamanho";
+                errorQuantidade.style.display = 'block';
+            } else {
                 errorQuantidade.style.display = 'none';
-
-                const estoque = estoqueDisponivel[selectedSize] || 0;
-                inputQuantidade.max = estoque;
-                inputQuantidade.value = estoque > 0 ? 1 : 0;
-
-                if (estoque === 0) {
-                    errorQuantidade.textContent = "Produto esgotado para este tamanho";
-                    errorQuantidade.style.display = 'block';
-                } else {
-                    errorQuantidade.style.display = 'none';
-                }
-            });
+            }
         });
+    });
 
-        // Configura evento para o botão de adicionar ao carrinho
-        const botoes = document.querySelectorAll(".addtocart-btn");
-        botoes.forEach(botao => {
-            botao.addEventListener("click", function() {
-                if (temTamanho && !selectedSize) {
-                    errorMessage.style.display = 'block';
-                    return;
-                }
+    // Configura evento para o botão de adicionar ao carrinho
+    const botoes = document.querySelectorAll(".addtocart-btn");
+    botoes.forEach(botao => {
+        botao.addEventListener("click", function() {
+            // se o produto tem tamanhos, só exige seleção quando NÃO houver padrao pré-selecionado
+            if (temTamanho && !selectedSize) {
+                if (errorMessage) errorMessage.style.display = 'block';
+                return;
+            }
 
-                const quantidade = parseInt(inputQuantidade.value);
-                const estoqueKey = selectedSize || 'quantidade';
-                const estoqueMaximo = estoqueDisponivel[estoqueKey] || 0;
+            const quantidade = parseInt(inputQuantidade.value);
+            const estoqueKey = selectedSize || null;
+            const estoqueMaximo = estoqueKey ? (estoqueDisponivel[estoqueKey] || 0) : (estoqueDisponivel['quantidade'] || 0);
 
-                // Verificação de quantidade
-                if (isNaN(quantidade) || quantidade <= 0) {
-                    errorQuantidade.textContent = "Quantidade inválida";
-                    errorQuantidade.style.display = 'block';
-                    return;
-                }
+            // Verificação de quantidade
+            if (isNaN(quantidade) || quantidade <= 0) {
+                errorQuantidade.textContent = "Quantidade inválida";
+                errorQuantidade.style.display = 'block';
+                return;
+            }
 
-                if (quantidade > estoqueMaximo) {
-                    errorQuantidade.textContent = estoqueMaximo > 0 ?
-                        `Quantidade máxima disponível: ${estoqueMaximo}` :
-                        "Produto esgotado para este tamanho";
-                    errorQuantidade.style.display = 'block';
-                    return;
-                }
+            if (quantidade > estoqueMaximo) {
+                errorQuantidade.textContent = estoqueMaximo > 0 ?
+                    `Quantidade máxima disponível: ${estoqueMaximo}` :
+                    "Produto esgotado para este tamanho";
+                errorQuantidade.style.display = 'block';
+                return;
+            }
 
-                const produtoId = this.getAttribute("data-id");
+            const produtoId = this.getAttribute("data-id");
 
-                const loadingToast = Toastify({
-                    text: "Adicionando ao carrinho...",
-                    duration: -1,
-                    gravity: "bottom",
-                    position: "right",
-                    backgroundColor: "#4CAF50",
-                    stopOnFocus: true
-                }).showToast();
+            const loadingToast = Toastify({
+                text: "Adicionando ao carrinho...",
+                duration: -1,
+                gravity: "bottom",
+                position: "right",
+                backgroundColor: "#4CAF50",
+                stopOnFocus: true
+            }).showToast();
 
-                fetch("{{ route('site.carrinho.itemCarrinho.adicionar') }}", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": '{{ csrf_token() }}',
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify({
-                            produto_id: produtoId,
-                            quantidade: quantidade,
-                            tamanho: estoqueKey,
-                        })
+            fetch("{{ route('site.carrinho.itemCarrinho.adicionar') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": '{{ csrf_token() }}',
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        produto_id: produtoId,
+                        quantidade: quantidade,
+                        tamanho: estoqueKey,
                     })
-                    .then(async (res) => {
-                        const contentType = res.headers.get("content-type");
-                        if (contentType && contentType.includes("application/json")) {
-                            return res.json();
-                        } else {
-                            const text = await res.text();
-                            throw new Error(text);
-                        }
-                    })
-                    .then(data => {
-                        loadingToast.hideToast();
+                })
+                .then(async (res) => {
+                    const contentType = res.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        return res.json();
+                    } else {
+                        const text = await res.text();
+                        throw new Error(text);
+                    }
+                })
+                .then(data => {
+                    loadingToast.hideToast();
 
-                        if (data.status === 'sucess' || data.status === 'success') {
-                            Swal.fire({
-                                title: data.message,
-                                icon: 'success',
-                                showConfirmButton: true,
-                                confirmButtonText: 'OK',
-                                timer: 3000,
-                                timerProgressBar: true
-                            });
+                    if (data.status === 'sucess' || data.status === 'success') {
+                        Swal.fire({
+                            title: data.message,
+                            icon: 'success',
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK',
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
 
-                            Toastify({
-                                text: `Adicionado ao carrinho!`,
-                                duration: 3000,
-                                gravity: "bottom",
-                                position: "right",
-                                backgroundColor: "#4CAF50",
-                                stopOnFocus: true
-                            }).showToast();
-                        } else {
-                            Swal.fire({
-                                title: 'Erro!',
-                                text: data.message ||
-                                    'Erro ao adicionar ao carrinho.',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-
-                            Toastify({
-                                text: data.message ||
-                                    "Erro ao adicionar ao carrinho.",
-                                duration: 3000,
-                                gravity: "top",
-                                position: "right",
-                                backgroundColor: "#f44336",
-                                stopOnFocus: true
-                            }).showToast();
-                        }
-                    })
-                    .catch(error => {
-                        loadingToast.hideToast();
-                        console.error("Erro na requisição:", error);
+                        Toastify({
+                            text: `Adicionado ao carrinho!`,
+                            duration: 3000,
+                            gravity: "bottom",
+                            position: "right",
+                            backgroundColor: "#4CAF50",
+                            stopOnFocus: true
+                        }).showToast();
+                    } else {
                         Swal.fire({
                             title: 'Erro!',
-                            text: 'Falha na comunicação com o servidor.',
+                            text: data.message || 'Erro ao adicionar ao carrinho.',
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
+
+                        Toastify({
+                            text: data.message || "Erro ao adicionar ao carrinho.",
+                            duration: 3000,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#f44336",
+                            stopOnFocus: true
+                        }).showToast();
+                    }
+                })
+                .catch(error => {
+                    loadingToast.hideToast();
+                    console.error("Erro na requisição:", error);
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Falha na comunicação com o servidor.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
                     });
-            });
+                });
         });
     });
+});
 </script>
+
 <style>
     /* Visual básico para estados de estoque */
     .size-option.in-stock {

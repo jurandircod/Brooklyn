@@ -104,7 +104,7 @@
                 <div class="space-y-2 text-gray-700">
                     <div class="flex justify-between"><span>Subtotal</span><span id="subtotal">R$
                             {{ number_format($preco_total, 2, ',', '.') }}</span></div>
-                    <div class="flex justify-between"><span>Taxa de Entrega</span><span id="taxaFrete">R$ 0,00</span>
+                    <div class="flex justify-between"><span>Taxa de Entrega</span><span id="taxaFrete">R$ {{ $taxa }}</span>
                     </div>
                     <div class="flex justify-between font-semibold text-[#4A1C1D]"><span>Total</span><span
                             id="preco_total2">R$ {{ number_format($preco_total, 2, ',', '.') }}</span></div>

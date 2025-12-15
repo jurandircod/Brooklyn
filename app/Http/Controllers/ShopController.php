@@ -34,7 +34,7 @@ class ShopController extends Controller
         if ($request->ajax()) {
             // Para filtros com paginação, pegar a página da URL se existir
             $page = $request->input('page', $request->query('page', 1));
-            $produtos = $query->paginate(8, ['*'], 'page', $page);
+            $produtos = $query->where('quantidade', '>', 0)->paginate(8, ['*'], 'page', $page);
             $sizes = $request->input('sizes', []);
 
 
@@ -64,10 +64,10 @@ class ShopController extends Controller
 
         // Requisição normal (não AJAX)
         if (!$id) {
-            $produtos = $query->where('estado', 'ativo')->paginate(8);
+            $produtos = $query->where('estado', 'ativo')->where('quantidade', '>', 0)->paginate(8);
             return view('site.shop', compact('produtos', 'categorias', 'marcas'));
         } else {
-            $produtos = $query->where('produtos.categoria_id', $id)->where('estado', 'ativo')->paginate(8);
+            $produtos = $query->where('produtos.categoria_id', $id)->where('estado', 'ativo')->where('quantidade', '>', 0)->paginate(8);
             return view('site.shop', compact('produtos', 'categorias', 'marcas'));
         }
     }

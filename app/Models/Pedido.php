@@ -16,7 +16,7 @@ class Pedido extends Model
     }
     public function endereco()
     {
-        return $this->belongsTo(endereco::class, 'endereco_id');
+        return $this->belongsTo(Endereco::class, 'endereco_id');
     }
 
     public function carrinho()

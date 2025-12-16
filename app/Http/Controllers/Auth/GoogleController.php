@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 
@@ -14,7 +15,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class GoogleController extends Controller
 {
-    
+
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
@@ -32,8 +33,10 @@ class GoogleController extends Controller
                     'email' => $socialUser->getEmail(),
                     'password' => bcrypt(Str::random(16)),
                     'role_id' => 2,
+                    'email_verified_at' => now(),
                 ]);
             }
+
 
             Auth::login($user);
 
@@ -45,5 +48,4 @@ class GoogleController extends Controller
             return redirect('/login');
         }
     }
-    
 }

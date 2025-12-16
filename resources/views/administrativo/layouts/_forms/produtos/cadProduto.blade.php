@@ -57,6 +57,18 @@
 
                     <div class="card-body">
                         <h4 class="mb-4 text-secondary">Cadastrar Produtos</h4>
+
+                        <div class="row mb-3">
+                            <div class="input-group col-md-3 mb-3">
+                                <select class="form-control" name="" id="preSelect">
+                                    <option value="">Pré-Preencher</option>
+                                    <option value="camisas">Camisas</option>
+                                    <option value="skates">Skates</option>
+                                    <option value="tenis">Tênis</option>
+                                    <option value="calcas">Calças</option>
+                                </select>
+                            </div>
+                        </div>
                         <form id="formProduto" method="POST" enctype="multipart/form-data">
                             @csrf
                             <!-- Nome do produto -->
@@ -71,7 +83,20 @@
                                         <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
                                     @enderror
                                 </div>
-
+                                
+                                <div class="col-md-3 mb-3">
+                                    <label for="valor" class="form-label">Valor da compra<span
+                                            style="color: red">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R$</span>
+                                        <input type="text" id="valor_compra" oninput="formatCurrency(this)"
+                                            value="{{ old('valor_compra') }}" id="valor_compra" class="form-control" name="valor_compra"
+                                            placeholder="R$ 0,00">
+                                    </div>
+                                    @error('valor_compra')
+                                        <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
+                                    @enderror
+                                </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="valor" class="form-label">Valor de venda<span
                                             style="color: red">*</span></label>
@@ -86,19 +111,6 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-3 mb-3">
-                                    <label for="valor" class="form-label">Valor da compra<span
-                                            style="color: red">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">R$</span>
-                                        <input type="text" id="valor_compra" oninput="formatCurrency(this)"
-                                            value="{{ old('valor_compra') }}" class="form-control" name="valor_compra"
-                                            placeholder="R$ 0,00">
-                                    </div>
-                                    @error('valor_compra')
-                                        <span class="invalid-feedback d-block" style="color: red">{{ $message }}</span>
-                                    @enderror
-                                </div>
 
                                 <div class="col-md-3 mb-3">
                                     <label for="categoria" class="form-label">Categoria do Produto <span
@@ -376,16 +388,75 @@
     const tenisSection = document.getElementById('tenisSection');
     const skateSection = document.getElementById('skateSection');
     const quantidadeSection = document.getElementById('quantidadeSection');
+    const preSelect = document.getElementById('preSelect');
+
+    console.log(preSelect);
+    if(preSelect){
+        preSelect.addEventListener('change', () => {
+            quantidadeSection.style.display = 'none';
+            camisaSection.style.display = 'none';
+            skateSection.style.display = 'none';
+            tenisSection.style.display = 'none';
+            const selectedText = preSelect.options[preSelect.selectedIndex]?.text || '';
+            if(selectedText === 'Camisas'){
+            document.getElementById('nome').value = 'Camisa';
+            document.getElementById('valor').value = '69,90';
+            document.getElementById('valor_compra').value = '50';
+            camisaSection.style.display = 'block';
+            categoria.value = 1;
+            document.getElementById('marca').value = 1;
+            document.getElementById('material').value = 'algodão';
+            }
+
+            if (selectedText === 'Skates'){
+                document.getElementById('nome').value = 'Skate';
+                document.getElementById('valor').value = '179,90';
+                document.getElementById('valor_compra').value = '100';
+                skateSection.style.display = 'block';
+                categoria.value = 2;
+                document.getElementById('marca').value = 1;
+                document.getElementById('material').value = 'Marfil';
+            }
+
+            if (selectedText === 'Tênis'){
+                document.getElementById('nome').value = 'Tênis';
+                document.getElementById('valor').value = '119,90';
+                document.getElementById('valor_compra').value = '80';
+                tenisSection.style.display = 'block';
+                categoria.value = 3;
+                document.getElementById('marca').value = 1;
+                document.getElementById('material').value = 'fibra';
+            }
+
+            if(selectedText === 'Calças'){
+                document.getElementById('nome').value = 'Calça';
+                document.getElementById('valor').value = '69,90';
+                document.getElementById('valor_compra').value = '45';
+                camisaSection.style.display = 'block';
+                categoria.value = 4;
+                document.getElementById('marca').value = 1;
+                document.getElementById('material').value = 'Algodão';
+            }
+ 
+            if (selectedText === 'Pré-Preencher'){            
+                document.getElementById('nome').value = '';
+                document.getElementById('valor').value = '';
+                document.getElementById('valor_compra').value = '';
+                quantidadeSection.style.display = 'block';
+                categoria.value = "";
+                document.getElementById('marca').value = 1;
+                document.getElementById('material').value = '';
+            }
+        })
+    }
 
     if (categoria) {
         categoria.addEventListener('change', () => {
             const selectedText = categoria.options[categoria.selectedIndex]?.text || '';
-
             camisaSection.style.display = 'none';
             skateSection.style.display = 'none';
             tenisSection.style.display = 'none';
             quantidadeSection.style.display = 'none';
-
             if (selectedText === 'Camisas') {
                 camisaSection.style.display = 'block';
             } else if (selectedText === 'Skates') {

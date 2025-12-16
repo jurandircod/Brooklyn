@@ -49,10 +49,11 @@ class CategoriaController extends Controller
                 Alert::alert('Categoria', 'Salva com sucesso', 'success');
                 try {
                     Categoria::create(($data));
-                    return redirect()->route('administrativo.produtos')->withInput();
+                    Alert::alert('Categoria', 'Salva com sucesso', 'success');
+                    return back()->withInput();
                 } catch (\Exception $e) {
                     Alert::alert('Erro', $e->getMessage(), 'error');
-                    return redirect()->route('administrativo.produtos');
+                    return back()->withInput();
                 }
             }
         } else {
@@ -68,10 +69,11 @@ class CategoriaController extends Controller
                 Alert::alert('Categoria', 'Salva com sucesso', 'success');
                 try {
                     Categoria::create($request->all());
-                    return redirect()->route('administrativo.produto.categoria');
+                    Alert::alert('Categoria', 'Salva com sucesso', 'success');
+                    return back()->withInput();
                 } catch (\Exception $e) {
                     Alert::alert('Erro', $e->getMessage(), 'error');
-                    return redirect()->route('administrativo.produto.categoria');
+                    return back()->withInput();
                 }
             }
         }

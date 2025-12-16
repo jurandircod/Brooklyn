@@ -118,7 +118,7 @@
               </div>
 
               <!-- Orders -->
-              <div id="order" class="tab-pane fade">
+              <div id="order" class="tab-pane fade @isset($activeTab) @if ($activeTab == 4) show active @endif @endisset @isset($_GET['activeTab']) @if ($_GET['activeTab'] == 3) show active @endif @endisset">
                 <div id="pedidos-table-container">@include('site.layouts._pages.perfil.partials.pedidos-table',['pedidos'=>$pedidos])</div>
                 <div id="pedidos-pagination-container" class="mt-4">@include('site.layouts._pages.perfil.partials.pedidos-pagination',['pedidos'=>$pedidos])</div>
               </div>

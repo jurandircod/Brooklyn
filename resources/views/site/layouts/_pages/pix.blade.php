@@ -260,8 +260,8 @@
         // redireciona para página de confirmação/visualização do pedido (opcional)
         setTimeout(() => {
             // ajuste a rota conforme seu projeto
-            window.location.href = `/perfil/confirmar/pedido/${pedidoId}`;
-        }, 500);
+            window.location.href = `{{ route('site.perfil') }}`;
+        }, 2000);
     }
 
     document.addEventListener('DOMContentLoaded', init);

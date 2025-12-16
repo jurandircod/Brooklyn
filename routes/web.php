@@ -19,8 +19,7 @@ use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\FreteController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest; // ADICIONE ESTA LINHA
+use Illuminate\Foundation\Auth\EmailVerificationRequest; 
 
 
 /* |-------------------------------------------------------------------------- | Web Routes |-------------------------------------------------------------------------- | | Here is where you can register web routes for your application. These | routes are loaded by the RouteServiceProvider within a group which | contains the "web" middleware group. Now create something great! | */
@@ -107,10 +106,6 @@ Route::prefix('produto')->group(function () {
 // ==========================================
 // ROTAS DE FRETE
 // ==========================================
-Route::prefix('frete')->group(function () {
-    Route::post('/calcular', [FreteController::class, 'calcular'])->name('site.frete.calcular');
-});
-
 // ==========================================
 // ROTAS DE PESQUISA
 // ==========================================

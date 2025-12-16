@@ -25,8 +25,7 @@ class ProdutoController extends Controller
         $estoqueCollection = Estoque::where('produto_id', $id)->get();
 
         $produtosDaMesmaCategoria = Produto::where('categoria_id', $produto->categoria_id)
-            ->where('id', '!=', $id)->where('quantidade', '>', 0)->where('estado','ativo');
-            ->paginate(6);
+            ->where('id', '!=', $id)->where('quantidade', '>', 0)->where('estado','ativo')->paginate(6);
 
         // Verifica se é uma requisição AJAX
         if ($request->ajax()) {
